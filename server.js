@@ -54,7 +54,27 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
-        // Clean up rooms (simplified for now)
+        
+        // Find which room the user was in
+        for (const gameType in games) {
+            for (const roomId in games[gameType]) {
+                const room = games[gameType][roomId];
+                const index = room.players.indexOf(socket.id);
+                if (index !== -1) {
+                    room.players.splice(index, 1);
+                    console.log(`Removed ${socket.id} from ${gameType} room ${roomId}`);
+                    
+                    // If room is empty, delete it
+                    if (room.players.length === 0) {
+                        delete games[gameType][roomId];
+                        console.log(`Deleted empty room ${roomId} in ${gameType}`);
+                    } else {
+                        // Notify remaining player
+                        io.to(roomId).emit('error', 'Opponent disconnected.');
+                    }
+                }
+            }
+        }
     });
 });
 

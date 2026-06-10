@@ -8,6 +8,8 @@ const urlsToCache = [
   '/js/app.js',
   '/js/tictactoe.js',
   '/js/dotsandboxes.js',
+  '/js/tetris.js',
+  '/tetris.html',
   '/socket.io/socket.io.js'
 ];
 

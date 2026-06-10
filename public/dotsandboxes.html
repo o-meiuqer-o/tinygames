@@ -18,10 +18,16 @@
 
         <div id="setup-area" class="room-setup">
             <h3>Join or Create a Room</h3>
-            <div class="input-group">
-                <input type="text" id="room-input" placeholder="Room Code (min 4 chars)">
-                <input type="number" id="grid-size" min="6" max="12" value="6" title="Grid Size (6 to 12)" style="width: 80px;">
-                <button id="join-btn">Join</button>
+            <div class="input-group" style="flex-direction: column; align-items: center; gap: 15px;">
+                <div>
+                    <label for="room-input" style="display:block; margin-bottom: 5px;">Room Code (min 4 chars):</label>
+                    <input type="text" id="room-input" placeholder="e.g. 5678" style="width: 150px; text-align: center;">
+                </div>
+                <div>
+                    <label for="grid-size" style="display:block; margin-bottom: 5px;">Grid Size (6-12):</label>
+                    <input type="number" id="grid-size" min="6" max="12" value="6" style="width: 100px; text-align: center;">
+                </div>
+                <button id="join-btn" style="width: 150px;">Join</button>
             </div>
             <div id="status" class="status">Waiting for input...</div>
         </div>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Drop | TinyGames</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-btn">&larr; Back to Hub</a>
+            <h1>Block Drop</h1>
+            <button id="install-pwa-btn" class="install-pwa-btn hidden">Install App</button>
+        </header>
+
+        <div class="tetris-wrapper">
+            <div class="score-board">
+                <div class="score-p1">Score: <span id="score">0</span></div>
+            </div>
+            
+            <div class="tetris-board" id="tetris-board"></div>
+
+            <div class="tetris-controls">
+                <button id="btn-left">◀</button>
+                <button id="btn-rotate">↻</button>
+                <button id="btn-right">▶</button>
+                <button id="btn-down">▼</button>
+            </div>
+        </div>
+
+        <div id="game-over-screen" class="room-setup hidden" style="margin-top: 20px;">
+            <h2 style="color: var(--secondary)">Game Over!</h2>
+            <p style="margin: 10px 0;">Final Score: <span id="final-score"></span></p>
+            <button id="restart-btn">Play Again</button>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/tetris.js"></script>
+</body>
+</html>
