@@ -305,7 +305,6 @@ button:hover {
     font-size: 1.1rem;
 .back-btn:hover { color: white; }
 
-/* Tetris Styles */
 .tetris-wrapper {
     display: flex;
     flex-direction: column;
@@ -314,74 +313,10 @@ button:hover {
     flex-grow: 1;
 }
 
-.tetris-board {
-    height: 75vh;
-    width: 37.5vh;
-    max-width: 65vw;
-    max-height: 130vw;
-    background-color: #111;
-    border: 2px solid #333;
-    position: relative;
-    flex-shrink: 0;
-}
-
 .t-cell {
     position: absolute;
     width: 10%;
     height: 5%;
     box-sizing: border-box;
-}
-
-.tetris-layout {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 10px;
-    width: 100%;
-}
-
-.side-btn {
-    background: linear-gradient(45deg, var(--primary), var(--secondary));
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-size: 2rem;
-    padding: 15px 10px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    z-index: 5;
-    transition: transform 0.1s;
-}
-
-.side-btn:active {
-    transform: scale(0.95);
-}
-
-/* Touch Zones */
-.touch-zone {
-    position: absolute;
-    z-index: 100; /* above everything except maybe modals */
-}
-
-#zone-left {
-    top: 100px;
-    left: 0;
-    width: 40vw; /* left 40% of screen */
-    height: 70vh; /* top 70% */
-}
-
-#zone-right {
-    top: 100px;
-    right: 0;
-    width: 40vw; /* right 40% of screen */
-    height: 70vh; /* top 70% */
-}
-
-#zone-down {
-    bottom: 0;
-    left: 0;
-    width: 100vw;
-    height: 30vh; /* bottom 30% of screen */
 }
 
