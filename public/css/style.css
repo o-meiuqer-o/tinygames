@@ -315,12 +315,13 @@ button:hover {
 }
 
 .tetris-board {
-    width: 250px;
-    height: 500px;
+    height: 75vh;
+    width: 37.5vh;
+    max-width: 65vw;
+    max-height: 130vw;
     background-color: #111;
     border: 2px solid #333;
     position: relative;
-    margin: 20px 0;
     flex-shrink: 0;
 }
 
@@ -335,8 +336,9 @@ button:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 20px;
+    gap: 15px;
     margin-top: 10px;
+    width: 100%;
 }
 
 .side-btn {
@@ -344,8 +346,8 @@ button:hover {
     border: none;
     border-radius: 12px;
     color: white;
-    font-size: 2.5rem;
-    padding: 20px 15px;
+    font-size: 2rem;
+    padding: 15px 10px;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
     z-index: 5;
