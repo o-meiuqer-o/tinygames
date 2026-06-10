@@ -1,35 +1,53 @@
-const CACHE_NAME = 'tinygames-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/tictactoe.html',
-  '/dotsandboxes.html',
+// CACHE v5 — network-first for HTML, cache-first for assets
+// Bumping version forces all old caches to be wiped
+const CACHE_NAME = 'tinygames-v5';
+const ASSETS = [
   '/css/style.css',
   '/js/app.js',
+  '/js/sounds.js',
   '/js/tictactoe.js',
   '/js/dotsandboxes.js',
   '/js/tetris.js',
-  '/tetris.html',
-  '/socket.io/socket.io.js'
+  '/manifest.json'
 ];
 
+// Install: pre-cache only static assets (not HTML — served network-first)
 self.addEventListener('install', event => {
+  self.skipWaiting(); // activate immediately
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
   );
 });
 
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      })
+// Activate: delete all old caches
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim()) // take control of all open tabs
   );
+});
+
+// Fetch: network-first for HTML pages, cache-first for assets
+self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+  const isHTML = event.request.destination === 'document' || url.pathname.endsWith('.html') || url.pathname === '/';
+
+  if (isHTML) {
+    // Always try network first for HTML so updates show immediately
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          return response;
+        })
+        .catch(() => caches.match(event.request)) // fallback to cache if offline
+    );
+  } else {
+    // Cache-first for JS/CSS assets
+    event.respondWith(
+      caches.match(event.request).then(cached => cached || fetch(event.request))
+    );
+  }
 });

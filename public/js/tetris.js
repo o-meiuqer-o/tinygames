@@ -141,6 +141,7 @@
         if (!collides(dr, dc, currentPiece.shape)) {
             currentPiece.r += dr;
             currentPiece.c += dc;
+            if (dc !== 0) Sounds.play('move');
             draw();
         } else if (dr > 0) {
             lock();
@@ -153,6 +154,7 @@
         const rotated = s[0].map((_, c) => s.map((row, r) => s[s.length - 1 - r][c]));
         if (!collides(0, 0, rotated)) {
             currentPiece.shape = rotated;
+            Sounds.play('rotate');
             draw();
         }
     }
@@ -181,12 +183,15 @@
                 board.splice(r, 1);
                 board.unshift(new Array(COLS).fill(0));
                 cleared++;
-                r++; // recheck same row index
+                r++;
             }
         }
         if (cleared) {
             score += bonuses[cleared] ?? cleared * 100;
             scoreEl.textContent = score;
+            Sounds.play('lineClear');
+        } else {
+            Sounds.play('drop');
         }
     }
 
@@ -219,6 +224,7 @@
         gameInterval = null;
         finalScoreEl.textContent     = score;
         gameoverScreen.style.display = 'flex';
+        Sounds.play('gameOver');
     }
 
     function togglePause() {
@@ -245,6 +251,22 @@
     document.getElementById('go-home-btn')      .addEventListener('click', () => location.href = 'index.html');
     document.getElementById('btn-rotate')       .addEventListener('click', e => { e.preventDefault(); rotate(); });
     pauseBtn.addEventListener('click', togglePause);
+
+    // PWA install button in pause menu
+    const installPauseBtn = document.getElementById('install-pwa-pause');
+    let deferredInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        installPauseBtn.style.display = 'block';
+    });
+    installPauseBtn.addEventListener('click', async () => {
+        if (!deferredInstallPrompt) return;
+        deferredInstallPrompt.prompt();
+        const { outcome } = await deferredInstallPrompt.userChoice;
+        if (outcome === 'accepted') installPauseBtn.style.display = 'none';
+        deferredInstallPrompt = null;
+    });
 
     // ── TOUCH ZONES ────────────────────────────────────────────────────────────
     function wire(id, events, fn) {

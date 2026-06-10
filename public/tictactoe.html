@@ -7,13 +7,34 @@
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="/socket.io/socket.io.js"></script>
+    <style>
+        .pause-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 500;
+            display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+        }
+        .pause-overlay h2 { font-size: 2.2rem; letter-spacing: 3px; }
+        .ov-btn {
+            width: 75%; max-width: 280px; padding: 14px; border-radius: 12px;
+            border: none; font-size: 1.05rem; font-weight: 600; cursor: pointer; color: white;
+        }
+        .ov-primary { background: linear-gradient(45deg, var(--primary), var(--secondary)); }
+        .ov-neutral { background: #222; }
+        .ov-install { background: linear-gradient(45deg, #11998e, #38ef7d); display: none; }
+        #pause-bar {
+            display: flex; justify-content: flex-end; align-items: center; width: 100%; max-width: 600px;
+        }
+        #pause-top-btn {
+            background: #1e1e1e; border: 1px solid #333; border-radius: 8px; color: white;
+            font-size: 1.1rem; width: 38px; height: 38px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
             <a href="index.html" class="back-btn">&larr; Back to Hub</a>
             <h1>Tic-Tac-Toe</h1>
-            <button id="install-pwa-btn" class="install-pwa-btn hidden">Install App</button>
         </header>
 
         <div id="setup-area" class="room-setup">
@@ -26,11 +47,14 @@
         </div>
 
         <div id="game-area" class="hidden">
-            <div class="score-board">
-                <div class="score-p1">You: <span id="player-symbol"></span></div>
-                <div class="score-p2">Turn: <span id="current-turn">X</span></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div class="score-board" style="margin-bottom:0; flex:1;">
+                    <div class="score-p1">You: <span id="player-symbol"></span></div>
+                    <div class="score-p2">Turn: <span id="current-turn">X</span></div>
+                </div>
+                <button id="pause-top-btn">⏸</button>
             </div>
-            
+
             <div class="tictactoe-board" id="board">
                 <div class="cell" data-index="0"></div>
                 <div class="cell" data-index="1"></div>
@@ -42,13 +66,22 @@
                 <div class="cell" data-index="7"></div>
                 <div class="cell" data-index="8"></div>
             </div>
-            
+
             <div class="room-setup">
                 <button id="reset-btn" class="hidden">Play Again</button>
             </div>
         </div>
     </div>
 
+    <!-- Pause overlay -->
+    <div class="pause-overlay" id="ttt-pause">
+        <h2>PAUSED</h2>
+        <button class="ov-btn ov-primary" id="ttt-resume">Resume</button>
+        <button class="ov-btn ov-install" id="ttt-install">📲 Save as App</button>
+        <button class="ov-btn ov-neutral" id="ttt-hub">← Back to Hub</button>
+    </div>
+
+    <script src="js/sounds.js"></script>
     <script src="js/tictactoe.js"></script>
 </body>
 </html>

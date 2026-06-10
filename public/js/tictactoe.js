@@ -15,6 +15,29 @@ const cells = document.querySelectorAll('.cell');
 const playerSymbolSpan = document.getElementById('player-symbol');
 const currentTurnSpan = document.getElementById('current-turn');
 const resetBtn = document.getElementById('reset-btn');
+const pauseOverlay = document.getElementById('ttt-pause');
+const pauseTopBtn = document.getElementById('pause-top-btn');
+
+// ── Pause Menu ────────────────────────────────────────────────
+pauseTopBtn.addEventListener('click', () => { pauseOverlay.style.display = 'flex'; });
+document.getElementById('ttt-resume').addEventListener('click', () => { pauseOverlay.style.display = 'none'; });
+document.getElementById('ttt-hub').addEventListener('click', () => { location.href = 'index.html'; });
+
+// ── PWA install in pause menu ─────────────────────────────────
+const tttInstallBtn = document.getElementById('ttt-install');
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    tttInstallBtn.style.display = 'block';
+});
+tttInstallBtn.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    if (outcome === 'accepted') tttInstallBtn.style.display = 'none';
+    deferredInstallPrompt = null;
+});
 
 const winningConditions = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
@@ -72,9 +95,8 @@ function makeMove(index, symbol) {
     boardState[index] = symbol;
     cells[index].innerText = symbol;
     cells[index].classList.add(symbol.toLowerCase());
-    
+    Sounds.play('place');
     checkWin(symbol);
-    
     if (gameActive) {
         currentTurn = currentTurn === 'X' ? 'O' : 'X';
         updateTurnDisplay();
@@ -104,6 +126,7 @@ function checkWin(symbol) {
         currentTurnSpan.innerText = `${symbol} Wins!`;
         gameActive = false;
         resetBtn.classList.remove('hidden');
+        Sounds.play(symbol === mySymbol ? 'win' : 'lose');
         return;
     }
 
@@ -111,6 +134,7 @@ function checkWin(symbol) {
         currentTurnSpan.innerText = `Draw!`;
         gameActive = false;
         resetBtn.classList.remove('hidden');
+        Sounds.play('lose');
         return;
     }
 }

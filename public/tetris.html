@@ -22,29 +22,90 @@
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        .how-to-play {
-            background: #161616; border: 1px solid #2a2a2a; border-radius: 16px;
-            padding: 18px 22px; width: 100%; max-width: 340px; display: flex;
-            flex-direction: column; gap: 12px;
+        /* ── Phone diagram instructions ──────────────────────── */
+        .phone-diagram {
+            position: relative;
+            width: 160px;
+            height: 260px;
+            border: 3px solid #444;
+            border-radius: 20px;
+            background: #111;
+            overflow: hidden;
+            flex-shrink: 0;
         }
-        .how-to-play h3 { font-size: 0.85rem; color: #666; letter-spacing: 2px; text-transform: uppercase; }
-        .tip { display: flex; align-items: center; gap: 14px; }
-        .tip-icon {
-            width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+        /* pause label top-right */
+        .phone-diagram .d-pause {
+            position: absolute; top: 6px; right: 8px;
+            font-size: 0.6rem; color: #aaa;
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
         }
-        .tip-icon.left  { background: rgba(0,210,255,0.15); border: 1px solid rgba(0,210,255,0.3); }
-        .tip-icon.right { background: rgba(255,0,127,0.15);  border: 1px solid rgba(255,0,127,0.3); }
-        .tip-icon.down  { background: rgba(255,165,0,0.15);  border: 1px solid rgba(255,165,0,0.3); }
-        .tip-icon.rot   { background: rgba(170,0,255,0.15);  border: 1px solid rgba(170,0,255,0.3); }
-        .tip-text strong { display: block; font-size: 0.95rem; color: #eee; }
-        .tip-text span   { font-size: 0.8rem; color: #666; }
+        .phone-diagram .d-pause-btn {
+            width: 18px; height: 18px; background: #333; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center; font-size: 0.6rem;
+        }
+        /* the board in the middle */
+        .phone-diagram .d-board {
+            position: absolute;
+            left: 50%; top: 30px;
+            transform: translateX(-50%);
+            width: 80px; height: 160px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+        }
+        /* left zone */
+        .phone-diagram .d-left {
+            position: absolute; left: 0; top: 30px;
+            width: 30%; height: 160px;
+            background: rgba(0,210,255,0.12);
+            border: 1px dashed rgba(0,210,255,0.4);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        /* right zone */
+        .phone-diagram .d-right {
+            position: absolute; right: 0; top: 30px;
+            width: 30%; height: 160px;
+            background: rgba(255,0,127,0.12);
+            border: 1px dashed rgba(255,0,127,0.4);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        /* centre zone (soft drop) */
+        .phone-diagram .d-center {
+            position: absolute;
+            left: 30%; right: 30%; top: 30px;
+            height: 160px;
+            background: rgba(255,165,0,0.08);
+        }
+        /* rotate bar */
+        .phone-diagram .d-rotate {
+            position: absolute; bottom: 8px; left: 10%; right: 10%;
+            height: 24px; background: linear-gradient(45deg,var(--primary),var(--secondary));
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 0.65rem; font-weight: 700; color: white;
+        }
+        /* zone labels */
+        .phone-diagram .lbl {
+            font-size: 0.5rem; font-weight: 700; text-align: center; line-height: 1.2;
+        }
+        .lbl-left  { color: var(--primary); }
+        .lbl-right { color: var(--secondary); }
+
+        /* legend below diagram */
+        .diagram-legend {
+            display: flex; flex-direction: column; gap: 6px; margin-top: 4px;
+        }
+        .leg-row {
+            display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: #bbb;
+        }
+        .leg-dot {
+            width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0;
+        }
 
         #start-game-btn {
             background: linear-gradient(45deg, var(--primary), var(--secondary));
             border: none; padding: 16px 0; border-radius: 50px; color: white;
             font-size: 1.2rem; font-weight: 700; cursor: pointer; width: 100%;
             max-width: 340px; box-shadow: 0 5px 30px rgba(0,210,255,0.4);
+            margin-top: 6px;
         }
         #back-link { color: #444; text-decoration: none; font-size: 0.85rem; }
 
@@ -64,27 +125,17 @@
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
 
-        /* Board area — fills space between top bar and rotate btn */
         #board-area {
             flex: 1; position: relative; display: flex;
             align-items: center; justify-content: center; overflow: hidden;
         }
-
-        /* Board: use height:100% so it fills vertically, then aspect-ratio sets width.
-           max-width:97% caps it so it never bleeds off screen on wide phones. */
         #tetris-board {
-            height: 100%;
-            aspect-ratio: 1 / 2;
-            max-width: 97%;
-            background: #111;
-            border-left: 1px solid #2a2a2a;
-            border-right: 1px solid #2a2a2a;
+            height: 100%; aspect-ratio: 1 / 2; max-width: 97%;
+            background: #111; border-left: 1px solid #2a2a2a; border-right: 1px solid #2a2a2a;
             position: relative;
         }
-
         .t-cell { position: absolute; box-sizing: border-box; }
 
-        /* Touch zones — sit over board-area, not over the board element itself */
         #zone-left, #zone-right, #zone-down {
             position: absolute; z-index: 10; top: 0; bottom: 0;
         }
@@ -92,7 +143,6 @@
         #zone-right { right: 0;  width: 20%; }
         #zone-down  { left: 20%; width: 60%; }
 
-        /* Rotate button — pinned to bottom */
         #rotate-area {
             flex-shrink: 0; padding: 10px 20px 22px;
             display: flex; justify-content: center; background: rgba(0,0,0,0.85);
@@ -120,6 +170,7 @@
         .ov-primary { background: linear-gradient(45deg, var(--primary), var(--secondary)); }
         .ov-neutral { background: #222; }
         .ov-danger  { background: var(--secondary); }
+        .ov-install { background: linear-gradient(45deg, #11998e, #38ef7d); display:none; }
     </style>
 </head>
 <body>
@@ -127,37 +178,33 @@
 <!-- SETUP -->
 <div id="setup-screen">
     <h1>Block Drop</h1>
-    <div class="how-to-play">
-        <h3>How to Play</h3>
-        <div class="tip">
-            <div class="tip-icon left">◀</div>
-            <div class="tip-text">
-                <strong>Move Left</strong>
-                <span>Tap the left 20% of the screen</span>
+
+    <!-- Phone diagram -->
+    <div style="display:flex; align-items:flex-start; gap:16px;">
+        <div class="phone-diagram">
+            <!-- Pause label -->
+            <div class="d-pause">
+                <div class="d-pause-btn">⏸</div>
+                <span style="font-size:0.45rem;color:#666;">pause</span>
             </div>
+            <!-- Zones -->
+            <div class="d-left"><span class="lbl lbl-left">◀<br>Move<br>Left</span></div>
+            <div class="d-board"></div>
+            <div class="d-center"></div>
+            <div class="d-right"><span class="lbl lbl-right">▶<br>Move<br>Right</span></div>
+            <!-- Rotate bar -->
+            <div class="d-rotate">↻ ROTATE</div>
         </div>
-        <div class="tip">
-            <div class="tip-icon right">▶</div>
-            <div class="tip-text">
-                <strong>Move Right</strong>
-                <span>Tap the right 20% of the screen</span>
-            </div>
-        </div>
-        <div class="tip">
-            <div class="tip-icon down">▼</div>
-            <div class="tip-text">
-                <strong>Soft Drop</strong>
-                <span>Hold the centre of the screen</span>
-            </div>
-        </div>
-        <div class="tip">
-            <div class="tip-icon rot">↻</div>
-            <div class="tip-text">
-                <strong>Rotate</strong>
-                <span>Tap the Rotate button at the bottom</span>
-            </div>
+        <!-- Legend -->
+        <div class="diagram-legend">
+            <div class="leg-row"><div class="leg-dot" style="background:rgba(0,210,255,0.5);border:1px dashed var(--primary);"></div>Tap left 20% → Move Left</div>
+            <div class="leg-row"><div class="leg-dot" style="background:rgba(255,0,127,0.5);border:1px dashed var(--secondary);"></div>Tap right 20% → Move Right</div>
+            <div class="leg-row"><div class="leg-dot" style="background:rgba(255,165,0,0.4);border:1px dashed orange;"></div>Hold centre → Soft Drop ▼</div>
+            <div class="leg-row"><div class="leg-dot" style="background:var(--primary);"></div>Bottom bar → Rotate ↻</div>
+            <div class="leg-row"><div class="leg-dot" style="background:#333;border:1px solid #555;"></div>Top-right → Pause ⏸</div>
         </div>
     </div>
+
     <button id="start-game-btn">▶ &nbsp;Start Game</button>
     <a href="index.html" id="back-link">← Back to Hub</a>
 </div>
@@ -183,9 +230,10 @@
 <!-- PAUSE -->
 <div class="overlay" id="pause-screen">
     <h2>PAUSED</h2>
-    <button class="ov-btn ov-primary" id="resume-btn">Resume</button>
-    <button class="ov-btn ov-neutral" id="pause-restart-btn">Restart</button>
-    <button class="ov-btn ov-danger"  id="quit-home-btn">Quit to Hub</button>
+    <button class="ov-btn ov-primary"  id="resume-btn">Resume</button>
+    <button class="ov-btn ov-neutral"  id="pause-restart-btn">Restart</button>
+    <button class="ov-btn ov-install"  id="install-pwa-pause">📲 Save as App</button>
+    <button class="ov-btn ov-danger"   id="quit-home-btn">Quit to Hub</button>
 </div>
 
 <!-- GAME OVER -->
@@ -196,6 +244,7 @@
     <button class="ov-btn ov-neutral" id="go-home-btn">← Hub</button>
 </div>
 
+<script src="js/sounds.js"></script>
 <script src="js/tetris.js"></script>
 </body>
 </html>

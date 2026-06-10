@@ -19,6 +19,29 @@ const gameArea = document.getElementById('game-area');
 const turnIndicator = document.getElementById('turn-indicator');
 const boardContainer = document.getElementById('dab-board-container');
 const resetBtn = document.getElementById('reset-btn');
+const pauseOverlay = document.getElementById('dab-pause');
+const pauseTopBtn = document.getElementById('pause-top-btn');
+
+// ── Pause Menu ────────────────────────────────────────────────
+pauseTopBtn.addEventListener('click', () => { pauseOverlay.style.display = 'flex'; });
+document.getElementById('dab-resume').addEventListener('click', () => { pauseOverlay.style.display = 'none'; });
+document.getElementById('dab-hub').addEventListener('click', () => { location.href = 'index.html'; });
+
+// ── PWA install in pause menu ─────────────────────────────────
+const dabInstallBtn = document.getElementById('dab-install');
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    dabInstallBtn.style.display = 'block';
+});
+dabInstallBtn.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    if (outcome === 'accepted') dabInstallBtn.style.display = 'none';
+    deferredInstallPrompt = null;
+});
 
 joinBtn.addEventListener('click', () => {
     const roomId = roomInput.value.trim();
@@ -121,41 +144,36 @@ socket.on('opponent_move', (lineId) => {
 function makeMove(lineId, player) {
     lines[lineId] = player;
     const el = document.getElementById(lineId);
-    if(el) {
-        el.classList.add(`line-active-${player}`);
-    }
-    
+    if(el) { el.classList.add(`line-active-${player}`); }
+    Sounds.play('drawLine');
+
     const [type, rStr, cStr] = lineId.split('-');
     const r = parseInt(rStr);
     const c = parseInt(cStr);
-    
-    // Check if box formed
     let boxFormed = false;
-    
+
     if (type === 'h') {
-        if (r > 0 && checkBox(r - 1, c, player)) boxFormed = true; // box above
-        if (r < ROWS && checkBox(r, c, player)) boxFormed = true; // box below
+        if (r > 0 && checkBox(r - 1, c, player)) boxFormed = true;
+        if (r < ROWS && checkBox(r, c, player)) boxFormed = true;
     } else {
-        if (c > 0 && checkBox(r, c - 1, player)) boxFormed = true; // box left
-        if (c < COLS && checkBox(r, c, player)) boxFormed = true; // box right
+        if (c > 0 && checkBox(r, c - 1, player)) boxFormed = true;
+        if (c < COLS && checkBox(r, c, player)) boxFormed = true;
     }
-    
+
     if (!boxFormed) {
         currentTurn = currentTurn === 'p1' ? 'p2' : 'p1';
     }
-    
+
     checkGameOver();
     updateUI();
 }
 
 function checkBox(r, c, player) {
     if (boxes[`${r}-${c}`]) return false;
-    
     const top = lines[`h-${r}-${c}`];
     const bottom = lines[`h-${r+1}-${c}`];
     const left = lines[`v-${r}-${c}`];
     const right = lines[`v-${r}-${c+1}`];
-    
     if (top && bottom && left && right) {
         boxes[`${r}-${c}`] = player;
         scores[player]++;
@@ -164,6 +182,7 @@ function checkBox(r, c, player) {
             boxEl.innerText = player === 'p1' ? 'P1' : 'P2';
             boxEl.classList.add(player);
         }
+        Sounds.play('claimBox');
         return true;
     }
     return false;
@@ -185,12 +204,15 @@ function checkGameOver() {
         if (scores.p1 > scores.p2) {
             turnIndicator.innerText = 'P1 WINS!';
             turnIndicator.style.color = 'var(--primary)';
+            Sounds.play(myPlayer === 'p1' ? 'win' : 'lose');
         } else if (scores.p2 > scores.p1) {
             turnIndicator.innerText = 'P2 WINS!';
             turnIndicator.style.color = 'var(--secondary)';
+            Sounds.play(myPlayer === 'p2' ? 'win' : 'lose');
         } else {
             turnIndicator.innerText = 'DRAW!';
             turnIndicator.style.color = 'white';
+            Sounds.play('lose');
         }
         resetBtn.classList.remove('hidden');
     }
