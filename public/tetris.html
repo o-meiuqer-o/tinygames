@@ -15,7 +15,12 @@
             <button id="install-pwa-btn" class="install-pwa-btn hidden">Install App</button>
         </header>
 
-        <div class="tetris-wrapper">
+        <div id="setup-area" class="room-setup" style="margin-top: 50px;">
+            <h3>Ready to drop some blocks?</h3>
+            <button id="start-game-btn" style="width: 100%; padding: 15px; font-size: 1.2rem; margin-top: 20px;">Start Game</button>
+        </div>
+
+        <div class="tetris-wrapper hidden" id="game-area">
             <div class="score-board">
                 <div class="score-p1">Score: <span id="score">0</span></div>
             </div>

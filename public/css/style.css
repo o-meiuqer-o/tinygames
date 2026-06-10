@@ -311,6 +311,7 @@ button:hover {
     flex-direction: column;
     align-items: center;
     width: 100%;
+    flex-grow: 1;
 }
 
 .tetris-board {
@@ -320,6 +321,7 @@ button:hover {
     border: 2px solid #333;
     position: relative;
     margin: 20px 0;
+    flex-shrink: 0;
 }
 
 .t-cell {
@@ -334,8 +336,10 @@ button:hover {
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     gap: 10px;
-    width: 250px;
-    margin-top: 10px;
+    width: 100%;
+    max-width: 300px;
+    margin-top: auto;
+    padding-bottom: 20px;
 }
 
 .tetris-controls button {

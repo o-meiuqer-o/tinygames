@@ -33,6 +33,9 @@ const scoreEl = document.getElementById('score');
 const gameOverScreen = document.getElementById('game-over-screen');
 const finalScoreEl = document.getElementById('final-score');
 const restartBtn = document.getElementById('restart-btn');
+const setupArea = document.getElementById('setup-area');
+const gameArea = document.getElementById('game-area');
+const startGameBtn = document.getElementById('start-game-btn');
 
 function initBoard() {
     for (let r = 0; r < ROWS; r++) {
@@ -213,5 +216,8 @@ document.addEventListener('keydown', (e) => {
 
 restartBtn.addEventListener('click', resetGame);
 
-// Start
-resetGame();
+startGameBtn.addEventListener('click', () => {
+    setupArea.classList.add('hidden');
+    gameArea.classList.remove('hidden');
+    resetGame();
+});
