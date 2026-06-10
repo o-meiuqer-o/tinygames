@@ -13,12 +13,14 @@
         <header>
             <a href="index.html" class="back-btn">&larr; Back to Hub</a>
             <h1>Dots & Boxes</h1>
+            <button id="install-pwa-btn" class="install-pwa-btn hidden">Install App</button>
         </header>
 
         <div id="setup-area" class="room-setup">
             <h3>Join or Create a Room</h3>
             <div class="input-group">
-                <input type="text" id="room-input" placeholder="Room Code (e.g., 5678)">
+                <input type="text" id="room-input" placeholder="Room Code (min 4 chars)">
+                <input type="number" id="grid-size" min="6" max="12" value="6" title="Grid Size (6 to 12)" style="width: 80px;">
                 <button id="join-btn">Join</button>
             </div>
             <div id="status" class="status">Waiting for input...</div>

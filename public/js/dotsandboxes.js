@@ -5,8 +5,8 @@ let myRoomId = '';
 let currentTurn = 'p1';
 let gameActive = false;
 
-const ROWS = 4; // Number of boxes per row
-const COLS = 4; // Number of boxes per col
+let ROWS = 6;
+let COLS = 6;
 let scores = { p1: 0, p2: 0 };
 let lines = {}; // 'x-y-type': player (e.g., '0-0-h': 'p1')
 let boxes = {}; // 'r-c': player
@@ -22,9 +22,17 @@ const resetBtn = document.getElementById('reset-btn');
 
 joinBtn.addEventListener('click', () => {
     const roomId = roomInput.value.trim();
-    if (roomId) {
-        socket.emit('join_game', { gameType, roomId });
+    let gridSizeInput = document.getElementById('grid-size').value;
+    let gridSize = parseInt(gridSizeInput) || 6;
+    if (gridSize < 6) gridSize = 6;
+    if (gridSize > 12) gridSize = 12;
+
+    if (roomId.length >= 4) {
+        socket.emit('join_game', { gameType, roomId, gridSize });
         statusDiv.innerText = 'Connecting...';
+    } else {
+        statusDiv.innerText = 'Room code must be at least 4 characters long';
+        statusDiv.style.color = 'red';
     }
 });
 
@@ -34,7 +42,11 @@ socket.on('joined', (data) => {
     statusDiv.innerText = `Joined room ${myRoomId} as ${myPlayer.toUpperCase()}. Waiting for opponent...`;
 });
 
-socket.on('game_start', () => {
+socket.on('game_start', (data) => {
+    if (data && data.gridSize) {
+        ROWS = data.gridSize;
+        COLS = data.gridSize;
+    }
     setupArea.classList.add('hidden');
     gameArea.classList.remove('hidden');
     initBoard();

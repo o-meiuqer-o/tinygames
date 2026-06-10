@@ -154,6 +154,14 @@ button:hover {
     transform: scale(1.05);
 }
 
+.install-pwa-btn {
+    background: linear-gradient(45deg, #11998e, #38ef7d);
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+}
+
 .status {
     margin-top: 15px;
     font-size: 1.2rem;

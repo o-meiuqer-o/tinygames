@@ -24,9 +24,12 @@ const winningConditions = [
 
 joinBtn.addEventListener('click', () => {
     const roomId = roomInput.value.trim();
-    if (roomId) {
+    if (roomId.length >= 4) {
         socket.emit('join_game', { gameType, roomId });
         statusDiv.innerText = 'Connecting...';
+    } else {
+        statusDiv.innerText = 'Room code must be at least 4 characters long';
+        statusDiv.style.color = 'red';
     }
 });
 

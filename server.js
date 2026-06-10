@@ -21,7 +21,7 @@ io.on('connection', (socket) => {
         socket.join(roomId);
         
         if (!games[gameType][roomId]) {
-            games[gameType][roomId] = { players: [], state: null };
+            games[gameType][roomId] = { players: [], state: null, gridSize: data.gridSize || 6 };
         }
         
         const room = games[gameType][roomId];
@@ -34,7 +34,7 @@ io.on('connection', (socket) => {
             console.log(`${socket.id} joined ${gameType} room ${roomId} as ${symbol}`);
             
             if (room.players.length === 2) {
-                io.to(roomId).emit('game_start', { message: 'Both players connected. Game starts!' });
+                io.to(roomId).emit('game_start', { message: 'Both players connected. Game starts!', gridSize: room.gridSize });
             }
         } else {
             socket.emit('error', 'Room is full');
