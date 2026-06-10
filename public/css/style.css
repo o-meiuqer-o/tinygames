@@ -331,31 +331,55 @@ button:hover {
     box-sizing: border-box;
 }
 
-.tetris-controls {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 10px;
-    width: 100%;
-    max-width: 300px;
-    margin-top: auto;
-    padding-bottom: 20px;
+.tetris-layout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
 }
 
-.tetris-controls button {
-    font-size: 1.5rem;
-    padding: 15px 0;
-    background: #333;
-    border-radius: 8px;
+.side-btn {
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    border: none;
+    border-radius: 12px;
     color: white;
+    font-size: 2.5rem;
+    padding: 20px 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    z-index: 5;
+    transition: transform 0.1s;
 }
 
-.tetris-controls button:active {
-    background: #555;
+.side-btn:active {
+    transform: scale(0.95);
 }
 
-#btn-left { grid-column: 1; grid-row: 2; }
-#btn-right { grid-column: 3; grid-row: 2; }
-#btn-down { grid-column: 2; grid-row: 2; }
-#btn-rotate { grid-column: 2; grid-row: 1; background: linear-gradient(45deg, var(--primary), var(--secondary)); }
+/* Touch Zones */
+.touch-zone {
+    position: absolute;
+    z-index: 100; /* above everything except maybe modals */
+}
+
+#zone-left {
+    top: 100px;
+    left: 0;
+    width: 40vw; /* left 40% of screen */
+    height: 70vh; /* top 70% */
+}
+
+#zone-right {
+    top: 100px;
+    right: 0;
+    width: 40vw; /* right 40% of screen */
+    height: 70vh; /* top 70% */
+}
+
+#zone-down {
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 30vh; /* bottom 30% of screen */
+}
 

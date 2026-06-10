@@ -5,6 +5,10 @@ let score = 0;
 let gameInterval;
 let currentPiece;
 let isGameOver = false;
+let isPaused = false;
+let isSoftDropping = false;
+const NORMAL_SPEED = 1000;
+const FAST_SPEED = 50;
 
 const COLORS = [
     '#000000', // 0: empty
@@ -36,6 +40,8 @@ const restartBtn = document.getElementById('restart-btn');
 const setupArea = document.getElementById('setup-area');
 const gameArea = document.getElementById('game-area');
 const startGameBtn = document.getElementById('start-game-btn');
+const pauseBtn = document.getElementById('pause-btn');
+const pauseScreen = document.getElementById('pause-screen');
 
 function initBoard() {
     for (let r = 0; r < ROWS; r++) {
@@ -114,7 +120,7 @@ function checkCollision(dr, dc, newShape) {
 }
 
 function movePiece(dr, dc) {
-    if (isGameOver) return;
+    if (isGameOver || isPaused) return;
     if (!checkCollision(dr, dc, currentPiece.shape)) {
         currentPiece.r += dr;
         currentPiece.c += dc;
@@ -126,7 +132,7 @@ function movePiece(dr, dc) {
 }
 
 function rotatePiece() {
-    if (isGameOver) return;
+    if (isGameOver || isPaused) return;
     const oldShape = currentPiece.shape;
     const newShape = [];
     for (let c = 0; c < oldShape[0].length; c++) {
@@ -194,24 +200,95 @@ function resetGame() {
     score = 0;
     scoreEl.innerText = score;
     isGameOver = false;
+    isPaused = false;
+    isSoftDropping = false;
+    pauseScreen.classList.add('hidden');
     gameOverScreen.classList.add('hidden');
     spawnPiece();
     drawBoard();
+    startGameLoop();
+}
+
+function startGameLoop() {
     clearInterval(gameInterval);
-    gameInterval = setInterval(() => movePiece(1, 0), 1000);
+    const speed = isSoftDropping ? FAST_SPEED : NORMAL_SPEED;
+    gameInterval = setInterval(() => movePiece(1, 0), speed);
+}
+
+function togglePause() {
+    if (isGameOver || setupArea.classList.contains('hidden') === false) return;
+    isPaused = !isPaused;
+    if (isPaused) {
+        clearInterval(gameInterval);
+        pauseScreen.classList.remove('hidden');
+        pauseBtn.innerText = '▶';
+    } else {
+        pauseScreen.classList.add('hidden');
+        pauseBtn.innerText = '⏸';
+        startGameLoop();
+    }
 }
 
 // Controls
-document.getElementById('btn-left').addEventListener('click', () => movePiece(0, -1));
-document.getElementById('btn-right').addEventListener('click', () => movePiece(0, 1));
-document.getElementById('btn-down').addEventListener('click', () => movePiece(1, 0));
-document.getElementById('btn-rotate').addEventListener('click', rotatePiece);
+document.getElementById('btn-rotate').addEventListener('click', (e) => { e.preventDefault(); rotatePiece(); });
+pauseBtn.addEventListener('click', (e) => { e.preventDefault(); togglePause(); });
+
+const zoneLeft = document.getElementById('zone-left');
+const zoneRight = document.getElementById('zone-right');
+const zoneDown = document.getElementById('zone-down');
+
+function handleTap(e, action) {
+    e.preventDefault(); // prevent double firing on mobile
+    action();
+}
+
+zoneLeft.addEventListener('touchstart', (e) => handleTap(e, () => movePiece(0, -1)));
+zoneLeft.addEventListener('mousedown', (e) => handleTap(e, () => movePiece(0, -1)));
+
+zoneRight.addEventListener('touchstart', (e) => handleTap(e, () => movePiece(0, 1)));
+zoneRight.addEventListener('mousedown', (e) => handleTap(e, () => movePiece(0, 1)));
+
+function startSoftDrop(e) {
+    e.preventDefault();
+    if (!isSoftDropping && !isPaused && !isGameOver) {
+        isSoftDropping = true;
+        movePiece(1, 0); // initial tick
+        startGameLoop();
+    }
+}
+
+function stopSoftDrop(e) {
+    e.preventDefault();
+    if (isSoftDropping) {
+        isSoftDropping = false;
+        startGameLoop();
+    }
+}
+
+zoneDown.addEventListener('touchstart', startSoftDrop);
+zoneDown.addEventListener('mousedown', startSoftDrop);
+zoneDown.addEventListener('touchend', stopSoftDrop);
+zoneDown.addEventListener('mouseup', stopSoftDrop);
+zoneDown.addEventListener('mouseleave', stopSoftDrop);
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft') movePiece(0, -1);
     if (e.key === 'ArrowRight') movePiece(0, 1);
-    if (e.key === 'ArrowDown') movePiece(1, 0);
+    if (e.key === 'ArrowDown') {
+        if (!isSoftDropping) {
+            isSoftDropping = true;
+            startGameLoop();
+        }
+    }
     if (e.key === 'ArrowUp') rotatePiece();
+    if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') togglePause();
+});
+
+document.addEventListener('keyup', (e) => {
+    if (e.key === 'ArrowDown') {
+        isSoftDropping = false;
+        startGameLoop();
+    }
 });
 
 restartBtn.addEventListener('click', resetGame);
