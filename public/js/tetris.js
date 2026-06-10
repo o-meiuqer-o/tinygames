@@ -42,6 +42,9 @@ const gameArea = document.getElementById('game-area');
 const startGameBtn = document.getElementById('start-game-btn');
 const pauseBtn = document.getElementById('pause-btn');
 const pauseScreen = document.getElementById('pause-screen');
+const resumeBtn = document.getElementById('resume-btn');
+const pauseRestartBtn = document.getElementById('pause-restart-btn');
+const quitHomeBtn = document.getElementById('quit-home-btn');
 
 function initBoard() {
     for (let r = 0; r < ROWS; r++) {
@@ -232,6 +235,10 @@ function togglePause() {
 // Controls
 document.getElementById('btn-rotate').addEventListener('click', (e) => { e.preventDefault(); rotatePiece(); });
 pauseBtn.addEventListener('click', (e) => { e.preventDefault(); togglePause(); });
+
+resumeBtn.addEventListener('click', togglePause);
+pauseRestartBtn.addEventListener('click', resetGame);
+quitHomeBtn.addEventListener('click', () => { window.location.href = 'index.html'; });
 
 const zoneLeft = document.getElementById('zone-left');
 const zoneRight = document.getElementById('zone-right');

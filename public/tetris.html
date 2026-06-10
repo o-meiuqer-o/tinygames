@@ -31,7 +31,12 @@
             <div class="tetris-layout">
                 <button id="btn-rotate" class="side-btn">↻<br><span style="font-size: 0.8rem;">Rotate</span></button>
                 <div class="tetris-board" id="tetris-board">
-                    <div id="pause-screen" class="hidden" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.8); z-index: 10; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; font-weight: bold;">PAUSED</div>
+                    <div id="pause-screen" class="hidden" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.85); z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
+                        <h2 style="font-size: 2rem; margin-bottom: 20px;">PAUSED</h2>
+                        <button id="resume-btn" style="margin-bottom: 15px; width: 80%; padding: 12px; font-size: 1rem;">Resume</button>
+                        <button id="pause-restart-btn" style="margin-bottom: 15px; width: 80%; padding: 12px; font-size: 1rem; background: var(--card-bg);">Restart</button>
+                        <button id="quit-home-btn" style="width: 80%; padding: 12px; font-size: 1rem; background: #ff007f;">Quit to Hub</button>
+                    </div>
                 </div>
             </div>
 
