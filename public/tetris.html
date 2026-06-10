@@ -2,62 +2,276 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Block Drop | TinyGames</title>
-    <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #ff007f;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            color: white;
+            overflow: hidden; /* NO scrolling — full screen game */
+        }
+
+        /* ── SETUP SCREEN ── */
+        #setup-screen {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #0a0a0a;
+            z-index: 999;
+            gap: 20px;
+        }
+        #setup-screen h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        #setup-screen p { color: #aaa; font-size: 1rem; }
+        #start-game-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            padding: 18px 50px;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 5px 30px rgba(0,210,255,0.4);
+        }
+        #back-link {
+            color: #555;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        /* ── GAME SCREEN ── */
+        #game-screen {
+            position: fixed;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+        }
+
+        /* Top bar: score left, title center, pause right */
+        #top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 14px;
+            background: rgba(0,0,0,0.7);
+            flex-shrink: 0;
+            z-index: 50;
+        }
+        #top-bar a {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+        #score-display {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        #pause-btn {
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.2rem;
+            width: 42px;
+            height: 42px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Board area — fills everything between top bar and rotate button */
+        #board-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #tetris-board {
+            /* 10 cols : 20 rows = 1:2 ratio */
+            height: 100%;
+            aspect-ratio: 1 / 2;
+            background: #111;
+            border: 2px solid #333;
+            position: relative;
+            max-width: 100%;
+        }
+
+        .t-cell {
+            position: absolute;
+            width: 10%;
+            height: 5%;
+            box-sizing: border-box;
+        }
+
+        /* Touch zones — overlaid on board-area */
+        #zone-left, #zone-right, #zone-down {
+            position: absolute;
+            z-index: 10;
+        }
+        #zone-left  { top: 0; left: 0;   width: 30%; height: 100%; }
+        #zone-right { top: 0; right: 0;  width: 30%; height: 100%; }
+        #zone-down  { top: 0; left: 30%; width: 40%; height: 100%; }
+
+        /* Rotate button — fixed to bottom */
+        #rotate-area {
+            flex-shrink: 0;
+            padding: 10px 20px 20px;
+            display: flex;
+            justify-content: center;
+            background: rgba(0,0,0,0.7);
+        }
+        #btn-rotate {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 700;
+            padding: 16px 0;
+            width: 90%;
+            max-width: 360px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,210,255,0.3);
+            letter-spacing: 1px;
+        }
+
+        /* ── PAUSE OVERLAY ── */
+        #pause-screen {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            z-index: 500;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+        #pause-screen h2 { font-size: 2.5rem; letter-spacing: 4px; }
+        .pause-btn {
+            width: 75%;
+            max-width: 280px;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+        }
+        #resume-btn      { background: linear-gradient(45deg, var(--primary), var(--secondary)); }
+        #pause-restart-btn { background: #333; }
+        #quit-home-btn   { background: var(--secondary); }
+
+        /* ── GAME OVER OVERLAY ── */
+        #gameover-screen {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            z-index: 500;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+        #gameover-screen h2 { font-size: 2.5rem; color: var(--secondary); }
+        #gameover-screen p  { color: #aaa; font-size: 1.2rem; }
+        #gameover-screen span { color: var(--primary); font-weight: 800; }
+        #restart-btn, #go-home-btn {
+            width: 75%;
+            max-width: 280px;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+        }
+        #restart-btn { background: linear-gradient(45deg, var(--primary), var(--secondary)); }
+        #go-home-btn { background: #333; }
+
+        .hidden { display: none !important; }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <header style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 10px; margin-bottom: 10px;">
-            <a href="index.html" class="back-btn" style="margin-bottom: 0;">&larr; Hub</a>
-            <h1 style="font-size: 1.8rem;">Block Drop</h1>
-            <div>
-                <button id="install-pwa-btn" class="install-pwa-btn hidden" style="margin: 0; padding: 5px 10px;">Install</button>
-                <button id="pause-btn" style="margin-left: 5px; padding: 5px 15px; font-size: 1.2rem; background: #333; border-radius: 8px;">⏸</button>
-            </div>
-        </header>
 
-        <div id="setup-area" class="room-setup">
-            <h3>Ready to drop some blocks?</h3>
-            <button id="start-game-btn" style="width: 100%; padding: 15px; font-size: 1.2rem; margin-top: 20px;">Start Game</button>
-        </div>
+<!-- SETUP SCREEN -->
+<div id="setup-screen">
+    <h1>Block Drop</h1>
+    <p>Tap left/right to move · Tap center to soft drop</p>
+    <button id="start-game-btn">▶ Start Game</button>
+    <a href="index.html" id="back-link">← Back to Hub</a>
+</div>
 
-        <div class="tetris-wrapper hidden" id="game-area" style="display: flex; flex-direction: column; width: 100%; flex-grow: 1; align-items: center;">
-            <div class="score-board" style="width: 100%; display: flex; justify-content: center; margin-bottom: 10px;">
-                <div class="score-p1" style="font-size: 1.5rem;">Score: <span id="score">0</span></div>
-            </div>
-            
-            <div style="flex-grow: 1; width: 100%; display: flex; justify-content: center; align-items: stretch; position: relative; min-height: 50vh; margin-bottom: 15px;">
-                <!-- The Board -->
-                <div class="tetris-board" id="tetris-board" style="height: auto; aspect-ratio: 1/2; background-color: #111; border: 2px solid #333; position: relative; max-width: 100%;">
-                    <div id="pause-screen" class="hidden" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.85); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
-                        <h2 style="font-size: 2rem; margin-bottom: 20px;">PAUSED</h2>
-                        <button id="resume-btn" style="margin-bottom: 15px; width: 80%; padding: 12px; font-size: 1rem;">Resume</button>
-                        <button id="pause-restart-btn" style="margin-bottom: 15px; width: 80%; padding: 12px; font-size: 1rem; background: var(--card-bg);">Restart</button>
-                        <button id="quit-home-btn" style="width: 80%; padding: 12px; font-size: 1rem; background: #ff007f;">Quit to Hub</button>
-                    </div>
-                </div>
+<!-- GAME SCREEN -->
+<div id="game-screen">
 
-                <!-- Touch Zones directly over the board container -->
-                <div id="zone-left" style="position: absolute; left: 0; top: 0; bottom: 0; width: 25%; z-index: 100;"></div>
-                <div id="zone-down" style="position: absolute; left: 25%; right: 25%; top: 0; bottom: 0; z-index: 100;"></div>
-                <div id="zone-right" style="position: absolute; right: 0; top: 0; bottom: 0; width: 25%; z-index: 100;"></div>
-            </div>
-
-            <div style="width: 100%; display: flex; justify-content: center; padding-bottom: 20px;">
-                <button id="btn-rotate" style="width: 80%; max-width: 300px; padding: 15px; font-size: 1.5rem; background: linear-gradient(45deg, var(--primary), var(--secondary)); border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">↻ Rotate</button>
-            </div>
-        </div>
-
-        <div id="game-over-screen" class="room-setup hidden" style="margin-top: 20px;">
-            <h2 style="color: var(--secondary)">Game Over!</h2>
-            <p style="margin: 10px 0;">Final Score: <span id="final-score"></span></p>
-            <button id="restart-btn">Play Again</button>
-        </div>
+    <!-- Top bar -->
+    <div id="top-bar">
+        <a href="index.html">← Hub</a>
+        <div id="score-display">Score: <span id="score">0</span></div>
+        <button id="pause-btn">⏸</button>
     </div>
 
-    <script src="js/app.js"></script>
-    <script src="js/tetris.js"></script>
+    <!-- Board + touch zones -->
+    <div id="board-area">
+        <div id="tetris-board"></div>
+
+        <!-- Invisible touch zones over the board area -->
+        <div id="zone-left"></div>
+        <div id="zone-down"></div>
+        <div id="zone-right"></div>
+    </div>
+
+    <!-- Rotate button at the bottom -->
+    <div id="rotate-area">
+        <button id="btn-rotate">↻ &nbsp; ROTATE</button>
+    </div>
+</div>
+
+<!-- PAUSE OVERLAY -->
+<div id="pause-screen">
+    <h2>PAUSED</h2>
+    <button class="pause-btn" id="resume-btn">Resume</button>
+    <button class="pause-btn" id="pause-restart-btn">Restart</button>
+    <button class="pause-btn" id="quit-home-btn">Quit to Hub</button>
+</div>
+
+<!-- GAME OVER OVERLAY -->
+<div id="gameover-screen">
+    <h2>Game Over!</h2>
+    <p>Score: <span id="final-score">0</span></p>
+    <button id="restart-btn">Play Again</button>
+    <button id="go-home-btn">← Hub</button>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/tetris.js"></script>
 </body>
 </html>
