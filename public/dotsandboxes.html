@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dots and Boxes | TinyGames</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-btn">&larr; Back to Hub</a>
+            <h1>Dots & Boxes</h1>
+        </header>
+
+        <div id="setup-area" class="room-setup">
+            <h3>Join or Create a Room</h3>
+            <div class="input-group">
+                <input type="text" id="room-input" placeholder="Room Code (e.g., 5678)">
+                <button id="join-btn">Join</button>
+            </div>
+            <div id="status" class="status">Waiting for input...</div>
+        </div>
+
+        <div id="game-area" class="hidden">
+            <div class="score-board">
+                <div class="score-p1" id="score-p1-disp">P1 (Cyan): 0</div>
+                <div class="status" id="turn-indicator">Turn: P1</div>
+                <div class="score-p2" id="score-p2-disp">P2 (Pink): 0</div>
+            </div>
+            
+            <!-- We will generate the board dynamically in JS -->
+            <div id="dab-board-container" class="dab-board"></div>
+            
+            <div class="room-setup">
+                <button id="reset-btn" class="hidden">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/dotsandboxes.js"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+const express = require('express');
+const app = express();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
+const path = require('path');
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Simple matchmaking logic
+const games = {
+    tictactoe: {},
+    dotsandboxes: {}
+};
+
+io.on('connection', (socket) => {
+    console.log('A user connected:', socket.id);
+
+    socket.on('join_game', (data) => {
+        const { gameType, roomId } = data;
+        
+        socket.join(roomId);
+        
+        if (!games[gameType][roomId]) {
+            games[gameType][roomId] = { players: [], state: null };
+        }
+        
+        const room = games[gameType][roomId];
+        
+        if (room.players.length < 2) {
+            room.players.push(socket.id);
+            const symbol = room.players.length === 1 ? 'player1' : 'player2';
+            
+            socket.emit('joined', { symbol, roomId });
+            console.log(`${socket.id} joined ${gameType} room ${roomId} as ${symbol}`);
+            
+            if (room.players.length === 2) {
+                io.to(roomId).emit('game_start', { message: 'Both players connected. Game starts!' });
+            }
+        } else {
+            socket.emit('error', 'Room is full');
+        }
+    });
+
+    socket.on('make_move', (data) => {
+        const { roomId, move, gameType } = data;
+        // Broadcast the move to the other player in the room
+        socket.to(roomId).emit('opponent_move', move);
+    });
+    
+    socket.on('reset_game', (data) => {
+        const { roomId, gameType } = data;
+        io.to(roomId).emit('reset_game');
+    });
+
+    socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id);
+        // Clean up rooms (simplified for now)
+    });
+});
+
+const PORT = process.env.PORT || 3000;
+http.listen(PORT, () => {
+    console.log(`Server listening on http://localhost:${PORT}`);
+});
