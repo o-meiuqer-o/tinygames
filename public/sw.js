@@ -1,6 +1,6 @@
-// CACHE v5 — network-first for HTML, cache-first for assets
+// CACHE v6 — network-first for HTML, cache-first for assets
 // Bumping version forces all old caches to be wiped
-const CACHE_NAME = 'tinygames-v5';
+const CACHE_NAME = 'tinygames-v6';
 const ASSETS = [
   '/css/style.css',
   '/js/app.js',
@@ -8,6 +8,7 @@ const ASSETS = [
   '/js/tictactoe.js',
   '/js/dotsandboxes.js',
   '/js/tetris.js',
+  '/js/kakka.js',
   '/manifest.json'
 ];
 
