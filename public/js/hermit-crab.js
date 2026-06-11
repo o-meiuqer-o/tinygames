@@ -274,7 +274,7 @@ function spawnLevelItems() {
     const shellConfig = shells[Math.floor(Math.random() * shells.length)];
     items.push({
         x: cameraX + canvasWidth * 0.8,
-        y: canvasHeight * 0.5 + Math.random() * (canvasHeight * 0.4),
+        y: canvasHeight * 0.4 + Math.random() * (canvasHeight * 0.35), // Stay out of bottom joystick area
         type: Math.random() > 0.3 ? 'shell' : 'cap',
         shellConfig: shellConfig
     });
@@ -291,7 +291,7 @@ function spawnLevelItems() {
         
         items.push({
             x: cameraX + 50 + Math.random() * (canvasWidth - 100),
-            y: canvasHeight * 0.2 + Math.random() * (canvasHeight * 0.8),
+            y: canvasHeight * 0.25 + Math.random() * (canvasHeight * 0.55), // Keep items mostly centered vertically
             type: type
         });
     }
@@ -542,7 +542,8 @@ function initGame(isLeftHanded) {
     joystickManager = nipplejs.create({
         zone: zone,
         mode: 'static',
-        position: isLeftHanded ? { left: '50%', bottom: '20%' } : { left: '50%', bottom: '20%' },
+        position: isLeftHanded ? { left: '20%', bottom: '25%' } : { right: '20%', bottom: '25%' },
+        size: 150, // Adult-friendly size (larger than default 100)
         color: '#2196F3'
     });
     
