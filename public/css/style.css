@@ -33,6 +33,10 @@ body {
     flex-direction: column;
 }
 
+.hub-container {
+    max-width: 900px;
+}
+
 /* Header */
 header {
     text-align: center;
@@ -56,9 +60,21 @@ header p {
 
 /* Hub Game Selection */
 .game-selection {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .game-selection {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .game-selection {
+        grid-template-columns: 1fr;
+    }
 }
 
 .game-card {

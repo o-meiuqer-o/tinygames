@@ -12,24 +12,191 @@ let board = Array(14).fill(5);
 let stores = { player1: 39, player2: 39 };
 
 const DOM = {
+    startScreen: document.getElementById('start-screen'),
+    gameContainer: document.getElementById('game-container'),
     createBtn: document.getElementById('create-room-btn'),
     joinBtn: document.getElementById('join-room-btn'),
     localBtn: document.getElementById('local-mode-btn'),
     roomCodeInput: document.getElementById('room-code-input'),
-    roomControls: document.getElementById('room-controls'),
     gameArea: document.getElementById('game-area'),
     roomInfo: document.getElementById('room-info'),
     displayRoomCode: document.getElementById('display-room-code'),
     status: document.getElementById('status'),
-    waitingMsg: document.getElementById('waiting-msg'),
     pits: document.querySelectorAll('.pit'),
     store1Val: document.getElementById('store1-val'),
     store2Val: document.getElementById('store2-val'),
     p1Info: document.getElementById('player1-info'),
     p2Info: document.getElementById('player2-info'),
-    resetBtn: document.getElementById('reset-btn')
+    resetBtn: document.getElementById('reset-btn'),
+    
+    pauseTopBtn: document.getElementById('pause-top-btn'),
+    pauseOverlay: document.getElementById('pause-overlay'),
+    resumeBtn: document.getElementById('resume-btn'),
+    quitBtn: document.getElementById('quit-btn'),
+    
+    langEn: document.getElementById('lang-en'),
+    langMl: document.getElementById('lang-ml'),
+    langEnPause: document.getElementById('lang-en-pause'),
+    langMlPause: document.getElementById('lang-ml-pause')
 };
 
+// --- i18n Localization ---
+const translations = {
+    en: {
+        rotateMsg: "Please rotate your device to Landscape mode to play Pallanguzhi.",
+        title: "Pallanguzhi",
+        subtitle: "Traditional pit-and-pebble game.",
+        rulesTitle: "Rules:",
+        rule1: "Distribute your seeds counter-clockwise.",
+        rule2: "If the NEXT pit has seeds, pick them up and continue.",
+        rule3: "If the NEXT pit is empty, your turn ends.",
+        rule4: "Capture seeds from the pit AFTER the empty one.",
+        rule5: "The player with the most seeds in their store wins.",
+        createRoom: "Create Room",
+        joinRoom: "Join Room",
+        orLocal: "Or play locally:",
+        localMode: "Local 2-Player Mode",
+        backHub: "Back to Hub",
+        connecting: "Connecting...",
+        roomCodeTxt: "Room Code:",
+        waiting: "Waiting for opponent...",
+        opponentTop: "Opponent (Top)",
+        youBottom: "You (Bottom)",
+        storeLabel: "Store:",
+        playAgain: "Play Again",
+        paused: "PAUSED",
+        resume: "Resume",
+        quit: "Quit Game",
+        player1Wins: "Player 1 Wins!",
+        player2Wins: "Player 2 Wins!",
+        tie: "It's a Tie!",
+        yourTurn: "Your Turn",
+        opponentTurn: "Opponent's Turn",
+        p1Turn: "Player 1's Turn (Bottom)",
+        p2Turn: "Player 2's Turn (Top)"
+    },
+    ml: {
+        rotateMsg: "പല്ലങ്കുഴി കളിക്കാൻ നിങ്ങളുടെ ഉപകരണം ലാൻഡ്‌സ്‌കേപ്പിലേക്ക് തിരിക്കുക.",
+        title: "കിതകിതപ്പ് / പല്ലങ്കുഴി",
+        subtitle: "പരമ്പരാഗത ബോർഡ് ഗെയിം.",
+        rulesTitle: "നിയമങ്ങൾ:",
+        rule1: "നിങ്ങളുടെ കുരുക്കൾ എതിർ ഘടികാരദിശയിൽ വിതരണം ചെയ്യുക.",
+        rule2: "അടുത്ത കുഴിയിൽ കുരുക്കൾ ഉണ്ടെങ്കിൽ, അവ എടുത്തു വിതരണം തുടരുക.",
+        rule3: "അടുത്ത കുഴി കാലിയാണെങ്കിൽ, നിങ്ങളുടെ ഊഴം അവസാനിക്കും.",
+        rule4: "കാലിയായ കുഴിക്ക് ശേഷമുള്ള കുഴിയിൽ നിന്ന് കുരുക്കൾ സ്വന്തമാക്കാം.",
+        rule5: "കൂടുതൽ കുരുക്കൾ ഉള്ളയാൾ വിജയിക്കും.",
+        createRoom: "റൂം ഉണ്ടാക്കുക",
+        joinRoom: "റൂമിൽ ചേരുക",
+        orLocal: "അല്ലെങ്കിൽ ഒരുമിച്ച് കളിക്കുക:",
+        localMode: "രണ്ടുപേർക്കുള്ള കളി",
+        backHub: "തിരികെ പോകുക",
+        connecting: "ബന്ധിപ്പിക്കുന്നു...",
+        roomCodeTxt: "റൂം കോഡ്:",
+        waiting: "കൂട്ടുകാരനായി കാത്തിരിക്കുന്നു...",
+        opponentTop: "എതിരാളി (മുകളിൽ)",
+        youBottom: "നിങ്ങൾ (താഴെ)",
+        storeLabel: "ശേഖരം:",
+        playAgain: "വീണ്ടും കളിക്കുക",
+        paused: "നിർത്തിവെച്ചിരിക്കുന്നു",
+        resume: "തുടരുക",
+        quit: "കളി നിർത്തുക",
+        player1Wins: "ഒന്നാമൻ വിജയിച്ചു!",
+        player2Wins: "രണ്ടാമൻ വിജയിച്ചു!",
+        tie: "സമനില!",
+        yourTurn: "നിങ്ങളുടെ ഊഴം",
+        opponentTurn: "എതിരാളിയുടെ ഊഴം",
+        p1Turn: "ഒന്നാമന്റെ ഊഴം (താഴെ)",
+        p2Turn: "രണ്ടാമന്റെ ഊഴം (മുകളിൽ)"
+    }
+};
+
+let currentLang = 'en';
+
+function setLanguage(lang) {
+    currentLang = lang;
+    const elements = document.querySelectorAll('[data-i18n]');
+    elements.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+            el.textContent = translations[lang][key];
+        }
+    });
+
+    if (lang === 'en') {
+        DOM.langEn.classList.add('active');
+        DOM.langMl.classList.remove('active');
+        DOM.langEnPause.classList.add('active');
+        DOM.langMlPause.classList.remove('active');
+    } else {
+        DOM.langMl.classList.add('active');
+        DOM.langEn.classList.remove('active');
+        DOM.langMlPause.classList.add('active');
+        DOM.langEnPause.classList.remove('active');
+    }
+    
+    // Refresh status text if in game
+    updateBoardUI();
+}
+
+[DOM.langEn, DOM.langEnPause].forEach(btn => btn.addEventListener('click', () => setLanguage('en')));
+[DOM.langMl, DOM.langMlPause].forEach(btn => btn.addEventListener('click', () => setLanguage('ml')));
+
+// Set initial language
+setLanguage('en');
+
+// --- Fullscreen & Orientation ---
+async function requestGameFullscreen() {
+    try {
+        if (document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+            await document.documentElement.webkitRequestFullscreen();
+        }
+    } catch (err) {
+        console.warn("Fullscreen failed:", err);
+    }
+
+    try {
+        if (screen.orientation && screen.orientation.lock) {
+            await screen.orientation.lock('landscape');
+        }
+    } catch (err) {
+        console.warn("Orientation lock failed:", err);
+    }
+}
+
+function exitGameFullscreen() {
+    try {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    } catch (err) {
+        console.warn("Exit Fullscreen failed:", err);
+    }
+}
+
+// --- Pause Menu ---
+DOM.pauseTopBtn.addEventListener('click', () => {
+    DOM.pauseOverlay.classList.remove('hidden');
+});
+
+DOM.resumeBtn.addEventListener('click', () => {
+    DOM.pauseOverlay.classList.add('hidden');
+});
+
+DOM.quitBtn.addEventListener('click', () => {
+    DOM.pauseOverlay.classList.add('hidden');
+    DOM.gameContainer.classList.add('hidden');
+    DOM.startScreen.classList.remove('hidden');
+    exitGameFullscreen();
+    if (gameMode === 'online') {
+        location.reload(); // Quick way to disconnect socket and reset
+    }
+});
+
+// --- Game Logic ---
 function updateBoardUI() {
     DOM.pits.forEach(pit => {
         const idx = parseInt(pit.dataset.index);
@@ -65,17 +232,21 @@ function updateBoardUI() {
 
     DOM.store1Val.textContent = stores.player1;
     DOM.store2Val.textContent = stores.player2;
-    document.getElementById('p1-store-count').textContent = `Store: ${stores.player1}`;
-    document.getElementById('p2-store-count').textContent = `Store: ${stores.player2}`;
 
+    let statusKey = '';
     if (currentPlayer === 'player1') {
         DOM.p1Info.classList.add('active');
         DOM.p2Info.classList.remove('active');
-        DOM.status.textContent = gameMode === 'online' ? (mySymbol === 'player1' ? "Your Turn" : "Opponent's Turn") : "Player 1's Turn (Bottom)";
+        statusKey = gameMode === 'online' ? (mySymbol === 'player1' ? "yourTurn" : "opponentTurn") : "p1Turn";
     } else {
         DOM.p2Info.classList.add('active');
         DOM.p1Info.classList.remove('active');
-        DOM.status.textContent = gameMode === 'online' ? (mySymbol === 'player2' ? "Your Turn" : "Opponent's Turn") : "Player 2's Turn (Top)";
+        statusKey = gameMode === 'online' ? (mySymbol === 'player2' ? "yourTurn" : "opponentTurn") : "p2Turn";
+    }
+    
+    // Check if game is over before updating status to turn string
+    if (!DOM.resetBtn.classList.contains('hidden') === false) {
+       DOM.status.textContent = translations[currentLang][statusKey];
     }
 }
 
@@ -94,13 +265,13 @@ function checkWinCondition() {
         // Game Over
         let winner = null;
         if (stores.player1 > stores.player2) {
-            DOM.status.textContent = "Player 1 Wins!";
+            DOM.status.textContent = translations[currentLang]['player1Wins'];
             winner = 'player1';
         } else if (stores.player2 > stores.player1) {
-            DOM.status.textContent = "Player 2 Wins!";
+            DOM.status.textContent = translations[currentLang]['player2Wins'];
             winner = 'player2';
         } else {
-            DOM.status.textContent = "It's a Tie!";
+            DOM.status.textContent = translations[currentLang]['tie'];
         }
         
         DOM.resetBtn.classList.remove('hidden');
@@ -145,7 +316,6 @@ async function executeMove(startIndex) {
     pitEl.classList.remove('highlight');
 
     while (hand > 0) {
-        // Distribute seeds
         while (hand > 0) {
             currentIndex = (currentIndex + 1) % 14;
             board[currentIndex]++;
@@ -159,14 +329,12 @@ async function executeMove(startIndex) {
             pEl.classList.remove('highlight');
         }
 
-        // Check if the next pit has seeds to continue
         const nextIndex = (currentIndex + 1) % 14;
         
         if (board[nextIndex] > 0) {
-            // Pick up and continue
             hand = board[nextIndex];
             board[nextIndex] = 0;
-            currentIndex = nextIndex; // Fix: Move currentIndex forward so we don't drop a seed back into the pit we just emptied
+            currentIndex = nextIndex; 
             
             const npEl = document.querySelector(`.pit[data-index="${nextIndex}"]`);
             npEl.classList.add('highlight');
@@ -175,7 +343,6 @@ async function executeMove(startIndex) {
             await delay(400);
             npEl.classList.remove('highlight');
         } else {
-            // Next pit is empty, so capture the pit after that
             const captureIndex = (nextIndex + 1) % 14;
             if (board[captureIndex] > 0) {
                 const capturedAmount = board[captureIndex];
@@ -194,11 +361,10 @@ async function executeMove(startIndex) {
                 cEl.classList.remove('highlight');
                 sEl.classList.remove('highlight');
             }
-            break; // Turn ends
+            break;
         }
     }
 
-    // Switch turns
     currentPlayer = currentPlayer === 'player1' ? 'player2' : 'player1';
     isMyTurn = gameMode === 'online' ? (mySymbol === currentPlayer) : true;
     isAnimating = false;
@@ -208,7 +374,6 @@ async function executeMove(startIndex) {
     }
 }
 
-// Interaction
 DOM.pits.forEach(pit => {
     pit.addEventListener('click', () => {
         if (isAnimating) return;
@@ -223,7 +388,6 @@ DOM.pits.forEach(pit => {
             socket.emit('make_move', { roomId, move: idx, gameType: 'pallanguzhi' });
             executeMove(idx);
         } else {
-            // Local mode
             if (currentPlayer === 'player1' && (idx < 0 || idx > 6)) return;
             if (currentPlayer === 'player2' && (idx < 7 || idx > 13)) return;
             if (board[idx] === 0) return;
@@ -255,15 +419,17 @@ function resetGame() {
 
     if (gameMode === 'online') {
         isMyTurn = (mySymbol === 'player1');
-        DOM.status.textContent = isMyTurn ? "Your Turn" : "Opponent's Turn";
-    } else {
-        DOM.status.textContent = "Player 1's Turn";
     }
     updateBoardUI();
 }
 
-// --- Multiplayer logic ---
+function startGameUI() {
+    DOM.startScreen.classList.add('hidden');
+    DOM.gameContainer.classList.remove('hidden');
+    requestGameFullscreen();
+}
 
+// --- Multiplayer logic ---
 function generateRoomId() {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
@@ -272,6 +438,7 @@ DOM.createBtn.addEventListener('click', () => {
     roomId = generateRoomId();
     gameMode = 'online';
     socket.emit('join_game', { gameType: 'pallanguzhi', roomId });
+    startGameUI();
 });
 
 DOM.joinBtn.addEventListener('click', () => {
@@ -280,6 +447,7 @@ DOM.joinBtn.addEventListener('click', () => {
         roomId = code;
         gameMode = 'online';
         socket.emit('join_game', { gameType: 'pallanguzhi', roomId });
+        startGameUI();
     } else {
         alert("Enter a valid 6-character room code.");
     }
@@ -287,7 +455,8 @@ DOM.joinBtn.addEventListener('click', () => {
 
 DOM.localBtn.addEventListener('click', () => {
     gameMode = 'local';
-    DOM.roomControls.classList.add('hidden');
+    startGameUI();
+    DOM.roomInfo.classList.add('hidden');
     DOM.gameArea.classList.remove('hidden');
     resetGame();
 });
@@ -296,11 +465,21 @@ socket.on('joined', (data) => {
     mySymbol = data.symbol;
     roomId = data.roomId;
     
-    DOM.roomControls.classList.add('hidden');
     DOM.roomInfo.classList.remove('hidden');
     DOM.displayRoomCode.textContent = roomId;
-    DOM.status.textContent = `You are ${mySymbol === 'player1' ? 'Player 1 (Bottom)' : 'Player 2 (Top)'}`;
     
+    // Generate QR
+    document.getElementById("qrcode").innerHTML = ""; // Clear existing
+    const joinUrl = window.location.origin + window.location.pathname + '?room=' + roomId;
+    new QRCode(document.getElementById("qrcode"), {
+        text: joinUrl,
+        width: 150,
+        height: 150,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.L
+    });
+
     isMyTurn = (mySymbol === 'player1');
 });
 
@@ -324,3 +503,13 @@ socket.on('error', (msg) => {
         location.reload();
     }
 });
+
+// Auto-join from URL parameter
+const urlParams = new URLSearchParams(window.location.search);
+const autoRoom = urlParams.get('room');
+if (autoRoom) {
+    roomId = autoRoom.toUpperCase();
+    gameMode = 'online';
+    socket.emit('join_game', { gameType: 'pallanguzhi', roomId });
+    startGameUI();
+}

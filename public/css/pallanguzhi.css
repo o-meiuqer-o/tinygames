@@ -163,3 +163,44 @@ body {
     filter: grayscale(100%) opacity(0.6);
     transition: filter 1s ease, opacity 1s ease;
 }
+
+/* OVERLAYS & FULLSCREEN */
+.overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.game-over-box {
+    background: var(--card-bg, #1e1e1e);
+    border: 2px solid #333;
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    color: white;
+}
+
+#game-container {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    margin: 0;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.game-header {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.game-header h1 {
+    font-size: 2rem;
+}

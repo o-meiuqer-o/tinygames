@@ -46,15 +46,47 @@ const winningConditions = [
 ];
 
 joinBtn.addEventListener('click', () => {
-    const roomId = roomInput.value.trim();
+    const roomId = roomInput.value.trim().toUpperCase();
     if (roomId.length >= 4) {
         socket.emit('join_game', { gameType, roomId });
+        document.getElementById('setup-buttons').classList.add('hidden');
         statusDiv.innerText = 'Connecting...';
     } else {
-        statusDiv.innerText = 'Room code must be at least 4 characters long';
+        statusDiv.innerText = 'Room code must be at least 4 characters';
         statusDiv.style.color = 'red';
     }
 });
+
+const createRoomBtn = document.getElementById('create-room-btn');
+if (createRoomBtn) {
+    createRoomBtn.addEventListener('click', () => {
+        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+        socket.emit('join_game', { gameType, roomId: code });
+        document.getElementById('setup-buttons').classList.add('hidden');
+        document.getElementById('qr-container').classList.remove('hidden');
+        document.getElementById('room-code-display').innerText = code;
+        
+        const joinUrl = window.location.origin + window.location.pathname + '?room=' + code;
+        new QRCode(document.getElementById("qrcode"), {
+            text: joinUrl,
+            width: 150,
+            height: 150,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.L
+        });
+    });
+}
+
+// Auto-join from URL parameter
+const urlParams = new URLSearchParams(window.location.search);
+const autoRoom = urlParams.get('room');
+if (autoRoom) {
+    roomInput.value = autoRoom.toUpperCase();
+    document.getElementById('setup-buttons').classList.add('hidden');
+    socket.emit('join_game', { gameType, roomId: autoRoom.toUpperCase() });
+    statusDiv.innerText = 'Connecting via QR...';
+}
 
 socket.on('joined', (data) => {
     mySymbol = data.symbol === 'player1' ? 'X' : 'O';

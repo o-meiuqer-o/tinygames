@@ -9,38 +9,68 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="orientation-warning">
+    <div id="orientation-warning" data-i18n="rotateMsg">
         Please rotate your device to Landscape mode to play Pallanguzhi.
     </div>
 
-    <div class="container game-container" id="game-wrapper">
-        <header class="game-header">
-            <a href="index.html" class="back-btn">← Back</a>
-            <h1>Pallanguzhi</h1>
-            <div id="status" class="status">Connecting...</div>
+    <!-- START SCREEN -->
+    <div id="start-screen" class="container hub-container">
+        <header>
+            <h1 data-i18n="title">Pallanguzhi</h1>
+            <p data-i18n="subtitle">Traditional pit-and-pebble game.</p>
         </header>
 
-        <div class="room-controls" id="room-controls">
-            <button id="create-room-btn" class="btn primary-btn">Create Room</button>
-            <div class="join-room-wrapper">
-                <input type="text" id="room-code-input" placeholder="Room Code" maxlength="6">
-                <button id="join-room-btn" class="btn secondary-btn">Join Room</button>
-            </div>
-            <div style="margin-top: 10px; color: #aaa; text-align: center; width: 100%;">
-                Or play locally:
-            </div>
-            <button id="local-mode-btn" class="btn outline-btn" style="width: 100%; margin-top: 5px;">Local 2-Player Mode</button>
+        <!-- LANGUAGE SELECTOR -->
+        <div style="text-align: center; margin: 10px 0;">
+            <button id="lang-en" class="btn outline-btn active" style="padding: 5px 10px;">English</button>
+            <button id="lang-ml" class="btn outline-btn" style="padding: 5px 10px;">മലയാളം</button>
+        </div>
+        
+        <div class="instructions" style="text-align: left; background: #1a1a1a; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 data-i18n="rulesTitle" style="margin-top: 0; color: #ffd700;">Rules:</h3>
+            <ul style="padding-left: 20px; line-height: 1.6; color: #ccc;">
+                <li data-i18n="rule1">Distribute your seeds counter-clockwise.</li>
+                <li data-i18n="rule2">If the last seed falls in a pit, and the NEXT pit has seeds, pick them up and continue.</li>
+                <li data-i18n="rule3">If the NEXT pit is empty, your turn ends.</li>
+                <li data-i18n="rule4">You capture the seeds in the pit AFTER the empty one!</li>
+                <li data-i18n="rule5">The player with the most seeds in their store wins.</li>
+            </ul>
         </div>
 
+        <div class="room-controls" id="room-controls">
+            <button id="create-room-btn" class="btn primary-btn" data-i18n="createRoom">Create Room</button>
+            <div class="join-room-wrapper" style="margin-top: 10px; display: flex; gap: 10px;">
+                <input type="text" id="room-code-input" placeholder="Room Code" maxlength="6" style="flex: 1; padding: 10px;">
+                <button id="join-room-btn" class="btn secondary-btn" data-i18n="joinRoom">Join Room</button>
+            </div>
+            <div style="margin-top: 20px; color: #aaa; text-align: center; width: 100%;" data-i18n="orLocal">
+                Or play locally:
+            </div>
+            <button id="local-mode-btn" class="btn outline-btn" style="width: 100%; margin-top: 10px;" data-i18n="localMode">Local 2-Player Mode</button>
+        </div>
+        
+        <a href="index.html" class="back-link" style="display: block; text-align: center; margin-top: 20px;" data-i18n="backHub">Back to Hub</a>
+    </div>
+
+    <!-- GAME CONTAINER -->
+    <div id="game-container" class="container game-container hidden">
+        <header class="game-header">
+            <h1 data-i18n="title">Pallanguzhi</h1>
+            <div id="status" class="status" data-i18n="connecting">Connecting...</div>
+            <button id="pause-top-btn" style="position:absolute; top:20px; right:20px; background: #1e1e1e; border: 1px solid #333; border-radius: 8px; color: white; font-size: 1.1rem; width: 38px; height: 38px; cursor: pointer; display: flex; align-items: center; justify-content: center;">⏸</button>
+        </header>
+
         <div id="room-info" class="hidden" style="text-align: center; margin-bottom: 20px;">
-            <p>Room Code: <strong id="display-room-code" style="font-size: 1.5em; letter-spacing: 2px;"></strong></p>
-            <p id="waiting-msg">Waiting for opponent...</p>
+            <p><span data-i18n="roomCodeTxt">Room Code:</span> <strong id="display-room-code" style="font-size: 1.5em; letter-spacing: 2px;"></strong></p>
+            <div id="qrcode" style="background:white; padding:10px; border-radius:8px; display:inline-block; margin-top:10px;"></div>
+            <p style="margin-top:10px; font-size:0.9rem; color:#aaa;">Scan to join automatically</p>
+            <p id="waiting-msg" data-i18n="waiting" style="margin-top:10px;">Waiting for opponent...</p>
         </div>
 
         <div id="game-area" class="hidden">
             <div class="player-info" id="player2-info">
-                <span>Opponent (Top)</span>
-                <span class="store-count" id="p2-store-count">Store: 39</span>
+                <span data-i18n="opponentTop">Opponent (Top)</span>
+                <span class="store-count" id="p2-store-count"><span data-i18n="storeLabel">Store:</span> <span class="val">39</span></span>
             </div>
 
             <div class="board">
@@ -75,16 +105,42 @@
             </div>
 
             <div class="player-info" id="player1-info">
-                <span>You (Bottom)</span>
-                <span class="store-count" id="p1-store-count">Store: 39</span>
+                <span data-i18n="youBottom">You (Bottom)</span>
+                <span class="store-count" id="p1-store-count"><span data-i18n="storeLabel">Store:</span> <span class="val">39</span></span>
             </div>
             
-            <button id="reset-btn" class="btn secondary-btn hidden" style="margin-top: 20px; width: 100%;">Play Again</button>
+            <button id="reset-btn" class="btn secondary-btn hidden" style="margin-top: 20px; width: 100%;" data-i18n="playAgain">Play Again</button>
+        </div>
+        
+        <!-- PAUSE OVERLAY -->
+        <div id="pause-overlay" class="hidden overlay">
+            <div class="game-over-box" style="text-align: left; width: 90%; max-width: 400px;">
+                <h2 style="text-align: center; margin-top: 0;" data-i18n="paused">PAUSED</h2>
+                
+                <div class="instructions" style="background: #111; padding: 10px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 15px;">
+                    <h4 data-i18n="rulesTitle" style="margin: 0 0 5px 0; color: #ffd700;">Rules:</h4>
+                    <ul style="padding-left: 20px; margin: 0; color: #ccc;">
+                        <li data-i18n="rule1">Distribute your seeds counter-clockwise.</li>
+                        <li data-i18n="rule2">If the NEXT pit has seeds, pick them up and continue.</li>
+                        <li data-i18n="rule3">If the NEXT pit is empty, your turn ends.</li>
+                        <li data-i18n="rule4">Capture seeds from the pit AFTER the empty one.</li>
+                    </ul>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; justify-content: center;">
+                    <button id="lang-en-pause" class="btn outline-btn active" style="padding: 5px 10px; flex: 1;">English</button>
+                    <button id="lang-ml-pause" class="btn outline-btn" style="padding: 5px 10px; flex: 1;">മലയാളം</button>
+                </div>
+
+                <button id="resume-btn" class="btn primary-btn" style="width: 100%; margin-bottom: 10px;" data-i18n="resume">Resume</button>
+                <button id="quit-btn" class="btn outline-btn" style="width: 100%;" data-i18n="quit">Quit Game</button>
+            </div>
         </div>
     </div>
 
     <!-- Include Socket.io -->
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="js/sounds.js"></script>
     <script src="js/pallanguzhi.js"></script>
 </body>
