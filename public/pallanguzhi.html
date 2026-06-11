@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pallanguzhi - TinyGames</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/pallanguzhi.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="orientation-warning">
+        Please rotate your device to Landscape mode to play Pallanguzhi.
+    </div>
+
+    <div class="container game-container" id="game-wrapper">
+        <header class="game-header">
+            <a href="index.html" class="back-btn">← Back</a>
+            <h1>Pallanguzhi</h1>
+            <div id="status" class="status">Connecting...</div>
+        </header>
+
+        <div class="room-controls" id="room-controls">
+            <button id="create-room-btn" class="btn primary-btn">Create Room</button>
+            <div class="join-room-wrapper">
+                <input type="text" id="room-code-input" placeholder="Room Code" maxlength="6">
+                <button id="join-room-btn" class="btn secondary-btn">Join Room</button>
+            </div>
+            <div style="margin-top: 10px; color: #aaa; text-align: center; width: 100%;">
+                Or play locally:
+            </div>
+            <button id="local-mode-btn" class="btn outline-btn" style="width: 100%; margin-top: 5px;">Local 2-Player Mode</button>
+        </div>
+
+        <div id="room-info" class="hidden" style="text-align: center; margin-bottom: 20px;">
+            <p>Room Code: <strong id="display-room-code" style="font-size: 1.5em; letter-spacing: 2px;"></strong></p>
+            <p id="waiting-msg">Waiting for opponent...</p>
+        </div>
+
+        <div id="game-area" class="hidden">
+            <div class="player-info" id="player2-info">
+                <span>Opponent (Top)</span>
+                <span class="store-count" id="p2-store-count">Store: 39</span>
+            </div>
+
+            <div class="board">
+                <div class="store player2-store" id="store2">
+                    <div class="store-value" id="store2-val">39</div>
+                </div>
+
+                <div class="pits-container">
+                    <div class="pits-row player2-row" id="row2">
+                        <div class="pit" data-index="13"><span class="pit-value">5</span></div>
+                        <div class="pit" data-index="12"><span class="pit-value">5</span></div>
+                        <div class="pit" data-index="11"><span class="pit-value">5</span></div>
+                        <div class="pit" data-index="10"><span class="pit-value">5</span></div>
+                        <div class="pit" data-index="9"><span class="pit-value">5</span></div>
+                        <div class="pit" data-index="8"><span class="pit-value">5</span></div>
+                        <div class="pit" data-index="7"><span class="pit-value">5</span></div>
+                    </div>
+                    <div class="pits-row player1-row" id="row1">
+                        <div class="pit" data-index="0"><span class="pit-value">5</span></div>
+                        <div class="pit" data-index="1"><span class="pit-value">5</span></div>
+                        <div class="pit" data-index="2"><span class="pit-value">5</span></div>
+                        <div class="pit" data-index="3"><span class="pit-value">5</span></div>
+                        <div class="pit" data-index="4"><span class="pit-value">5</span></div>
+                        <div class="pit" data-index="5"><span class="pit-value">5</span></div>
+                        <div class="pit" data-index="6"><span class="pit-value">5</span></div>
+                    </div>
+                </div>
+
+                <div class="store player1-store" id="store1">
+                    <div class="store-value" id="store1-val">39</div>
+                </div>
+            </div>
+
+            <div class="player-info" id="player1-info">
+                <span>You (Bottom)</span>
+                <span class="store-count" id="p1-store-count">Store: 39</span>
+            </div>
+            
+            <button id="reset-btn" class="btn secondary-btn hidden" style="margin-top: 20px; width: 100%;">Play Again</button>
+        </div>
+    </div>
+
+    <!-- Include Socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/sounds.js"></script>
+    <script src="js/pallanguzhi.js"></script>
+</body>
+</html>

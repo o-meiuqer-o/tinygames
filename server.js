@@ -9,7 +9,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Simple matchmaking logic
 const games = {
     tictactoe: {},
-    dotsandboxes: {}
+    dotsandboxes: {},
+    pallanguzhi: {}
 };
 
 io.on('connection', (socket) => {

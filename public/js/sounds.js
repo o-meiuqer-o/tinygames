@@ -77,6 +77,24 @@ const Sounds = (() => {
     gameOver() {
       tone({ type: 'sawtooth', freq: 440, freq2: 220, duration: 0.3, gain: 0.3 });
       tone({ type: 'sawtooth', freq: 220, freq2: 110, duration: 0.4, gain: 0.3, delay: 0.3 });
+    },
+    // ── Pallanguzhi ─────────────────────────────────────────
+    seedDrop() {
+      tone({ type: 'sine', freq: 800, duration: 0.05, gain: 0.2 });
+    },
+    capture() {
+      tone({ type: 'sine', freq: 600, duration: 0.1, gain: 0.3 });
+      tone({ type: 'sine', freq: 800, duration: 0.1, gain: 0.3, delay: 0.1 });
+    },
+    happyWin() {
+      const b = 60 / 118; // 118 BPM (~0.508s)
+      for (let i = 0; i < 4; i++) {
+        const d = i * b * 2; // Plays every 2 beats
+        tone({ type: 'triangle', freq: 523.25, duration: b/2, gain: 0.3, delay: d }); // C5
+        tone({ type: 'triangle', freq: 659.25, duration: b/2, gain: 0.3, delay: d + b/2 }); // E5
+        tone({ type: 'triangle', freq: 783.99, duration: b/2, gain: 0.3, delay: d + b }); // G5
+        tone({ type: 'triangle', freq: 1046.50, duration: b/2, gain: 0.3, delay: d + b*1.5 }); // C6
+      }
     }
   };
 
