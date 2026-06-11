@@ -7,6 +7,7 @@ let joystickManager;
 let joystickData = { vector: { x: 0, y: 0 } };
 
 let isPlaying = false;
+let isPaused = false;
 let animationId;
 let lastTime = 0;
 let cameraX = 0;
@@ -53,6 +54,7 @@ const startScreen = document.getElementById('start-screen');
 const gameContainer = document.getElementById('game-container');
 const gameOverOverlay = document.getElementById('game-over-overlay');
 const winOverlay = document.getElementById('win-overlay');
+const pauseOverlay = document.getElementById('pause-overlay');
 const levelDisplay = document.getElementById('level-display');
 const hungerFill = document.getElementById('hunger-fill');
 const growthFill = document.getElementById('growth-fill');
@@ -198,6 +200,9 @@ function drawItems() {
             ctx.arc(8*scale, -3*scale, 2*scale, 0, Math.PI*2);
             ctx.fill();
         } else if (item.type === 'shell' || item.type === 'cap') {
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
+            ctx.shadowBlur = 15 * scale;
+            
             const shellSize = item.shellConfig.size * scale;
             ctx.fillStyle = item.shellConfig.color;
             if (item.type === 'cap') {
@@ -211,14 +216,31 @@ function drawItems() {
                 ctx.arc(shellSize*0.2, 0, shellSize*0.2, 0, Math.PI * 2);
                 ctx.fill();
             }
+            
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
         } else if (item.type === 'rock') {
             ctx.fillStyle = '#7f8c8d';
             ctx.beginPath();
-            ctx.arc(0, 0, 20 * scale, 0, Math.PI * 2);
+            
+            // Generate irregular geometry once per rock
+            if (!item.offsets) {
+                item.offsets = [];
+                for(let k=0; k<8; k++) item.offsets.push(Math.random() * 0.4 + 0.8);
+            }
+            
+            for (let k = 0; k < 8; k++) {
+                const angle = (k / 8) * Math.PI * 2;
+                const r = 20 * scale * item.offsets[k];
+                if (k === 0) ctx.moveTo(Math.cos(angle) * r, Math.sin(angle) * r);
+                else ctx.lineTo(Math.cos(angle) * r, Math.sin(angle) * r);
+            }
+            ctx.closePath();
             ctx.fill();
+            
             ctx.fillStyle = '#95a5a6';
             ctx.beginPath();
-            ctx.arc(-5 * scale, -5 * scale, 8 * scale, 0, Math.PI * 2);
+            ctx.arc(-5 * scale, -5 * scale, 5 * scale, 0, Math.PI * 2);
             ctx.fill();
         }
         
@@ -440,6 +462,12 @@ function draw() {
 
 function loop(time) {
     if (!isPlaying) return;
+    if (isPaused) {
+        lastTime = time;
+        animationId = requestAnimationFrame(loop);
+        return;
+    }
+    
     const dt = (time - lastTime) / 1000;
     lastTime = time;
     
@@ -526,3 +554,35 @@ document.getElementById('restart-win-btn').addEventListener('click', () => {
     const isLeftHanded = document.getElementById('joystick-zone').style.left === '0px';
     initGame(isLeftHanded);
 });
+
+// Pause Menu Wiring
+document.getElementById('pause-top-btn').addEventListener('click', () => {
+    if (!isPlaying || isPaused) return;
+    isPaused = true;
+    pauseOverlay.classList.remove('hidden');
+});
+document.getElementById('resume-btn').addEventListener('click', () => {
+    isPaused = false;
+    pauseOverlay.classList.add('hidden');
+});
+document.getElementById('quit-btn').addEventListener('click', () => {
+    location.href = 'index.html';
+});
+
+// PWA Install Wiring
+const installBtn = document.getElementById('install-pwa-btn');
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (installBtn) installBtn.style.display = 'block';
+});
+if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') installBtn.style.display = 'none';
+        deferredPrompt = null;
+    });
+}

@@ -1,14 +1,16 @@
-// CACHE v6 — network-first for HTML, cache-first for assets
+// CACHE v8 — network-first for HTML, cache-first for assets
 // Bumping version forces all old caches to be wiped
-const CACHE_NAME = 'tinygames-v6';
+const CACHE_NAME = 'tinygames-v8';
 const ASSETS = [
   '/css/style.css',
+  '/css/hermit-crab.css',
   '/js/app.js',
   '/js/sounds.js',
   '/js/tictactoe.js',
   '/js/dotsandboxes.js',
   '/js/tetris.js',
   '/js/kakka.js',
+  '/js/hermit-crab.js',
   '/manifest.json'
 ];
 
