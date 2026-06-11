@@ -105,12 +105,17 @@ header p {
         margin-bottom: 6px;
     }
     .game-card h2 {
-        font-size: 9pt;
+        font-size: 15px;
         margin-bottom: 0;
-        line-height: 1.2;
+        line-height: 1;
         text-align: center;
         width: 100%;
-        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: 400;
+        color: #f1f1f1;
+        letter-spacing: 0.2px;
     }
     .game-card p {
         display: none;
