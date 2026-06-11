@@ -497,8 +497,24 @@ function gameOver(reason) {
     }
 }
 
+async function forceLandscape() {
+    try {
+        if (document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
+        } else if (document.documentElement.webkitRequestFullscreen) { /* Safari */
+            await document.documentElement.webkitRequestFullscreen();
+        }
+        if (screen.orientation && screen.orientation.lock) {
+            await screen.orientation.lock('landscape');
+        }
+    } catch (err) {
+        console.warn("Fullscreen/Orientation lock failed (often requires user gesture or specific browser support):", err);
+    }
+}
+
 function initGame(isLeftHanded) {
     if(audioCtx.state === 'suspended') audioCtx.resume();
+    forceLandscape();
     
     startScreen.classList.add('hidden');
     gameContainer.classList.remove('hidden');
