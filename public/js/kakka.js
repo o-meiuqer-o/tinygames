@@ -2,32 +2,32 @@
 
 const items = [
     // Flying
-    { word: "Crow", emoji: "🦅", flies: true }, // Eagle emoji as crow approx for simplicity or 🐦
-    { word: "Eagle", emoji: "🦅", flies: true },
-    { word: "Airplane", emoji: "✈️", flies: true },
-    { word: "Helicopter", emoji: "🚁", flies: true },
-    { word: "Mosquito", emoji: "🦟", flies: true },
-    { word: "Butterfly", emoji: "🦋", flies: true },
-    { word: "Parrot", emoji: "🦜", flies: true },
-    { word: "Rocket", emoji: "🚀", flies: true },
-    { word: "Owl", emoji: "🦉", flies: true },
-    { word: "Bat", emoji: "🦇", flies: true },
-    { word: "Dragon", emoji: "🐉", flies: true },
-    { word: "Bee", emoji: "🐝", flies: true },
+    { word: "Crow", mlWord: "കാക്ക", emoji: "🦅", flies: true },
+    { word: "Eagle", mlWord: "കഴുകൻ", emoji: "🦅", flies: true },
+    { word: "Airplane", mlWord: "വിമാനം", emoji: "✈️", flies: true },
+    { word: "Helicopter", mlWord: "ഹെലികോപ്റ്റർ", emoji: "🚁", flies: true },
+    { word: "Mosquito", mlWord: "കൊതുക്", emoji: "🦟", flies: true },
+    { word: "Butterfly", mlWord: "ചിത്രശലഭം", emoji: "🦋", flies: true },
+    { word: "Parrot", mlWord: "തത്ത", emoji: "🦜", flies: true },
+    { word: "Rocket", mlWord: "റോക്കറ്റ്", emoji: "🚀", flies: true },
+    { word: "Owl", mlWord: "മൂങ്ങ", emoji: "🦉", flies: true },
+    { word: "Bat", mlWord: "വവ്വാൽ", emoji: "🦇", flies: true },
+    { word: "Dragon", mlWord: "വ്യാളി", emoji: "🐉", flies: true },
+    { word: "Bee", mlWord: "തേനീച്ച", emoji: "🐝", flies: true },
 
     // Non-Flying
-    { word: "Table", emoji: "🪑", flies: false },
-    { word: "Dog", emoji: "🐶", flies: false },
-    { word: "Cat", emoji: "🐱", flies: false },
-    { word: "House", emoji: "🏠", flies: false },
-    { word: "Car", emoji: "🚗", flies: false },
-    { word: "Elephant", emoji: "🐘", flies: false },
-    { word: "Tree", emoji: "🌳", flies: false },
-    { word: "Computer", emoji: "💻", flies: false },
-    { word: "Apple", emoji: "🍎", flies: false },
-    { word: "Guitar", emoji: "🎸", flies: false },
-    { word: "Bicycle", emoji: "🚲", flies: false },
-    { word: "Penguin", emoji: "🐧", flies: false } // A classic trick!
+    { word: "Table", mlWord: "മേശ", emoji: "🪑", flies: false },
+    { word: "Dog", mlWord: "നായ", emoji: "🐶", flies: false },
+    { word: "Cat", mlWord: "പൂച്ച", emoji: "🐱", flies: false },
+    { word: "House", mlWord: "വീട്", emoji: "🏠", flies: false },
+    { word: "Car", mlWord: "കാർ", emoji: "🚗", flies: false },
+    { word: "Elephant", mlWord: "ആന", emoji: "🐘", flies: false },
+    { word: "Tree", mlWord: "മരം", emoji: "🌳", flies: false },
+    { word: "Computer", mlWord: "കമ്പ്യൂട്ടർ", emoji: "💻", flies: false },
+    { word: "Apple", mlWord: "ആപ്പിൾ", emoji: "🍎", flies: false },
+    { word: "Guitar", mlWord: "ഗിറ്റാർ", emoji: "🎸", flies: false },
+    { word: "Bicycle", mlWord: "സൈക്കിൾ", emoji: "🚲", flies: false },
+    { word: "Penguin", mlWord: "പെൻഗ്വിൻ", emoji: "🐧", flies: false }
 ];
 
 // DOM Elements
@@ -53,6 +53,30 @@ let currentItem = null;
 let itemStartTime = 0;
 let currentDuration = 1800; // ms to react
 let animationFrameId = null;
+let gameLang = 'en';
+
+// Speak text using Web Speech API
+function speakText(text, lang) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel(); // Stop any previous speech
+    const utterance = new SpeechSynthesisUtterance(text);
+    if (lang === 'ml') {
+        utterance.lang = 'ml-IN';
+    } else {
+        utterance.lang = 'en-US';
+    }
+    utterance.rate = 1.1; // slightly faster for action game
+    window.speechSynthesis.speak(utterance);
+}
+
+// Language Toggle Event
+const langBtn = document.getElementById('lang-btn');
+if (langBtn) {
+    langBtn.addEventListener('click', () => {
+        gameLang = gameLang === 'en' ? 'ml' : 'en';
+        langBtn.textContent = gameLang === 'en' ? 'EN' : 'ML';
+    });
+}
 
 function startGame() {
     score = 0;
@@ -78,7 +102,15 @@ function nextItem() {
     // Pick random
     currentItem = items[Math.floor(Math.random() * items.length)];
     emojiEl.textContent = currentItem.emoji;
-    wordEl.textContent = currentItem.word;
+    
+    // Set text and speak it! Note that it ALWAYS says it flies, that's the game!
+    if (gameLang === 'ml') {
+        wordEl.textContent = currentItem.mlWord;
+        speakText(`${currentItem.mlWord} പറ പറ`, 'ml');
+    } else {
+        wordEl.textContent = currentItem.word;
+        speakText(`${currentItem.word} flies`, 'en');
+    }
     
     // Trigger pop animation via reflow
     void emojiEl.offsetWidth;

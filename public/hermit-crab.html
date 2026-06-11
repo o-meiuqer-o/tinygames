@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Hermit Crab's Real Estate</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/hermit-crab.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#121212">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="start-screen" class="container hub-container">
+        <header>
+            <h1>Hermit Crab's Real Estate</h1>
+            <p>Grow, adapt, and survive the coast.</p>
+        </header>
+        
+        <div class="instructions">
+            <p>🦀 Find food to grow, but don't take too long or you'll starve!</p>
+            <p>🐚 As you grow, your shell becomes tight. Find a bigger shell or bottle cap to move into.</p>
+            <p>🐕 Watch out for dogs! They love to chase crabs.</p>
+        </div>
+
+        <div class="control-selection">
+            <h2>Select Hand Preference</h2>
+            <p>This sets the position of your virtual joystick.</p>
+            <div class="hand-options">
+                <button id="left-hand-btn" class="hand-btn">
+                    <span class="icon">👈</span>
+                    <span>Left-Handed</span>
+                    <small>Joystick on Left</small>
+                </button>
+                <button id="right-hand-btn" class="hand-btn">
+                    <span class="icon">👉</span>
+                    <span>Right-Handed</span>
+                    <small>Joystick on Right</small>
+                </button>
+            </div>
+        </div>
+        <a href="index.html" class="back-link">Back to Hub</a>
+    </div>
+
+    <div id="game-container" class="hidden">
+        <div id="hud">
+            <div class="hud-item">
+                <span>Level:</span>
+                <span id="level-display">1 / 15</span>
+            </div>
+            <div class="hud-item">
+                <span>Hunger:</span>
+                <div class="bar-bg"><div id="hunger-fill" class="bar-fill"></div></div>
+            </div>
+            <div class="hud-item">
+                <span>Growth:</span>
+                <div class="bar-bg"><div id="growth-fill" class="bar-fill" style="background:#2196F3"></div></div>
+            </div>
+        </div>
+        
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="joystick-zone"></div>
+
+        <div id="win-overlay" class="hidden overlay">
+            <div class="game-over-box">
+                <h2>Victory!</h2>
+                <p>Your crab has fully grown up and gone to lay eggs!</p>
+                <button id="restart-win-btn">Play Again</button>
+            </div>
+        </div>
+        <div id="game-over-overlay" class="hidden overlay">
+            <div class="game-over-box">
+                <h2 id="game-over-title">Game Over</h2>
+                <p id="game-over-reason">You starved!</p>
+                <button id="restart-btn" class="hand-btn">Play Again</button>
+                <button id="home-btn" class="hand-btn" onclick="location.reload()">Main Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.10.1/nipplejs.min.js"></script>
+    <script src="js/hermit-crab.js"></script>
+</body>
+</html>

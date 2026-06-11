@@ -1,21 +1,40 @@
 {
+  "id": "/",
   "name": "TinyGames",
   "short_name": "TinyGames",
   "start_url": "/index.html",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#121212",
   "theme_color": "#121212",
   "description": "Local multiplayer games: Tic-Tac-Toe and Dots & Boxes",
+  "categories": ["games", "entertainment", "casual"],
   "icons": [
     {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow"
     }
   ]
 }
