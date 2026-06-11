@@ -319,6 +319,7 @@ button:hover {
     display: inline-block;
     margin-bottom: 20px;
     font-size: 1.1rem;
+}
 .back-btn:hover { color: white; }
 
 .tetris-wrapper {
