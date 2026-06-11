@@ -68,23 +68,52 @@ header p {
 @media (max-width: 768px) {
     .game-selection {
         gap: 15px;
+        row-gap: 25px;
     }
     .game-card {
-        aspect-ratio: 1;
+        background-color: transparent;
+        padding: 0;
+        border: none;
         display: flex;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
-        padding: 5px;
+        justify-content: flex-start;
+        z-index: 1;
+        box-shadow: none !important;
+    }
+    .game-card::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%;
+        aspect-ratio: 1;
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        z-index: -1;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .game-card::before {
+        display: none;
     }
     .card-icon {
-        font-size: 2.2rem;
-        margin-bottom: 5px;
+        width: 100%;
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin-bottom: 6px;
     }
     .game-card h2 {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         margin-bottom: 0;
         line-height: 1.2;
+        text-align: center;
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: 500;
     }
     .game-card p {
         display: none;
