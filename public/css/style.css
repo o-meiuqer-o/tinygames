@@ -67,13 +67,21 @@ header p {
 
 @media (max-width: 768px) {
     .game-selection {
-        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
-}
-
-@media (max-width: 480px) {
-    .game-selection {
-        grid-template-columns: 1fr;
+    .game-card {
+        padding: 15px 10px;
+    }
+    .card-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+    }
+    .game-card h2 {
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+    }
+    .game-card p {
+        font-size: 0.8rem;
     }
 }
 
