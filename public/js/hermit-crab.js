@@ -73,7 +73,8 @@ const crab = {
     growth: 0,
     facingRight: true,
     level: 1,
-    isTransitioning: false
+    isTransitioning: false,
+    isLeftHanded: true
 };
 
 const shells = [
@@ -270,11 +271,28 @@ function drawDogs() {
 function spawnLevelItems() {
     items = [];
     
+    // Determine where the joystick is to avoid spawning items there
+    const joyXOffset = crab.isLeftHanded ? canvasWidth * 0.1 : canvasWidth * 0.9;
+    const joyY = canvasHeight * 0.75;
+    const avoidRadius = 150; // Joystick size is 150, so this gives a good buffer
+    
+    function getValidPos(fixedX = null) {
+        let x, y;
+        let attempts = 0;
+        do {
+            x = fixedX !== null ? fixedX : cameraX + 50 + Math.random() * (canvasWidth - 100);
+            y = canvasHeight * 0.2 + Math.random() * (canvasHeight * 0.75);
+            attempts++;
+        } while (attempts < 20 && Math.hypot((x - cameraX) - joyXOffset, y - joyY) < avoidRadius);
+        return {x, y};
+    }
+    
     // Spawn 1 shell
     const shellConfig = shells[Math.floor(Math.random() * shells.length)];
+    const shellPos = getValidPos(cameraX + canvasWidth * 0.8);
     items.push({
-        x: cameraX + canvasWidth * 0.8,
-        y: canvasHeight * 0.4 + Math.random() * (canvasHeight * 0.35), // Stay out of bottom joystick area
+        x: shellPos.x,
+        y: shellPos.y,
         type: Math.random() > 0.3 ? 'shell' : 'cap',
         shellConfig: shellConfig
     });
@@ -289,9 +307,10 @@ function spawnLevelItems() {
             type = 'rock';
         }
         
+        const pos = getValidPos();
         items.push({
-            x: cameraX + 50 + Math.random() * (canvasWidth - 100),
-            y: canvasHeight * 0.25 + Math.random() * (canvasHeight * 0.55), // Keep items mostly centered vertically
+            x: pos.x,
+            y: pos.y,
             type: type
         });
     }
@@ -528,6 +547,7 @@ function initGame(isLeftHanded) {
     crab.shellId = 'none';
     crab.level = 1;
     crab.isTransitioning = false;
+    crab.isLeftHanded = isLeftHanded;
     cameraX = 0;
     levelDisplay.innerText = `1 / 15`;
     
