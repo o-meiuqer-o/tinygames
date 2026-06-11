@@ -344,6 +344,7 @@ button:hover {
         justify-content: flex-start;
         z-index: 1;
         box-shadow: none !important;
+        min-width: 0;
     }
     .game-card::after {
         content: '';
@@ -378,6 +379,7 @@ button:hover {
         line-height: 1;
         text-align: center;
         width: 100%;
+        min-width: 0;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
