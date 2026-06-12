@@ -355,6 +355,8 @@ function onPointerDown(e, initialNodeId) {
     if (boardState[initialNodeId] !== turn) return;
     if (turn === 'goat' && phase === 'placement') return;
 
+    if (typeof Sounds !== 'undefined') Sounds.play('click');
+
     let nodeId = initialNodeId;
     
     let clientX = e.clientX;
@@ -477,6 +479,9 @@ function onPointerDown(e, initialNodeId) {
                         if (captureNode !== undefined) {
                             removePiece(captureNode);
                             goatsCaptured++;
+                            if (typeof Sounds !== 'undefined') Sounds.play('capture');
+                        } else {
+                            if (typeof Sounds !== 'undefined') Sounds.play('move');
                         }
                         selectedNode = null;
                         validMoves = [];
@@ -510,6 +515,7 @@ function handleNodeClick(nodeId) {
                 });
             }
             placePiece(nodeId, 'goat');
+            if (typeof Sounds !== 'undefined') Sounds.play('place');
             goatsToPlace--;
             if (goatsToPlace === 0) {
                 phase = 'movement';
@@ -538,6 +544,9 @@ function handleNodeClick(nodeId) {
             if (captureNode !== undefined) {
                 removePiece(captureNode);
                 goatsCaptured++;
+                if (typeof Sounds !== 'undefined') Sounds.play('capture');
+            } else {
+                if (typeof Sounds !== 'undefined') Sounds.play('move');
             }
             selectedNode = null;
             validMoves = [];
@@ -682,6 +691,7 @@ function showGameOver(title, reason) {
     DOM.winnerText.textContent = title;
     DOM.winReason.textContent = reason;
     DOM.gameOverModal.classList.add('show');
+    if (typeof Sounds !== 'undefined') Sounds.play('happyWin');
 }
 
 DOM.restartBtn.addEventListener('click', () => {
@@ -760,6 +770,7 @@ socket.on('game_start', () => {
 socket.on('opponent_move', (move) => {
     if (move.type === 'place') {
         placePiece(move.to, 'goat');
+        if (typeof Sounds !== 'undefined') Sounds.play('place');
         goatsToPlace--;
         if (goatsToPlace === 0) {
             phase = 'movement';
@@ -770,6 +781,9 @@ socket.on('opponent_move', (move) => {
         if (move.capture !== undefined && move.capture !== null) {
             removePiece(move.capture);
             goatsCaptured++;
+            if (typeof Sounds !== 'undefined') Sounds.play('capture');
+        } else {
+            if (typeof Sounds !== 'undefined') Sounds.play('move');
         }
         endTurn();
     }

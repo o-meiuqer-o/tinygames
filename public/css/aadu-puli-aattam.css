@@ -216,9 +216,12 @@ body {
 }
 
 .piece.tiger {
-    width: 48px;
-    height: 48px;
+    width: 41.4px;
+    height: 41.4px;
     background-image: url('../icons/tiger.png');
+    background-size: 75% !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
     box-shadow: var(--tiger-shadow);
     border: 3px solid var(--tiger-color);
     z-index: 10;
