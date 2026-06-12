@@ -114,14 +114,14 @@
                 <p>Grow, adapt, and survive.</p>
             </a>
 
-            <a href="signal-green.html" class="game-card" data-category="single-player">
+            <a href="signal-green.html" class="game-card" data-category="single-player play-learn">
                 <div class="card-icon">🟢🚥</div>
                 <h2>Signal Green</h2>
                 <p>Fast-paced traffic flow coordination simulation.</p>
             </a>
 
             <!-- PLAY LEARN GAMES -->
-            <a href="syn-ant.html" class="game-card" data-category="play-learn">
+            <a href="syn-ant.html" class="game-card" data-category="single-player play-learn">
                 <div class="card-icon">🧠</div>
                 <h2>Syn-Ant Switchback</h2>
                 <p>Cognitive reflex word matching.</p>
@@ -137,7 +137,8 @@
 
         function filterGames(category) {
             gameCards.forEach(card => {
-                if (card.getAttribute('data-category') === category) {
+                const cardCategories = card.getAttribute('data-category').split(' ');
+                if (cardCategories.includes(category)) {
                     card.style.display = '';
                 } else {
                     card.style.display = 'none';
