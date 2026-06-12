@@ -10,7 +10,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 const games = {
     tictactoe: {},
     dotsandboxes: {},
-    pallanguzhi: {}
+    pallanguzhi: {},
+    aadupuliaattam: {}
 };
 
 io.on('connection', (socket) => {
