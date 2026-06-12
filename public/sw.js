@@ -1,6 +1,6 @@
-// CACHE v19 — network-first for HTML, cache-first for assets
+// CACHE v20 — network-first for HTML, cache-first for assets
 // Bumping version forces all old caches to be wiped
-const CACHE_NAME = 'tinygames-v19';
+const CACHE_NAME = 'tinygames-v20';
 const ASSETS = [
   '/css/style.css',
   '/css/hermit-crab.css',

@@ -280,20 +280,7 @@ function startGame() {
 function updatePiecePositionAndOrientation(piece, nodeId, type) {
     piece.style.left = `${(nodes[nodeId].x / 400) * 100}%`;
     piece.style.top = `${(nodes[nodeId].y / 560) * 100}%`;
-    
-    if (type === 'tiger') {
-        let rot = 0;
-        if (nodes[nodeId].x < 200) {
-            rot = -90; // Look left
-        } else if (nodes[nodeId].x > 200) {
-            rot = 90; // Look right
-        } else {
-            rot = 180; // Look down
-        }
-        piece.style.setProperty('--rot', `${rot}deg`);
-    } else if (type === 'goat') {
-        piece.style.setProperty('--rot', `0deg`);
-    }
+    piece.style.setProperty('--rot', `0deg`);
 }
 
 function placePiece(nodeId, type) {
