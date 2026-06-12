@@ -218,7 +218,7 @@ const Game = {
     dragStartX: 0,
     dragStartY: 0,
     dragMinDistance: 25, // px to register swipe
-    
+
     // Lanes definitions (computed on resize)
     lanes: {
         horizontal: [], // arrays of lane configurations: { y, dir: 1 (east) or -1 (west), name }
@@ -227,6 +227,94 @@ const Game = {
     
     roadWidth: 90, // computed dynamic size
     
+    // Translations
+    translations: {
+        en: {
+            title: "SIGNAL GREEN",
+            subtitle: "Traffic Flow Logic Simulation",
+            selectJunction: "Junction Complexity",
+            diffStandard: "Standard (4-Way)",
+            diffRush: "Rush Hour (Multi-Lane)",
+            startBtn: "START SIMULATION",
+            backHub: "Back to Hub",
+            statScore: "PASSED VEHICLES",
+            statMult: "MULTIPLIER",
+            statEmergencies: "Priority Emergencies Handled:",
+            statBest: "PEAK FLOW",
+            pausedTitle: "Simulation Paused",
+            pausedDesc: "Traffic coordination frozen.",
+            resumeBtn: "RESUME",
+            restartBtn: "RESTART",
+            quitBtn: "QUIT GAME",
+            gameOverTitle: "💥 COLLISION DETECTED 💥",
+            gameOverDesc: "Intersection gridlocked. Operation terminated.",
+            retryBtn: "REINITIALIZE GRID",
+            alertAmbulanceCantStop: "🚨 AMBULANCES CANNOT BE STOPPED!",
+            alertTrafficActivated: "TRAFFIC FLOW ACTIVATED",
+            alertAmbulanceIncoming: "🚨 EMERGENCY: AMBULANCE INCOMING!"
+        },
+        ml: {
+            title: "സിഗ്നൽ ഗ്രീൻ",
+            subtitle: "ട്രാഫിക് നിയന്ത്രണ സിമുലേഷൻ",
+            selectJunction: "റോഡിന്റെ സങ്കീർണ്ണത",
+            diffStandard: "സാധാരണ പാത (4-Way)",
+            diffRush: "തിരക്കേറിയ പാത (Multi-Lane)",
+            startBtn: "കളി തുടങ്ങാം",
+            backHub: "തിരികെ പോകുക",
+            statScore: "കടന്നുപോയ വണ്ടികൾ",
+            statMult: "ഗുണിതം",
+            statEmergencies: "കടത്തിവിട്ട ആംബുലൻസുകൾ:",
+            statBest: "ഉയർന്ന റെക്കോർഡ്",
+            pausedTitle: "നിർത്തിവെച്ചിരിക്കുന്നു",
+            pausedDesc: "ട്രാഫിക് നിയന്ത്രണങ്ങൾ തൽക്കാലം നിർത്തിവെച്ചിരിക്കുന്നു.",
+            resumeBtn: "തുടരുക",
+            restartBtn: "വീണ്ടും തുടങ്ങുക",
+            quitBtn: "കളി നിർത്തുക",
+            gameOverTitle: "💥 വണ്ടികൾ കൂട്ടിയിടിച്ചു 💥",
+            gameOverDesc: "റോഡിൽ വണ്ടികൾ തടസ്സപ്പെട്ടു. ദൗത്യം പരാജയപ്പെട്ടു.",
+            retryBtn: "വീണ്ടും തുടങ്ങുക",
+            alertAmbulanceCantStop: "🚨 ആംബുലൻസുകൾ നിർത്താൻ കഴിയില്ല!",
+            alertTrafficActivated: "ട്രാഫിക് സിമുലേഷൻ സജീവമാക്കി",
+            alertAmbulanceIncoming: "🚨 മുന്നറിയിപ്പ്: ആംബുലൻസ് വരുന്നു!"
+        }
+    },
+
+    currentLang: 'en',
+
+    setLanguage(lang) {
+        this.currentLang = lang;
+        const elements = document.querySelectorAll('[data-i18n]');
+        elements.forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (this.translations[lang][key]) {
+                el.textContent = this.translations[lang][key];
+            }
+        });
+
+        // Set difficulty button text dynamically
+        const diffStandard = document.getElementById('diff-standard');
+        const diffRush = document.getElementById('diff-rush');
+        if (diffStandard) diffStandard.textContent = this.translations[lang]['diffStandard'];
+        if (diffRush) diffRush.textContent = this.translations[lang]['diffRush'];
+
+        const langEn = document.getElementById('lang-en');
+        const langMl = document.getElementById('lang-ml');
+        const langEnPause = document.getElementById('lang-en-pause');
+        const langMlPause = document.getElementById('lang-ml-pause');
+
+        if (lang === 'en') {
+            if (langEn) langEn.classList.add('active');
+            if (langMl) langMl.classList.remove('active');
+            if (langEnPause) langEnPause.classList.add('active');
+            if (langMlPause) langMlPause.classList.remove('active');
+        } else {
+            if (langMl) langMl.classList.add('active');
+            if (langEn) langEn.classList.remove('active');
+            if (langMlPause) langMlPause.classList.add('active');
+            if (langEnPause) langEnPause.classList.remove('active');
+        }
+    },
+
     init() {
         this.canvas = document.getElementById('game-canvas');
         this.ctx = this.canvas.getContext('2d');
@@ -239,6 +327,9 @@ const Game = {
         
         this.setupEventListeners();
         
+        // Initialize Language
+        this.setLanguage('en');
+
         // Start animation loop
         requestAnimationFrame((t) => this.loop(t));
     },
@@ -312,6 +403,12 @@ const Game = {
     },
     
     setupEventListeners() {
+        // Language Buttons
+        document.getElementById('lang-en').addEventListener('click', () => this.setLanguage('en'));
+        document.getElementById('lang-ml').addEventListener('click', () => this.setLanguage('ml'));
+        document.getElementById('lang-en-pause').addEventListener('click', () => this.setLanguage('en'));
+        document.getElementById('lang-ml-pause').addEventListener('click', () => this.setLanguage('ml'));
+
         // Difficulty toggle buttons
         document.querySelectorAll('.diff-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -342,6 +439,22 @@ const Game = {
         document.getElementById('restart-paused-btn').addEventListener('click', () => {
             TrafficAudio.playClick();
             this.startGame();
+        });
+
+        document.getElementById('quit-btn').addEventListener('click', () => {
+            TrafficAudio.playClick();
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch(() => {});
+            }
+            location.reload();
+        });
+
+        document.getElementById('go-home-btn').addEventListener('click', () => {
+            TrafficAudio.playClick();
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch(() => {});
+            }
+            location.reload();
         });
         
         // HUD buttons
@@ -419,7 +532,7 @@ const Game = {
                 const v = this.draggedVehicle;
                 if (v.type === 'ambulance') {
                     TrafficAudio.playBuzzer();
-                    this.showAlert("🚨 AMBULANCES CANNOT BE STOPPED!");
+                    this.showAlert(this.translations[this.currentLang]['alertAmbulanceCantStop']);
                 } else {
                     if (v.state === 'HOLD') {
                         v.release();
@@ -485,8 +598,17 @@ const Game = {
         document.getElementById('game-over-screen').classList.remove('active');
         document.getElementById('hud-score').textContent = '000';
         document.getElementById('hud-mult').textContent = 'x1.0';
-        
-        this.showAlert("TRAFFIC FLOW ACTIVATED");
+        // Request landscape full screen when starting
+        try {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            }
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(() => {});
+            }
+        } catch (e) {}
+
+        this.showAlert(this.translations[this.currentLang]['alertTrafficActivated']);
     },
     
     pauseGame() {
@@ -581,7 +703,7 @@ const Game = {
         
         if (type === 'ambulance') {
             TrafficAudio.startSiren();
-            this.showAlert("🚨 EMERGENCY: AMBULANCE INCOMING!");
+            this.showAlert(this.translations[this.currentLang]['alertAmbulanceIncoming']);
         }
     },
     

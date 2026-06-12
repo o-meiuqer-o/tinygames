@@ -1,9 +1,10 @@
 const socket = io();
 const gameType = 'dotsandboxes';
-let myPlayer = ''; // 'p1' or 'p2'
+let myPlayer = ''; // 'p1' or 'p2' (in online mode), or local players
 let myRoomId = '';
 let currentTurn = 'p1';
 let gameActive = false;
+let gameMode = 'local'; // 'local' or 'online'
 
 let ROWS = 6;
 let COLS = 6;
@@ -11,95 +12,269 @@ let scores = { p1: 0, p2: 0 };
 let lines = {}; // 'x-y-type': player (e.g., '0-0-h': 'p1')
 let boxes = {}; // 'r-c': player
 
-const joinBtn = document.getElementById('join-btn');
-const roomInput = document.getElementById('room-input');
-const statusDiv = document.getElementById('status');
-const setupArea = document.getElementById('setup-area');
-const gameArea = document.getElementById('game-area');
-const turnIndicator = document.getElementById('turn-indicator');
-const boardContainer = document.getElementById('dab-board-container');
-const resetBtn = document.getElementById('reset-btn');
-const pauseOverlay = document.getElementById('dab-pause');
-const pauseTopBtn = document.getElementById('pause-top-btn');
+const DOM = {
+    startScreen: document.getElementById('start-screen'),
+    gameContainer: document.getElementById('game-container'),
+    createBtn: document.getElementById('create-room-btn'),
+    joinBtn: document.getElementById('join-room-btn'),
+    localBtn: document.getElementById('local-mode-btn'),
+    roomCodeInput: document.getElementById('room-code-input'),
+    displayRoomCode: document.getElementById('display-room-code'),
+    roomInfo: document.getElementById('room-info'),
+    gameArea: document.getElementById('game-area'),
+    turnIndicator: document.getElementById('turn-indicator'),
+    boardContainer: document.getElementById('dab-board-container'),
+    resetBtn: document.getElementById('reset-btn'),
+    pauseTopBtn: document.getElementById('pause-top-btn'),
+    pauseOverlay: document.getElementById('dab-pause'),
+    resumeBtn: document.getElementById('dab-resume'),
+    quitBtn: document.getElementById('dab-hub'),
+    langEn: document.getElementById('lang-en'),
+    langMl: document.getElementById('lang-ml'),
+    langEnPause: document.getElementById('lang-en-pause'),
+    langMlPause: document.getElementById('lang-ml-pause')
+};
 
-// ── Pause Menu ────────────────────────────────────────────────
-pauseTopBtn.addEventListener('click', () => { pauseOverlay.style.display = 'flex'; });
-document.getElementById('dab-resume').addEventListener('click', () => { pauseOverlay.style.display = 'none'; });
-document.getElementById('dab-hub').addEventListener('click', () => { location.href = 'index.html'; });
+// Translations
+const translations = {
+    en: {
+        title: "Dots & Boxes",
+        subtitle: "Connect dots to claim boxes",
+        gridSizeLabel: "Grid Size (5-10):",
+        createRoom: "Create Room",
+        joinRoom: "Join Room",
+        orLocal: "Or play locally:",
+        localMode: "Local 2-Player Mode",
+        backHub: "Back to Hub",
+        roomCodeTxt: "Room Code:",
+        shareText: "Scan to join automatically\nor share with a friend to invite them to play",
+        waiting: "Waiting for opponent...",
+        paused: "PAUSED",
+        resume: "Resume",
+        quit: "Quit Game",
+        playAgain: "Play Again",
+        premise: "Dots and Boxes is a classic strategy game where players take turns drawing horizontal or vertical lines between dots. Completing a 1x1 box earns a point and a free turn.",
+        rulesTitle: "Rules:",
+        rule1: "On your turn, click a gray line between two adjacent dots to color it.",
+        rule2: "If you complete a square box, you claim that box (colored with your color) and score 1 point.",
+        rule3: "When you complete a box, you get another turn immediately.",
+        rule4: "The game ends when all lines are drawn. The player with the most boxes wins.",
+        scoreP1: "P1: ",
+        scoreP2: "P2: ",
+        turnP1: "Turn: P1",
+        turnP2: "Turn: P2",
+        winP1: "P1 WINS!",
+        winP2: "P2 WINS!",
+        draw: "DRAW!",
+        connecting: "Connecting...",
+        yourTurn: "Your Turn",
+        opponentTurn: "Opponent's Turn",
+        invalidCode: "Enter a valid room code."
+    },
+    ml: {
+        title: "ഡോട്ട്സും ബോക്സും",
+        subtitle: "ബിന്ദുക്കൾ യോജിപ്പിച്ചു കളങ്ങൾ സ്വന്തമാക്കുക",
+        gridSizeLabel: "ഗ്രിഡ് വലുപ്പം (5-10):",
+        createRoom: "റൂം ഉണ്ടാക്കുക",
+        joinRoom: "റൂമിൽ ചേരുക",
+        orLocal: "അല്ലെങ്കിൽ ഒരുമിച്ച് കളിക്കുക:",
+        localMode: "രണ്ടുപേർക്കുള്ള കളി",
+        backHub: "തിരികെ പോകുക",
+        roomCodeTxt: "റൂം കോഡ്:",
+        shareText: "കളിക്കാൻ കൂട്ടുകാരനെ ക്ഷണിക്കാൻ ഈ QR കോഡ് പങ്കുവെക്കുക",
+        waiting: "കൂട്ടുകാരനായി കാത്തിരിക്കുന്നു...",
+        paused: "നിർത്തിവെച്ചിരിക്കുന്നു",
+        resume: "തുടരുക",
+        quit: "കളി നിർത്തുക",
+        playAgain: "വീണ്ടും കളിക്കുക",
+        premise: "ബിന്ദുക്കളെ തമ്മിൽ വരകൾ വഴി ബന്ധിപ്പിച്ചു പരമാവധി കളങ്ങൾ വരച്ചുണ്ടാക്കുന്ന ഒരു ലളിതമായ തന്ത്രപ്രധാന കളിയാണ് ഡോട്ട്സും ബോക്സും. ഒരു കളം പൂർത്തിയാക്കുന്നയാൾക്ക് 1 പോയിന്റും അതോടൊപ്പം ഒരു ഊഴം കൂടി അധികമായി ലഭിക്കും.",
+        rulesTitle: "നിയമങ്ങൾ:",
+        rule1: "നിങ്ങളുടെ ഊഴത്തിൽ, തൊട്ടടുത്തുള്ള രണ്ട് ബിന്ദുക്കൾക്കിടയിലുള്ള ഒരു വരയിൽ ക്ലിക്ക് ചെയ്തു നിറം നൽകുക.",
+        rule2: "ഒരു ചതുര കളം പൂർത്തിയാക്കിയാൽ കളം നിങ്ങൾക്ക് ലഭിക്കുകയും 1 പോയിന്റ് നേടുകയും ചെയ്യും.",
+        rule3: "ഒരു കളം പൂർത്തിയാക്കുമ്പോൾ നിങ്ങൾക്ക് ഉടൻ തന്നെ അടുത്ത ഒരു ഊഴം കൂടി ലഭിക്കും.",
+        rule4: "എല്ലാ വരകളും വരച്ചു കഴിയുമ്പോൾ കളി അവസാനിക്കും. ഏറ്റവും കൂടുതൽ കളങ്ങൾ നേടിയയാൾ വിജയിക്കും.",
+        scoreP1: "കളിക്കാരൻ 1: ",
+        scoreP2: "കളിക്കാരൻ 2: ",
+        turnP1: "ഊഴം: കളിക്കാരൻ 1",
+        turnP2: "ഊഴം: കളിക്കാരൻ 2",
+        winP1: "കളിക്കാരൻ 1 വിജയിച്ചു!",
+        winP2: "കളിക്കാരൻ 2 വിജയിച്ചു!",
+        draw: "സമനില!",
+        connecting: "ബന്ധിപ്പിക്കുന്നു...",
+        yourTurn: "നിങ്ങളുടെ ഊഴം",
+        opponentTurn: "എതിരാളിയുടെ ഊഴം",
+        invalidCode: "ശരിയായ റൂം കോഡ് നൽകുക."
+    }
+};
 
-// ── PWA install in pause menu ─────────────────────────────────
-const dabInstallBtn = document.getElementById('dab-install');
-let deferredInstallPrompt = null;
-window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredInstallPrompt = e;
-    dabInstallBtn.style.display = 'block';
-});
-dabInstallBtn.addEventListener('click', async () => {
-    if (!deferredInstallPrompt) return;
-    deferredInstallPrompt.prompt();
-    const { outcome } = await deferredInstallPrompt.userChoice;
-    if (outcome === 'accepted') dabInstallBtn.style.display = 'none';
-    deferredInstallPrompt = null;
-});
+let currentLang = 'en';
 
-joinBtn.addEventListener('click', () => {
-    const roomId = roomInput.value.trim().toUpperCase();
-    let gridSizeInput = document.getElementById('grid-size').value;
-    let gridSize = parseInt(gridSizeInput) || 6;
-    if (gridSize < 6) gridSize = 6;
-    if (gridSize > 12) gridSize = 12;
+function setLanguage(lang) {
+    currentLang = lang;
+    const elements = document.querySelectorAll('[data-i18n]');
+    elements.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+            el.textContent = translations[lang][key];
+        }
+    });
 
-    if (roomId.length >= 4) {
-        socket.emit('join_game', { gameType, roomId, gridSize });
-        document.getElementById('setup-buttons').classList.add('hidden');
-        statusDiv.innerText = 'Connecting...';
+    if (lang === 'en') {
+        DOM.langEn.classList.add('active');
+        DOM.langMl.classList.remove('active');
+        DOM.langEnPause.classList.add('active');
+        DOM.langMlPause.classList.remove('active');
     } else {
-        statusDiv.innerText = 'Room code must be at least 4 characters';
-        statusDiv.style.color = 'red';
+        DOM.langMl.classList.add('active');
+        DOM.langEn.classList.remove('active');
+        DOM.langMlPause.classList.add('active');
+        DOM.langEnPause.classList.remove('active');
+    }
+    updateUI();
+}
+
+[DOM.langEn, DOM.langEnPause].forEach(btn => btn.addEventListener('click', () => setLanguage('en')));
+[DOM.langMl, DOM.langMlPause].forEach(btn => btn.addEventListener('click', () => setLanguage('ml')));
+
+// Set initial language
+setLanguage('en');
+
+// --- Fullscreen & Orientation ---
+async function requestGameFullscreen() {
+    try {
+        if (document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+            await document.documentElement.webkitRequestFullscreen();
+        }
+    } catch (err) {
+        console.warn("Fullscreen failed:", err);
+    }
+
+    try {
+        if (screen.orientation && screen.orientation.lock) {
+            await screen.orientation.lock('portrait');
+        }
+    } catch (err) {
+        console.warn("Orientation lock failed:", err);
+    }
+}
+
+function exitGameFullscreen() {
+    try {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    } catch (err) {
+        console.warn("Exit Fullscreen failed:", err);
+    }
+}
+
+// --- Pause Menu ---
+DOM.pauseTopBtn.addEventListener('click', () => {
+    DOM.pauseOverlay.classList.remove('hidden');
+});
+DOM.resumeBtn.addEventListener('click', () => {
+    DOM.pauseOverlay.classList.add('hidden');
+});
+DOM.quitBtn.addEventListener('click', () => {
+    DOM.pauseOverlay.classList.add('hidden');
+    DOM.gameContainer.classList.add('hidden');
+    DOM.startScreen.classList.remove('hidden');
+    exitGameFullscreen();
+    if (gameMode === 'online') {
+        location.reload();
     }
 });
 
-const createRoomBtn = document.getElementById('create-room-btn');
-if (createRoomBtn) {
-    createRoomBtn.addEventListener('click', () => {
-        let gridSizeInput = document.getElementById('grid-size').value;
-        let gridSize = parseInt(gridSizeInput) || 6;
-        if (gridSize < 6) gridSize = 6;
-        if (gridSize > 12) gridSize = 12;
-
-        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-        socket.emit('join_game', { gameType, roomId: code, gridSize });
-        document.getElementById('setup-buttons').classList.add('hidden');
-        document.getElementById('qr-container').classList.remove('hidden');
-        document.getElementById('room-code-display').innerText = code;
-        
-        const joinUrl = window.location.origin + window.location.pathname + '?room=' + code;
-        new QRCode(document.getElementById("qrcode"), {
-            text: joinUrl,
-            width: 150,
-            height: 150,
-            colorDark : "#000000",
-            colorLight : "#ffffff",
-            correctLevel : QRCode.CorrectLevel.L
-        });
-    });
+function startGameUI() {
+    DOM.startScreen.classList.add('hidden');
+    DOM.gameContainer.classList.remove('hidden');
+    requestGameFullscreen();
 }
+
+DOM.createBtn.addEventListener('click', () => {
+    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    let gridSizeInput = document.getElementById('grid-size').value;
+    let gridSize = parseInt(gridSizeInput) || 6;
+    if (gridSize < 5) gridSize = 5;
+    if (gridSize > 10) gridSize = 10;
+
+    gameMode = 'online';
+    socket.emit('join_game', { gameType, roomId: code, gridSize });
+    startGameUI();
+});
+
+DOM.joinBtn.addEventListener('click', () => {
+    const code = DOM.roomCodeInput.value.trim().toUpperCase();
+    let gridSizeInput = document.getElementById('grid-size').value;
+    let gridSize = parseInt(gridSizeInput) || 6;
+    if (gridSize < 5) gridSize = 5;
+    if (gridSize > 10) gridSize = 10;
+
+    if (code.length >= 4) {
+        myRoomId = code;
+        gameMode = 'online';
+        socket.emit('join_game', { gameType, roomId: code, gridSize });
+        startGameUI();
+    } else {
+        alert(translations[currentLang]['invalidCode']);
+    }
+});
+
+DOM.localBtn.addEventListener('click', () => {
+    let gridSizeInput = document.getElementById('grid-size').value;
+    let gridSize = parseInt(gridSizeInput) || 6;
+    if (gridSize < 5) gridSize = 5;
+    if (gridSize > 10) gridSize = 10;
+
+    ROWS = gridSize;
+    COLS = gridSize;
+    gameMode = 'local';
+    
+    startGameUI();
+    DOM.roomInfo.classList.add('hidden');
+    DOM.gameArea.classList.remove('hidden');
+    
+    scores = { p1: 0, p2: 0 };
+    lines = {};
+    boxes = {};
+    gameActive = true;
+    currentTurn = 'p1';
+    DOM.resetBtn.classList.add('hidden');
+    initBoard();
+    updateUI();
+});
 
 // Auto-join from URL parameter
 const urlParams = new URLSearchParams(window.location.search);
 const autoRoom = urlParams.get('room');
 if (autoRoom) {
-    roomInput.value = autoRoom.toUpperCase();
-    document.getElementById('setup-buttons').classList.add('hidden');
+    gameMode = 'online';
     socket.emit('join_game', { gameType, roomId: autoRoom.toUpperCase(), gridSize: 6 });
-    statusDiv.innerText = 'Connecting via QR...';
+    startGameUI();
 }
 
 socket.on('joined', (data) => {
     myPlayer = data.symbol === 'player1' ? 'p1' : 'p2';
     myRoomId = data.roomId;
-    statusDiv.innerText = `Joined room ${myRoomId} as ${myPlayer.toUpperCase()}. Waiting for opponent...`;
+    
+    DOM.roomInfo.classList.remove('hidden');
+    DOM.displayRoomCode.textContent = myRoomId;
+    
+    // Generate QR
+    document.getElementById("qrcode").innerHTML = "";
+    const joinUrl = window.location.origin + window.location.pathname + '?room=' + myRoomId;
+    new QRCode(document.getElementById("qrcode"), {
+        text: joinUrl,
+        width: 150,
+        height: 150,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.L
+    });
 });
 
 socket.on('game_start', (data) => {
@@ -107,22 +282,26 @@ socket.on('game_start', (data) => {
         ROWS = data.gridSize;
         COLS = data.gridSize;
     }
-    setupArea.classList.add('hidden');
-    gameArea.classList.remove('hidden');
+    DOM.roomInfo.classList.add('hidden');
+    DOM.gameArea.classList.remove('hidden');
     initBoard();
     gameActive = true;
     currentTurn = 'p1';
+    scores = { p1: 0, p2: 0 };
+    lines = {};
+    boxes = {};
     updateUI();
 });
 
 socket.on('error', (msg) => {
-    statusDiv.innerText = msg;
-    statusDiv.style.color = 'red';
+    alert(msg);
+    if (msg === 'Opponent disconnected.') {
+        location.reload();
+    }
 });
 
 function initBoard() {
-    boardContainer.innerHTML = '';
-    // Generate rows of dots and horizontal lines
+    DOM.boardContainer.innerHTML = '';
     for (let r = 0; r <= ROWS; r++) {
         // Dot + HLine Row
         const dotRow = document.createElement('div');
@@ -140,7 +319,7 @@ function initBoard() {
                 dotRow.appendChild(hLine);
             }
         }
-        boardContainer.appendChild(dotRow);
+        DOM.boardContainer.appendChild(dotRow);
         
         // VLine + Box Row
         if (r < ROWS) {
@@ -160,17 +339,22 @@ function initBoard() {
                     boxRow.appendChild(box);
                 }
             }
-            boardContainer.appendChild(boxRow);
+            DOM.boardContainer.appendChild(boxRow);
         }
     }
 }
 
 function handleLineClick(r, c, type) {
     const lineId = `${type}-${r}-${c}`;
-    if (!gameActive || currentTurn !== myPlayer || lines[lineId]) return;
+    if (!gameActive || lines[lineId]) return;
     
-    makeMove(lineId, myPlayer);
-    socket.emit('make_move', { roomId: myRoomId, move: lineId, gameType });
+    if (gameMode === 'online') {
+        if (currentTurn !== myPlayer) return;
+        makeMove(lineId, myPlayer);
+        socket.emit('make_move', { roomId: myRoomId, move: lineId, gameType });
+    } else {
+        makeMove(lineId, currentTurn);
+    }
 }
 
 socket.on('opponent_move', (lineId) => {
@@ -181,8 +365,8 @@ socket.on('opponent_move', (lineId) => {
 function makeMove(lineId, player) {
     lines[lineId] = player;
     const el = document.getElementById(lineId);
-    if(el) { el.classList.add(`line-active-${player}`); }
-    Sounds.play('drawLine');
+    if (el) { el.classList.add(`line-active-${player}`); }
+    if (typeof Sounds !== 'undefined') Sounds.play('drawLine');
 
     const [type, rStr, cStr] = lineId.split('-');
     const r = parseInt(rStr);
@@ -215,23 +399,30 @@ function checkBox(r, c, player) {
         boxes[`${r}-${c}`] = player;
         scores[player]++;
         const boxEl = document.getElementById(`b-${r}-${c}`);
-        if(boxEl) {
+        if (boxEl) {
             boxEl.innerText = player === 'p1' ? 'P1' : 'P2';
             boxEl.classList.add(player);
         }
-        Sounds.play('claimBox');
+        if (typeof Sounds !== 'undefined') Sounds.play('claimBox');
         return true;
     }
     return false;
 }
 
 function updateUI() {
-    document.getElementById('score-p1-disp').innerText = `P1: ${scores.p1}`;
-    document.getElementById('score-p2-disp').innerText = `P2: ${scores.p2}`;
+    if (!DOM.turnIndicator) return;
+    document.getElementById('score-p1-disp').innerText = `${translations[currentLang]['scoreP1']}${scores.p1}`;
+    document.getElementById('score-p2-disp').innerText = `${translations[currentLang]['scoreP2']}${scores.p2}`;
     
     if (gameActive) {
-        turnIndicator.innerText = `Turn: ${currentTurn.toUpperCase()}`;
-        turnIndicator.style.color = currentTurn === 'p1' ? 'var(--primary)' : 'var(--secondary)';
+        let turnText = translations[currentLang][`turn${currentTurn.toUpperCase()}`];
+        if (gameMode === 'online') {
+            const isMyTurn = (currentTurn === myPlayer);
+            const playerLabel = isMyTurn ? translations[currentLang]['yourTurn'] : translations[currentLang]['opponentTurn'];
+            turnText = `${currentTurn.toUpperCase()} (${playerLabel})`;
+        }
+        DOM.turnIndicator.innerText = turnText;
+        DOM.turnIndicator.style.color = currentTurn === 'p1' ? 'var(--primary)' : 'var(--secondary)';
     }
 }
 
@@ -239,24 +430,35 @@ function checkGameOver() {
     if (Object.keys(boxes).length === ROWS * COLS) {
         gameActive = false;
         if (scores.p1 > scores.p2) {
-            turnIndicator.innerText = 'P1 WINS!';
-            turnIndicator.style.color = 'var(--primary)';
-            Sounds.play(myPlayer === 'p1' ? 'win' : 'lose');
+            DOM.turnIndicator.innerText = translations[currentLang]['winP1'];
+            DOM.turnIndicator.style.color = 'var(--primary)';
+            if (typeof Sounds !== 'undefined') Sounds.play(gameMode === 'online' ? (myPlayer === 'p1' ? 'win' : 'lose') : 'win');
         } else if (scores.p2 > scores.p1) {
-            turnIndicator.innerText = 'P2 WINS!';
-            turnIndicator.style.color = 'var(--secondary)';
-            Sounds.play(myPlayer === 'p2' ? 'win' : 'lose');
+            DOM.turnIndicator.innerText = translations[currentLang]['winP2'];
+            DOM.turnIndicator.style.color = 'var(--secondary)';
+            if (typeof Sounds !== 'undefined') Sounds.play(gameMode === 'online' ? (myPlayer === 'p2' ? 'win' : 'lose') : 'win');
         } else {
-            turnIndicator.innerText = 'DRAW!';
-            turnIndicator.style.color = 'white';
-            Sounds.play('lose');
+            DOM.turnIndicator.innerText = translations[currentLang]['draw'];
+            DOM.turnIndicator.style.color = 'white';
+            if (typeof Sounds !== 'undefined') Sounds.play('lose');
         }
-        resetBtn.classList.remove('hidden');
+        DOM.resetBtn.classList.remove('hidden');
     }
 }
 
-resetBtn.addEventListener('click', () => {
-    socket.emit('reset_game', { roomId: myRoomId, gameType });
+DOM.resetBtn.addEventListener('click', () => {
+    if (gameMode === 'online') {
+        socket.emit('reset_game', { roomId: myRoomId, gameType });
+    } else {
+        scores = { p1: 0, p2: 0 };
+        lines = {};
+        boxes = {};
+        gameActive = true;
+        currentTurn = 'p1';
+        DOM.resetBtn.classList.add('hidden');
+        initBoard();
+        updateUI();
+    }
 });
 
 socket.on('reset_game', () => {
@@ -265,7 +467,8 @@ socket.on('reset_game', () => {
     boxes = {};
     gameActive = true;
     currentTurn = 'p1';
-    resetBtn.classList.add('hidden');
+    DOM.resetBtn.classList.add('hidden');
     initBoard();
     updateUI();
 });
+

@@ -32,38 +32,150 @@
     const boardEl        = document.getElementById('tetris-board');
     const scoreEl        = document.getElementById('score');
     const finalScoreEl   = document.getElementById('final-score');
-    const setupScreen    = document.getElementById('setup-screen');
+    const startScreen    = document.getElementById('start-screen');
     const gameScreen     = document.getElementById('game-screen');
     const pauseScreen    = document.getElementById('pause-screen');
     const gameoverScreen = document.getElementById('gameover-screen');
     const pauseBtn       = document.getElementById('pause-btn');
 
+    const langEn         = document.getElementById('lang-en');
+    const langMl         = document.getElementById('lang-ml');
+    const langEnPause    = document.getElementById('lang-en-pause');
+    const langMlPause    = document.getElementById('lang-ml-pause');
+
+    // Translations
+    const translations = {
+        en: {
+            title: "Block Drop",
+            subtitle: "Drop and clear blocks",
+            startBtn: "▶   Start Game",
+            backHub: "Back to Hub",
+            scoreText: "Score: ",
+            ruleRotate: "↻   ROTATE",
+            paused: "PAUSED",
+            resume: "Resume",
+            quit: "Quit Game",
+            playAgain: "Play Again",
+            gameOverTitle: "Game Over!",
+            instructionsTitle: "Controls & Zones",
+            legendLeft: "Tap left 20% → Move Left",
+            legendRight: "Tap right 20% → Move Right",
+            legendCenter: "Hold centre → Soft Drop ▼",
+            legendRotate: "Bottom bar → Rotate ↻",
+            legendPause: "Top-right → Pause ⏸",
+            lblLeftDiagram: "◀<br>Move<br>Left",
+            lblRightDiagram: "▶<br>Move<br>Right"
+        },
+        ml: {
+            title: "ബ്ലോക്ക് ഡ്രോപ്പ്",
+            subtitle: "ബ്ലോക്കുകൾ നിരത്തി കള്ളികൾ ഒഴിവാക്കുക",
+            startBtn: "▶   കളി തുടങ്ങാം",
+            backHub: "തിരികെ പോകുക",
+            scoreText: "സ്കോർ: ",
+            ruleRotate: "↻   തിരിക്കുക",
+            paused: "നിർത്തിവെച്ചിരിക്കുന്നു",
+            resume: "തുടരുക",
+            quit: "കളി നിർത്തുക",
+            playAgain: "വീണ്ടും കളിക്കുക",
+            gameOverTitle: "കളി കഴിഞ്ഞു!",
+            instructionsTitle: "കളിക്കുന്ന രീതി",
+            legendLeft: "ഇടത് ഭാഗം അമർത്തുക → ഇടത്തോട്ട് നീക്കുക",
+            legendRight: "വലത് ഭാഗം അമർത്തുക → വലത്തോട്ട് നീക്കുക",
+            legendCenter: "നടുവിൽ അമർത്തിപ്പിടിക്കുക → വേഗത്തിൽ താഴെയിടുക ▼",
+            legendRotate: "താഴത്തെ ബാർ → ബ്ലോക്ക് തിരിക്കുക ↻",
+            legendPause: "മുകളിൽ വലത് വശം → കളി നിർത്തുക ⏸",
+            lblLeftDiagram: "◀<br>ഇടത്തോട്ട്<br>നീക്കുക",
+            lblRightDiagram: "▶<br>വലത്തോട്ട്<br>നീക്കുക"
+        }
+    };
+
+    let currentLang = 'en';
+
+    function setLanguage(lang) {
+        currentLang = lang;
+        const elements = document.querySelectorAll('[data-i18n]');
+        elements.forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang][key]) {
+                el.textContent = translations[lang][key];
+            }
+        });
+
+        // Set diagram HTML labels (since they contain HTML <br>)
+        document.getElementById('lbl-left-diagram').innerHTML = translations[lang]['lblLeftDiagram'];
+        document.getElementById('lbl-right-diagram').innerHTML = translations[lang]['lblRightDiagram'];
+
+        if (lang === 'en') {
+            langEn.classList.add('active');
+            langMl.classList.remove('active');
+            langEnPause.classList.add('active');
+            langMlPause.classList.remove('active');
+        } else {
+            langMl.classList.add('active');
+            langEn.classList.remove('active');
+            langMlPause.classList.add('active');
+            langEnPause.classList.remove('active');
+        }
+    }
+
+    [langEn, langEnPause].forEach(btn => btn.addEventListener('click', () => setLanguage('en')));
+    [langMl, langMlPause].forEach(btn => btn.addEventListener('click', () => setLanguage('ml')));
+
+    setLanguage('en');
+
     // ── STATE ──────────────────────────────────────────────────────────────────
     let board, currentPiece, score, isGameOver, isPaused, isSoftDrop, gameInterval;
 
+    // --- Fullscreen & Orientation ---
+    async function requestGameFullscreen() {
+        try {
+            if (document.documentElement.requestFullscreen) {
+                await document.documentElement.requestFullscreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                await document.documentElement.webkitRequestFullscreen();
+            }
+        } catch (err) {
+            console.warn("Fullscreen failed:", err);
+        }
+
+        try {
+            if (screen.orientation && screen.orientation.lock) {
+                await screen.orientation.lock('portrait');
+            }
+        } catch (err) {
+            console.warn("Orientation lock failed:", err);
+        }
+    }
+
+    function exitGameFullscreen() {
+        try {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            }
+        } catch (err) {
+            console.warn("Exit Fullscreen failed:", err);
+        }
+    }
+
     // ── HARD RESET — clears EVERYTHING before a new game ──────────────────────
     function hardReset() {
-        // 1. Null out piece first so any stray interval tick is harmless
         currentPiece = null;
-        isGameOver   = true;   // block any stray moves while resetting
+        isGameOver   = true;
 
-        // 2. Kill the timer
         clearInterval(gameInterval);
         gameInterval = null;
 
-        // 3. Wipe DOM
         while (boardEl.firstChild) boardEl.removeChild(boardEl.firstChild);
 
-        // 4. Fresh board array
         board = Array.from({ length: ROWS }, () => new Array(COLS).fill(0));
 
-        // 5. Reset all state
         score      = 0;
         isPaused   = false;
         isSoftDrop = false;
-        isGameOver = false;   // now safe to allow moves again
+        isGameOver = false;
 
-        // 6. UI
         scoreEl.textContent          = '0';
         pauseBtn.textContent         = '⏸';
         pauseScreen.style.display    = 'none';
@@ -72,21 +184,17 @@
 
     // ── DRAW ───────────────────────────────────────────────────────────────────
     function draw() {
-        // Remove only .t-cell nodes (safe, never removes overlays)
         const cells = boardEl.getElementsByClassName('t-cell');
-        // getElementsByClassName is live — iterate backwards to avoid index shift
         for (let i = cells.length - 1; i >= 0; i--) {
             cells[i].parentNode.removeChild(cells[i]);
         }
 
-        // Draw locked cells
         for (let r = 0; r < ROWS; r++) {
             for (let c = 0; c < COLS; c++) {
                 if (board[r][c]) placeCell(r, c, board[r][c]);
             }
         }
 
-        // Draw active piece
         if (currentPiece) {
             currentPiece.shape.forEach((row, r) =>
                 row.forEach((val, c) => {
@@ -113,7 +221,7 @@
     // ── PIECE ──────────────────────────────────────────────────────────────────
     function spawn() {
         const type = Math.ceil(Math.random() * 7);
-        const shape = SHAPES[type].map(r => [...r]); // deep-copy row
+        const shape = SHAPES[type].map(r => [...r]);
         currentPiece = {
             shape,
             r: -shape.length,
@@ -203,8 +311,9 @@
 
     function startGame() {
         hardReset();
-        setupScreen.style.display = 'none';
+        startScreen.style.display = 'none';
         gameScreen.style.display  = 'flex';
+        requestGameFullscreen();
         spawn();
         draw();
         startLoop();
@@ -224,7 +333,7 @@
         gameInterval = null;
         finalScoreEl.textContent     = score;
         gameoverScreen.style.display = 'flex';
-        Sounds.play('gameOver');
+        if (typeof Sounds !== 'undefined') Sounds.play('gameOver');
     }
 
     function togglePause() {
@@ -247,26 +356,27 @@
     document.getElementById('restart-btn')      .addEventListener('click', restartGame);
     document.getElementById('pause-restart-btn').addEventListener('click', restartGame);
     document.getElementById('resume-btn')       .addEventListener('click', togglePause);
-    document.getElementById('quit-home-btn')    .addEventListener('click', () => location.href = 'index.html');
-    document.getElementById('go-home-btn')      .addEventListener('click', () => location.href = 'index.html');
+    
+    document.getElementById('quit-home-btn')    .addEventListener('click', () => {
+        isPaused = false;
+        isGameOver = true;
+        clearInterval(gameInterval);
+        gameInterval = null;
+        pauseScreen.style.display = 'none';
+        gameScreen.style.display = 'none';
+        startScreen.style.display = 'flex';
+        exitGameFullscreen();
+    });
+    
+    document.getElementById('go-home-btn')      .addEventListener('click', () => {
+        gameoverScreen.style.display = 'none';
+        gameScreen.style.display = 'none';
+        startScreen.style.display = 'flex';
+        exitGameFullscreen();
+    });
+    
     document.getElementById('btn-rotate')       .addEventListener('click', e => { e.preventDefault(); rotate(); });
     pauseBtn.addEventListener('click', togglePause);
-
-    // PWA install button in pause menu
-    const installPauseBtn = document.getElementById('install-pwa-pause');
-    let deferredInstallPrompt = null;
-    window.addEventListener('beforeinstallprompt', e => {
-        e.preventDefault();
-        deferredInstallPrompt = e;
-        installPauseBtn.style.display = 'block';
-    });
-    installPauseBtn.addEventListener('click', async () => {
-        if (!deferredInstallPrompt) return;
-        deferredInstallPrompt.prompt();
-        const { outcome } = await deferredInstallPrompt.userChoice;
-        if (outcome === 'accepted') installPauseBtn.style.display = 'none';
-        deferredInstallPrompt = null;
-    });
 
     // ── TOUCH ZONES ────────────────────────────────────────────────────────────
     function wire(id, events, fn) {

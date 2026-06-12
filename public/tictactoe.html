@@ -2,67 +2,176 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic-Tac-Toe | TinyGames</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title data-i18n="title">Tic-Tac-Toe | TinyGames</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#121212">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="/socket.io/socket.io.js"></script>
     <style>
-        .pause-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 500;
-            display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+        /* Shared Lounge & Pause overlay styles */
+        .hub-container {
+            max-width: 600px;
+            margin: 0 auto;
+            overflow-y: auto;
+            max-height: 100vh;
+            padding-bottom: 40px;
         }
-        .pause-overlay h2 { font-size: 2.2rem; letter-spacing: 3px; }
-        .ov-btn {
-            width: 75%; max-width: 280px; padding: 14px; border-radius: 12px;
-            border: none; font-size: 1.05rem; font-weight: 600; cursor: pointer; color: white;
+        .instructions {
+            text-align: left;
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
         }
-        .ov-primary { background: linear-gradient(45deg, var(--primary), var(--secondary)); }
-        .ov-neutral { background: #222; }
-        .ov-install { background: linear-gradient(45deg, #11998e, #38ef7d); display: none; }
-        #pause-bar {
-            display: flex; justify-content: flex-end; align-items: center; width: 100%; max-width: 600px;
+        .instructions p {
+            color: #eee;
+            margin-top: 0;
+            margin-bottom: 10px;
         }
-        #pause-top-btn {
-            background: #1e1e1e; border: 1px solid #333; border-radius: 8px; color: white;
-            font-size: 1.1rem; width: 38px; height: 38px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+        .instructions h3 {
+            margin-top: 0;
+            color: #ffd700;
+        }
+        .instructions ul {
+            padding-left: 20px;
+            color: #ccc;
+        }
+        .room-controls button, .room-controls input {
+            box-sizing: border-box;
+        }
+        .room-controls .join-room-wrapper {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        .room-controls input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background-color: #222;
+            color: white;
+            font-size: 1rem;
+            width: 50% !important;
+        }
+        .room-controls .join-room-wrapper button {
+            flex: 1;
+            width: 50% !important;
+        }
+        .btn {
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            width: 100%;
+        }
+        .outline-btn {
+            background: transparent;
+            border: 2px solid #555;
+            color: #ccc;
+        }
+        .outline-btn.active {
+            border-color: var(--primary);
+            color: white;
+            background: rgba(0, 210, 255, 0.1);
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #aaa;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            color: white;
+        }
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .game-over-box {
+            background: var(--card-bg, #1e1e1e);
+            border: 2px solid #333;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            color: white;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- START SCREEN / LOUNGE -->
+    <div id="start-screen" class="container hub-container">
         <header>
-            <a href="index.html" class="back-btn">&larr; Back to Hub</a>
-            <h1>Tic-Tac-Toe</h1>
+            <h1 data-i18n="title">Tic-Tac-Toe</h1>
+            <p data-i18n="subtitle">The classic game of Xs and Os</p>
         </header>
 
-        <div id="setup-area" class="room-setup">
-            <h3>Matchmaking</h3>
-            <div id="setup-buttons" style="margin-top: 15px;">
-                <button id="create-room-btn" style="width: 100%; margin-bottom: 15px;">Create Room</button>
-                <div style="display:flex; gap:10px;">
-                    <input type="text" id="room-input" placeholder="Code (e.g. X7B9)" style="width:60%; text-align:center;">
-                    <button id="join-btn" style="width:40%;">Join Room</button>
-                </div>
-            </div>
-            <div id="qr-container" class="hidden" style="margin-top:20px; display:flex; flex-direction:column; align-items:center;">
-                <h2 id="room-code-display" style="letter-spacing:3px; margin-bottom:10px; color:var(--primary);"></h2>
-                <div id="qrcode" style="background:white; padding:10px; border-radius:8px;"></div>
-                <p style="margin-top:10px; font-size:0.9rem; color:#aaa; text-align:center;">Scan to join automatically<br>or share with a friend to invite them to play</p>
-            </div>
-            <div id="status" class="status"></div>
+        <!-- LANGUAGE SELECTOR -->
+        <div style="text-align: center; margin: 10px 0;">
+            <button id="lang-en" class="btn outline-btn active" style="padding: 5px 10px; width: auto; margin-right: 5px;">English</button>
+            <button id="lang-ml" class="btn outline-btn" style="padding: 5px 10px; width: auto;">മലയാളം</button>
         </div>
 
+        <div class="room-controls" id="room-controls">
+            <button id="create-room-btn" class="btn primary-btn" data-i18n="createRoom">Create Room</button>
+            <div class="join-room-wrapper">
+                <input type="text" id="room-code-input" placeholder="Room Code" maxlength="6">
+                <button id="join-room-btn" class="btn secondary-btn" data-i18n="joinRoom">Join Room</button>
+            </div>
+            <div style="margin-top: 20px; color: #aaa; text-align: center; width: 100%;" data-i18n="orLocal">
+                Or play locally:
+            </div>
+            <button id="local-mode-btn" class="btn outline-btn" style="width: 100%; margin-top: 10px;" data-i18n="localMode">Local 2-Player Mode</button>
+        </div>
+
+        <div class="instructions">
+            <p id="rules-premise" data-i18n="premise">
+                Tic-Tac-Toe is a classic two-player board game where the objective is to place three of your marks in a horizontal, vertical, or diagonal row.
+            </p>
+            <h3 data-i18n="rulesTitle">Rules:</h3>
+            <ul id="rules-list">
+                <li data-i18n="rule1">The game is played on a grid that's 3 squares by 3 squares.</li>
+                <li data-i18n="rule2">One player is X, and the other is O. Players take turns putting their marks in empty squares.</li>
+                <li data-i18n="rule3">The first player to get 3 of their marks in a row (up, down, across, or diagonally) is the winner.</li>
+                <li data-i18n="rule4">When all 9 squares are full, the game is over. If no player has 3 in a row, the game ends in a tie.</li>
+            </ul>
+        </div>
+
+        <a href="index.html" class="back-link" data-i18n="backHub">Back to Hub</a>
+    </div>
+
+    <!-- GAME CONTAINER -->
+    <div id="game-container" class="container hidden">
+        <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; margin-top: 10px;">
+            <a href="index.html" class="back-btn" style="margin-bottom:0;">&larr; <span data-i18n="backHub">Back</span></a>
+            <h1 style="font-size:2rem; margin:0;" data-i18n="title">Tic-Tac-Toe</h1>
+            <button id="pause-top-btn">⏸</button>
+        </header>
+
+        <!-- ONLINE MATCHMAKING ROOM INFO -->
+        <div id="room-info" class="hidden" style="text-align: center; margin: 15px 0;">
+            <p><span data-i18n="roomCodeTxt">Room Code:</span> <strong id="display-room-code" style="font-size: 1.5em; letter-spacing: 2px;"></strong></p>
+            <div id="qrcode" style="background:white; padding:10px; border-radius:8px; display:inline-block; margin-top:10px;"></div>
+            <p style="margin-top:10px; font-size:0.9rem; color:#aaa; text-align:center;" data-i18n="shareText">Scan to join automatically<br>or share with a friend to invite them to play</p>
+            <p id="waiting-msg" data-i18n="waiting" style="margin-top:10px;">Waiting for opponent...</p>
+        </div>
+
+        <!-- GAME AREA -->
         <div id="game-area" class="hidden">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <div class="score-board" style="margin-bottom:0; flex:1;">
-                    <div class="score-p1">You: <span id="player-symbol"></span></div>
-                    <div class="score-p2">Turn: <span id="current-turn">X</span></div>
-                </div>
-                <button id="pause-top-btn">⏸</button>
+            <div class="score-board" style="margin-bottom:20px; display:flex; justify-content:space-around;">
+                <div class="score-p1"><span data-i18n="scoreYou">You</span>: <span id="player-symbol"></span></div>
+                <div class="score-p2"><span data-i18n="scoreTurn">Turn</span>: <span id="current-turn">X</span></div>
             </div>
 
             <div class="tictactoe-board" id="board">
@@ -77,23 +186,27 @@
                 <div class="cell" data-index="8"></div>
             </div>
 
-            <div class="room-setup">
-                <button id="reset-btn" class="hidden">Play Again</button>
+            <div style="text-align:center; margin-top:20px;">
+                <button id="reset-btn" class="hidden" data-i18n="playAgain">Play Again</button>
             </div>
         </div>
     </div>
 
     <!-- Pause overlay -->
-    <div class="pause-overlay" id="ttt-pause">
-        <h2>PAUSED</h2>
-        <button class="ov-btn ov-primary" id="ttt-resume">Resume</button>
-        <button class="ov-btn ov-install" id="ttt-install">📲 Save as App</button>
-        <button class="ov-btn ov-neutral" id="ttt-hub">← Back to Hub</button>
+    <div class="pause-overlay overlay hidden" id="ttt-pause">
+        <div class="game-over-box" style="text-align: left; width: 90%; max-width: 400px;">
+            <h2 style="text-align: center; margin-top: 0;" data-i18n="paused">PAUSED</h2>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px; justify-content: center;">
+                <button id="lang-en-pause" class="btn outline-btn active" style="padding: 5px 10px; flex: 1;">English</button>
+                <button id="lang-ml-pause" class="btn outline-btn" style="padding: 5px 10px; flex: 1;">മലയാളം</button>
+            </div>
+            <button class="ov-btn ov-primary btn" style="margin-bottom:10px;" id="ttt-resume" data-i18n="resume">Resume</button>
+            <button class="ov-btn ov-neutral btn outline-btn" id="ttt-hub" data-i18n="quit">Quit Game</button>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="js/sounds.js"></script>
-    <script src="js/app.js"></script>
     <script src="js/tictactoe.js"></script>
 </body>
 </html>

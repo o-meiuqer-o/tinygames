@@ -5,9 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#0d0e12">
     <link rel="manifest" href="/manifest.json">
-    <title>Signal Green | TinyGames</title>
+    <title data-i18n="title">Signal Green | TinyGames</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/signal-green.css">
+    <style>
+        .btn {
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+        }
+        .outline-btn {
+            background: transparent;
+            border: 2px solid #555;
+            color: #ccc;
+        }
+        .outline-btn.active {
+            border-color: #00ff66;
+            color: white;
+            background: rgba(0, 255, 102, 0.1);
+        }
+    </style>
 </head>
 <body>
     <!-- Landscape Orientation Lock Overlay -->
@@ -26,45 +50,51 @@
     <div id="setup-screen" class="overlay-screen active">
         <div class="setup-container">
             <div class="glow-title">
-                <h1>SIGNAL GREEN</h1>
-                <span class="subtitle">Traffic Flow Logic Simulation</span>
+                <h1 data-i18n="title">SIGNAL GREEN</h1>
+                <span class="subtitle" data-i18n="subtitle">Traffic Flow Logic Simulation</span>
+            </div>
+
+            <!-- LANGUAGE SELECTOR -->
+            <div style="text-align: center; margin: 10px 0;">
+                <button id="lang-en" class="btn outline-btn active" style="padding: 5px 10px; width: auto; margin-right: 5px; text-transform:none;">English</button>
+                <button id="lang-ml" class="btn outline-btn" style="padding: 5px 10px; width: auto; text-transform:none;">മലയാളം</button>
             </div>
             
             <div class="rules-section">
                 <div class="rule-card">
                     <span class="rule-icon">🚗</span>
                     <div>
-                        <h3>Regular Traffic</h3>
-                        <p>Tap a moving car to <strong>STOP / HOLD</strong> it. Tap again to <strong>GO</strong>.</p>
+                        <h3 data-i18n="rule1Title">Regular Traffic</h3>
+                        <p data-i18n="rule1Desc">Tap a moving car to <strong>STOP / HOLD</strong> it. Tap again to <strong>GO</strong>.</p>
                     </div>
                 </div>
                 <div class="rule-card highlight-boost">
                     <span class="rule-icon">⚡</span>
                     <div>
-                        <h3>Speed Boost</h3>
-                        <p>Swipe/flick a vehicle forward to <strong>BOOST</strong> it across the junction.</p>
+                        <h3 data-i18n="rule2Title">Speed Boost</h3>
+                        <p data-i18n="rule2Desc">Swipe/flick a vehicle forward to <strong>BOOST</strong> it across the junction.</p>
                     </div>
                 </div>
                 <div class="rule-card alert-card">
                     <span class="rule-icon">🚨</span>
                     <div>
-                        <h3>Emergency Vehicles</h3>
-                        <p>Ambulances <strong>CANNOT BE STOPPED</strong>. Prioritize their path immediately!</p>
+                        <h3 data-i18n="rule3Title">Emergency Vehicles</h3>
+                        <p data-i18n="rule3Desc">Ambulances <strong>CANNOT BE STOPPED</strong>. Prioritize their path immediately!</p>
                     </div>
                 </div>
             </div>
 
             <div class="difficulty-selection">
-                <label>Junction Complexity</label>
+                <label data-i18n="selectJunction">Junction Complexity</label>
                 <div class="diff-btn-group">
-                    <button class="diff-btn active" data-difficulty="standard">Standard (4-Way)</button>
-                    <button class="diff-btn" data-difficulty="rush">Rush Hour (Multi-Lane)</button>
+                    <button class="diff-btn active" data-difficulty="standard" id="diff-standard">Standard (4-Way)</button>
+                    <button class="diff-btn" data-difficulty="rush" id="diff-rush">Rush Hour (Multi-Lane)</button>
                 </div>
             </div>
 
             <div class="action-buttons">
-                <button id="start-btn" class="glow-btn">START SIMULATION</button>
-                <a href="index.html" class="back-btn">Back to Hub</a>
+                <button id="start-btn" class="glow-btn" data-i18n="startBtn">START SIMULATION</button>
+                <a href="index.html" class="back-btn" data-i18n="backHub">Back to Hub</a>
             </div>
         </div>
     </div>
@@ -73,21 +103,19 @@
     <div id="hud-container" class="hud-layout">
         <div class="hud-top-bar">
             <div class="hud-box score-box">
-                <div class="hud-label">PASSED VEHICLES</div>
+                <div class="hud-label" data-i18n="statScore">PASSED VEHICLES</div>
                 <div id="hud-score" class="hud-value font-mono">000</div>
             </div>
 
             <div class="hud-box multiplier-box">
-                <div class="hud-label">MULTIPLIER</div>
+                <div class="hud-label" data-i18n="statMult">MULTIPLIER</div>
                 <div id="hud-mult" class="hud-value font-mono text-neon-blue">x1.0</div>
             </div>
 
-            <div class="hud-center-alert font-mono" id="hud-alert">
-                <!-- Dynamic alerts like "🚨 AMBULANCE INCOMING" will appear here -->
-            </div>
+            <div class="hud-center-alert font-mono" id="hud-alert"></div>
 
             <div class="hud-box high-score-box">
-                <div class="hud-label">PEAK FLOW</div>
+                <div class="hud-label" data-i18n="statBest">PEAK FLOW</div>
                 <div id="hud-highscore" class="hud-value font-mono text-neon-yellow">000</div>
             </div>
 
@@ -101,12 +129,17 @@
 
     <!-- Pause Screen -->
     <div id="pause-screen" class="overlay-screen">
-        <div class="setup-container paused-container">
-            <h2>Simulation Paused</h2>
-            <p>Traffic coordination frozen.</p>
+        <div class="setup-container paused-container" style="text-align: left; max-width:440px;">
+            <h2 style="text-align: center;" data-i18n="pausedTitle">Simulation Paused</h2>
+            <p style="text-align: center;" data-i18n="pausedDesc">Traffic coordination frozen.</p>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px; justify-content: center;">
+                <button id="lang-en-pause" class="btn outline-btn active" style="padding: 5px 10px; flex: 1; text-transform:none;">English</button>
+                <button id="lang-ml-pause" class="btn outline-btn" style="padding: 5px 10px; flex: 1; text-transform:none;">മലയാളം</button>
+            </div>
             <div class="action-buttons">
-                <button id="resume-btn" class="glow-btn">RESUME</button>
-                <button id="restart-paused-btn" class="back-btn">RESTART</button>
+                <button id="resume-btn" class="glow-btn" data-i18n="resumeBtn">RESUME</button>
+                <button id="restart-paused-btn" class="back-btn" data-i18n="restartBtn">RESTART</button>
+                <button id="quit-btn" class="back-btn" data-i18n="quitBtn" style="background:var(--neon-red); color:white; border-color:transparent; margin-top:10px; width:100%;">QUIT GAME</button>
             </div>
         </div>
     </div>
@@ -114,31 +147,31 @@
     <!-- Game Over Screen -->
     <div id="game-over-screen" class="overlay-screen">
         <div class="setup-container gameover-container">
-            <div class="collision-banner">💥 COLLISION DETECTED 💥</div>
-            <p class="gameover-sub">Intersection gridlocked. Operation terminated.</p>
+            <div class="collision-banner" data-i18n="gameOverTitle">💥 COLLISION DETECTED 💥</div>
+            <p class="gameover-sub" data-i18n="gameOverDesc">Intersection gridlocked. Operation terminated.</p>
             
             <div class="gameover-stats">
                 <div class="stat-row">
-                    <span>Cars Dispatched:</span>
+                    <span data-i18n="statScore">Cars Dispatched:</span>
                     <span id="stat-score" class="font-mono">0</span>
                 </div>
                 <div class="stat-row">
-                    <span>Active Multiplier reached:</span>
+                    <span data-i18n="statMult">Active Multiplier reached:</span>
                     <span id="stat-multiplier" class="font-mono text-neon-blue">x1.0</span>
                 </div>
                 <div class="stat-row">
-                    <span>Priority Emergencies Handled:</span>
+                    <span data-i18n="statEmergencies">Priority Emergencies Handled:</span>
                     <span id="stat-emergencies" class="font-mono text-neon-red">0</span>
                 </div>
                 <div class="stat-row highlight-stat">
-                    <span>Peak Flow (Best):</span>
+                    <span data-i18n="statBest">Peak Flow (Best):</span>
                     <span id="stat-best" class="font-mono text-neon-yellow">0</span>
                 </div>
             </div>
 
             <div class="action-buttons">
-                <button id="retry-btn" class="glow-btn">REINITIALIZE GRID</button>
-                <a href="index.html" class="back-btn">Hangar Menu</a>
+                <button id="retry-btn" class="glow-btn" data-i18n="retryBtn">REINITIALIZE GRID</button>
+                <button id="go-home-btn" class="back-btn" data-i18n="quitBtn" style="width:100%; margin-top:10px;">QUIT</button>
             </div>
         </div>
     </div>

@@ -3,57 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The Hermit Crab's Real Estate</title>
+    <title data-i18n="title">Hermit Crab's Real Estate</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/hermit-crab.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#121212">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* Shared Lounge & Pause overlay styles */
+        .hub-container {
+            max-width: 600px;
+            margin: 0 auto;
+            overflow-y: auto;
+            max-height: 100vh;
+            padding: 20px;
+            padding-bottom: 40px;
+            text-align: center;
+        }
+        .instructions {
+            text-align: left;
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .instructions p {
+            color: #eee;
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+        .btn {
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-sizing: border-box;
+        }
+        .outline-btn {
+            background: transparent;
+            border: 2px solid #555;
+            color: #ccc;
+        }
+        .outline-btn.active {
+            border-color: var(--primary);
+            color: white;
+            background: rgba(0, 210, 255, 0.1);
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #aaa;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            color: white;
+        }
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.92);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .game-over-box {
+            background: var(--card-bg, #1e1e1e);
+            border: 2px solid #333;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            color: white;
+            width: 95%;
+            max-width: 440px;
+        }
+        .hand-btn {
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
+    <!-- LOUNGE / START SCREEN -->
     <div id="start-screen" class="container hub-container">
         <header>
-            <h1>Hermit Crab's Real Estate</h1>
-            <p>Grow, adapt, and survive the coast.</p>
+            <h1 data-i18n="title">Hermit Crab's Real Estate</h1>
+            <p data-i18n="subtitle">Grow, adapt, and survive the coast.</p>
         </header>
+
+        <!-- LANGUAGE SELECTOR -->
+        <div style="text-align: center; margin: 10px 0;">
+            <button id="lang-en" class="btn outline-btn active" style="padding: 5px 10px; width: auto; margin-right: 5px; text-transform:none;">English</button>
+            <button id="lang-ml" class="btn outline-btn" style="padding: 5px 10px; width: auto; text-transform:none;">മലയാളം</button>
+        </div>
         
         <div class="instructions">
-            <p>🦀 Find food to grow, but don't take too long or you'll starve!</p>
-            <p>🐚 As you grow, your shell becomes tight. Find a bigger shell or bottle cap to move into.</p>
-            <p>🐕 Watch out for dogs! They love to chase crabs.</p>
+            <p data-i18n="rule1">🦀 Find food to grow, but don't take too long or you'll starve!</p>
+            <p data-i18n="rule2">🐚 As you grow, your shell becomes tight. Find a bigger shell or bottle cap to move into.</p>
+            <p data-i18n="rule3">🐕 Watch out for dogs! They love to chase crabs.</p>
         </div>
 
-        <div class="control-selection">
-            <h2>Select Hand Preference</h2>
-            <p>This sets the position of your virtual joystick.</p>
-            <div class="hand-options">
-                <button id="left-hand-btn" class="hand-btn">
+        <div class="control-selection" style="margin-top: 15px;">
+            <h2 data-i18n="selectHand" style="font-size:1.4rem;">Select Hand Preference</h2>
+            <p data-i18n="handPreferenceDesc" style="font-size:0.9rem; color:#aaa; margin-bottom:15px;">This sets the position of your virtual joystick.</p>
+            <div class="hand-options" style="display:flex; gap:12px;">
+                <button id="left-hand-btn" class="hand-btn" style="flex:1;">
                     <span class="icon">👈</span>
-                    <span>Left-Handed</span>
-                    <small>Joystick on Left</small>
+                    <span data-i18n="leftHandedBtn">Left-Handed</span>
+                    <small data-i18n="leftHandedDesc">Joystick on Left</small>
                 </button>
-                <button id="right-hand-btn" class="hand-btn">
+                <button id="right-hand-btn" class="hand-btn" style="flex:1;">
                     <span class="icon">👉</span>
-                    <span>Right-Handed</span>
-                    <small>Joystick on Right</small>
+                    <span data-i18n="rightHandedBtn">Right-Handed</span>
+                    <small data-i18n="rightHandedDesc">Joystick on Right</small>
                 </button>
             </div>
         </div>
-        <a href="index.html" class="back-link">Back to Hub</a>
+        <a href="index.html" class="back-link" data-i18n="backHub">Back to Hub</a>
     </div>
 
+    <!-- GAME CONTAINER -->
     <div id="game-container" class="hidden">
         <div id="hud">
             <div class="hud-item">
-                <span>Level:</span>
+                <span data-i18n="hudLevel">Level:</span>
                 <span id="level-display">1 / 15</span>
             </div>
             <div class="hud-item">
-                <span>Hunger:</span>
+                <span data-i18n="hudHunger">Hunger:</span>
                 <div class="bar-bg"><div id="hunger-fill" class="bar-fill"></div></div>
             </div>
             <div class="hud-item">
-                <span>Growth:</span>
+                <span data-i18n="hudGrowth">Growth:</span>
                 <div class="bar-bg"><div id="growth-fill" class="bar-fill" style="background:#2196F3"></div></div>
             </div>
         </div>
@@ -63,27 +157,35 @@
         
         <div id="joystick-zone"></div>
 
+        <!-- WIN OVERLAY -->
         <div id="win-overlay" class="hidden overlay">
             <div class="game-over-box">
-                <h2>Victory!</h2>
-                <p>Your crab has fully grown up and gone to lay eggs!</p>
-                <button id="restart-win-btn">Play Again</button>
+                <h2 data-i18n="winTitle">Victory!</h2>
+                <p data-i18n="winDesc">Your crab has fully grown up and gone to lay eggs!</p>
+                <button id="restart-win-btn" class="btn btn-primary" data-i18n="playAgain" style="margin-top:15px;">Play Again</button>
             </div>
         </div>
+
+        <!-- GAME OVER OVERLAY -->
         <div id="game-over-overlay" class="hidden overlay">
             <div class="game-over-box">
-                <h2 id="game-over-title">Game Over</h2>
-                <p id="game-over-reason">You starved!</p>
-                <button id="restart-btn" class="hand-btn" style="width:80%; margin:5px auto;">Play Again</button>
-                <button id="home-btn" class="hand-btn" style="width:80%; margin:5px auto;" onclick="location.reload()">Main Menu</button>
+                <h2 id="game-over-title" data-i18n="gameOverTitle">Game Over</h2>
+                <p id="game-over-reason" style="margin-bottom:15px; color:#ff007f; font-weight:800;"></p>
+                <button id="restart-btn" class="btn btn-primary" data-i18n="playAgain" style="margin-bottom:10px;">Play Again</button>
+                <button id="home-btn" class="btn btn-neutral" data-i18n="mainMenu">Main Menu</button>
             </div>
         </div>
+
+        <!-- PAUSE OVERLAY -->
         <div id="pause-overlay" class="hidden overlay">
-            <div class="game-over-box">
-                <h2>PAUSED</h2>
-                <button id="resume-btn" class="hand-btn" style="width:80%; margin:10px auto;">Resume</button>
-                <button id="install-pwa-btn" class="hand-btn" style="width:80%; margin:10px auto; background: linear-gradient(45deg, #11998e, #38ef7d); display:none;">📲 Save as App</button>
-                <button id="quit-btn" class="hand-btn" style="width:80%; margin:10px auto;">Quit Game</button>
+            <div class="game-over-box" style="text-align: left;">
+                <h2 style="text-align: center; margin-top:0;" data-i18n="paused">PAUSED</h2>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; justify-content: center;">
+                    <button id="lang-en-pause" class="btn outline-btn active" style="padding: 5px 10px; flex: 1; text-transform:none;">English</button>
+                    <button id="lang-ml-pause" class="btn outline-btn" style="padding: 5px 10px; flex: 1; text-transform:none;">മലയാളം</button>
+                </div>
+                <button id="resume-btn" class="btn btn-primary" data-i18n="resume" style="margin-bottom:10px;">Resume</button>
+                <button id="quit-btn" class="btn btn-danger" data-i18n="quit">Quit Game</button>
             </div>
         </div>
     </div>

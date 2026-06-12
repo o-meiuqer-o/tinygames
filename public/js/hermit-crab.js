@@ -498,6 +498,101 @@ function loop(time) {
     animationId = requestAnimationFrame(loop);
 }
 
+// Translations
+const translations = {
+    en: {
+        title: "Hermit Crab's Real Estate",
+        subtitle: "Grow, adapt, and survive the coast.",
+        rule1: "🦀 Find food to grow, but don't take too long or you'll starve!",
+        rule2: "🐚 As you grow, your shell becomes tight. Find a bigger shell or bottle cap to move into.",
+        rule3: "🐕 Watch out for dogs! They love to chase crabs.",
+        selectHand: "Select Hand Preference",
+        handPreferenceDesc: "This sets the position of your virtual joystick.",
+        leftHandedBtn: "Left-Handed",
+        leftHandedDesc: "Joystick on Left",
+        rightHandedBtn: "Right-Handed",
+        rightHandedDesc: "Joystick on Right",
+        backHub: "Back to Hub",
+        winTitle: "Victory!",
+        winDesc: "Your crab has fully grown up and gone to lay eggs!",
+        gameOverTitle: "Game Over",
+        gameOverStarved: "You starved!",
+        gameOverDog: "A dog caught you!",
+        playAgain: "Play Again",
+        mainMenu: "Main Menu",
+        paused: "PAUSED",
+        resume: "Resume",
+        quit: "Quit Game",
+        hudLevel: "Level: ",
+        hudHunger: "Hunger: ",
+        hudGrowth: "Growth: "
+    },
+    ml: {
+        title: "ശങ്കുഭംഗിപ്പൂച്ച",
+        subtitle: "വളരുക, അതിജീവിക്കുക, തീരങ്ങളിൽ ചുറ്റിനടക്കുക.",
+        rule1: "🦀 വളരാൻ ഭക്ഷണം കണ്ടെത്തുക, വൈകിയാൽ വിശന്നു ചത്തുപോകും!",
+        rule2: "🐚 വളരുന്നതിനനുസരിച്ച് നിങ്ങളുടെ ചിപ്പി ഇടുങ്ങിയതാകും. വലിയ ചിപ്പിയോ കുപ്പിയുടെ അടപ്പോ കണ്ടെത്തുക.",
+        rule3: "🐕 നായ്ക്കളെ സൂക്ഷിക്കുക! അവയ്ക്ക് ഞണ്ടുകളെ പിടിക്കാൻ ഇഷ്ടമാണ്.",
+        selectHand: "നിയന്ത്രണം തിരഞ്ഞെടുക്കുക",
+        handPreferenceDesc: "ഇത് ജോയ്സ്റ്റിക്ക് സ്ക്രീനിന്റെ ഏത് ഭാഗത്ത് വേണമെന്ന് നിശ്ചയിക്കും.",
+        leftHandedBtn: "ഇടത് കൈ ശൈലി",
+        leftHandedDesc: "ജോയ്സ്റ്റിക്ക് ഇടത് ഭാഗത്ത്",
+        rightHandedBtn: "വലത് കൈ ശൈലി",
+        rightHandedDesc: "ജോയ്സ്റ്റിക്ക് വലത് ഭാഗത്ത്",
+        backHub: "തിരികെ പോകുക",
+        winTitle: "വിജയം!",
+        winDesc: "നിങ്ങളുടെ ഞണ്ട് പൂർണ്ണമായി വളർന്നു മുട്ടയിടാൻ പോയിരിക്കുന്നു!",
+        gameOverTitle: "കളി കഴിഞ്ഞു",
+        gameOverStarved: "നിങ്ങൾക്ക് വിശപ്പ് സഹിക്കാനായില്ല!",
+        gameOverDog: "നായ നിങ്ങളെ പിടികൂടി!",
+        playAgain: "വീണ്ടും കളിക്കുക",
+        mainMenu: "പ്രധാന പേജ്",
+        paused: "നിർത്തിവെച്ചിരിക്കുന്നു",
+        resume: "തുടരുക",
+        quit: "കളി നിർത്തുക",
+        hudLevel: "നില: ",
+        hudHunger: "വിശപ്പ്: ",
+        hudGrowth: "വളർച്ച: "
+    }
+};
+
+let currentLang = 'en';
+
+function setLanguage(lang) {
+    currentLang = lang;
+    const elements = document.querySelectorAll('[data-i18n]');
+    elements.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+            el.textContent = translations[lang][key];
+        }
+    });
+
+    const langEn = document.getElementById('lang-en');
+    const langMl = document.getElementById('lang-ml');
+    const langEnPause = document.getElementById('lang-en-pause');
+    const langMlPause = document.getElementById('lang-ml-pause');
+
+    if (lang === 'en') {
+        if (langEn) langEn.classList.add('active');
+        if (langMl) langMl.classList.remove('active');
+        if (langEnPause) langEnPause.classList.add('active');
+        if (langMlPause) langMlPause.classList.remove('active');
+    } else {
+        if (langMl) langMl.classList.add('active');
+        if (langEn) langEn.classList.remove('active');
+        if (langMlPause) langMlPause.classList.add('active');
+        if (langEnPause) langEnPause.classList.remove('active');
+    }
+}
+
+document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
+document.getElementById('lang-ml').addEventListener('click', () => setLanguage('ml'));
+document.getElementById('lang-en-pause').addEventListener('click', () => setLanguage('en'));
+document.getElementById('lang-ml-pause').addEventListener('click', () => setLanguage('ml'));
+
+setLanguage('en');
+
 function gameWon() {
     isPlaying = false;
     winOverlay.classList.remove('hidden');
@@ -509,7 +604,13 @@ function gameWon() {
 function gameOver(reason) {
     playSound('die');
     isPlaying = false;
-    document.getElementById('game-over-reason').innerText = reason;
+    
+    let reasonText = translations[currentLang]['gameOverStarved'];
+    if (reason && reason.includes('dog')) {
+        reasonText = translations[currentLang]['gameOverDog'];
+    }
+    
+    document.getElementById('game-over-reason').innerText = reasonText;
     gameOverOverlay.classList.remove('hidden');
     if (joystickManager) {
         joystickManager.destroy();
@@ -527,7 +628,7 @@ async function forceLandscape() {
             await screen.orientation.lock('landscape');
         }
     } catch (err) {
-        console.warn("Fullscreen/Orientation lock failed (often requires user gesture or specific browser support):", err);
+        console.warn("Fullscreen/Orientation lock failed:", err);
     }
 }
 
@@ -563,7 +664,7 @@ function initGame(isLeftHanded) {
         zone: zone,
         mode: 'semi',
         position: isLeftHanded ? { left: '20%', bottom: '25%' } : { right: '20%', bottom: '25%' },
-        size: 150, // Adult-friendly size (larger than default 100)
+        size: 150, 
         color: '#2196F3',
         catchDistance: 150
     });
@@ -604,23 +705,9 @@ document.getElementById('resume-btn').addEventListener('click', () => {
     pauseOverlay.classList.add('hidden');
 });
 document.getElementById('quit-btn').addEventListener('click', () => {
-    location.href = 'index.html';
+    location.reload(); // back to main lounge/start screen cleanly
+});
+document.getElementById('home-btn').addEventListener('click', () => {
+    location.reload();
 });
 
-// PWA Install Wiring
-const installBtn = document.getElementById('install-pwa-btn');
-let deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredPrompt = e;
-    if (installBtn) installBtn.style.display = 'block';
-});
-if (installBtn) {
-    installBtn.addEventListener('click', async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') installBtn.style.display = 'none';
-        deferredPrompt = null;
-    });
-}
