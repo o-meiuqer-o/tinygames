@@ -35,7 +35,7 @@ const items = [
 
     // Non-Flying (20)
     { word: "Chair", mlWord: "കസേര", emoji: "🪑", flies: false },
-    { word: "Table", mlWord: "മേശ", emoji: "🪵", flies: false },
+    { word: "Tree Stump", mlWord: "മരക്കുറ്റി", emoji: "🪵", flies: false },
     { word: "Dog", mlWord: "നായ", emoji: "🐶", flies: false },
     { word: "Cat", mlWord: "പൂച്ച", emoji: "🐱", flies: false },
     { word: "House", mlWord: "വീട്", emoji: "🏠", flies: false },
