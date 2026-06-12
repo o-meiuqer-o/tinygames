@@ -180,6 +180,39 @@ function setLanguage(lang) {
 // Set initial language
 setLanguage('en');
 
+// --- Fullscreen & Orientation ---
+async function requestGameFullscreen() {
+    try {
+        if (document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+            await document.documentElement.webkitRequestFullscreen();
+        }
+    } catch (err) {
+        console.warn("Fullscreen failed:", err);
+    }
+
+    try {
+        if (screen.orientation && screen.orientation.lock) {
+            await screen.orientation.lock('portrait');
+        }
+    } catch (err) {
+        console.warn("Orientation lock failed:", err);
+    }
+}
+
+function exitGameFullscreen() {
+    try {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    } catch (err) {
+        console.warn("Exit Fullscreen failed:", err);
+    }
+}
+
 // --- Pause Menu ---
 DOM.pauseTopBtn.addEventListener('click', () => {
     DOM.pauseOverlay.classList.remove('hidden');
@@ -191,6 +224,7 @@ DOM.quitBtn.addEventListener('click', () => {
     DOM.pauseOverlay.classList.add('hidden');
     DOM.gameContainer.classList.add('hidden');
     DOM.startScreen.classList.remove('hidden');
+    exitGameFullscreen();
     if (gameMode === 'online') {
         location.reload(); // Quick disconnect & reset
     }
@@ -666,6 +700,7 @@ function generateRoomId() {
 function startGameUI() {
     DOM.startScreen.classList.add('hidden');
     DOM.gameContainer.classList.remove('hidden');
+    requestGameFullscreen();
 }
 
 DOM.createBtn.addEventListener('click', () => {
