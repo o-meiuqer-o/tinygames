@@ -1,6 +1,6 @@
-// CACHE v38 — network-first for HTML, cache-first for assets
+// CACHE v39 — network-first for HTML, cache-first for assets
 // Bumping version forces all old caches to be wiped
-const CACHE_NAME = 'tinygames-v38';
+const CACHE_NAME = 'tinygames-v39';
 const ASSETS = [
   '/css/style.css',
   '/css/hermit-crab.css',

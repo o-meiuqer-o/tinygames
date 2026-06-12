@@ -68,20 +68,32 @@ header p {
 
 
 .game-card {
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius);
-    padding: 30px;
     text-decoration: none;
     color: var(--text-color);
     text-align: center;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Breathing space between tile and text */
+}
+
+.card-icon {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 30px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: 2px solid transparent;
     transition: var(--transition);
-    cursor: pointer;
     position: relative;
     overflow: hidden;
 }
 
-.game-card::before {
+.card-icon::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -90,41 +102,37 @@ header p {
     transition: var(--transition);
 }
 
-.game-card:hover, .game-card:focus {
+.game-card:hover .card-icon, .game-card:focus .card-icon {
     transform: translateY(-5px);
     border-color: rgba(255, 255, 255, 0.1);
     box-shadow: 0 10px 20px rgba(0,0,0,0.5);
 }
 
-.game-card:hover::before {
+.game-card:hover .card-icon::before, .game-card:focus .card-icon::before {
     opacity: 1;
 }
 
-.card-icon {
-    font-size: 3rem;
-    margin-top: 10px;
-    margin-bottom: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 70px;
-}
-
 .card-icon img {
-    height: 100%;
+    height: 90px; /* Slightly larger since it's the main focus of the tile now */
     max-width: 100%;
     object-fit: contain;
     border-radius: 12px;
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+    transition: var(--transition);
+}
+
+.game-card:hover .card-icon img {
+    transform: scale(1.05); /* subtle pop effect on hover */
 }
 
 .game-card h2 {
-    font-size: 1.8rem;
-    margin-bottom: 10px;
+    font-size: 1.5rem;
+    margin: 0;
 }
 
 .game-card p {
     color: #bbbbbb;
+    margin: 0;
 }
 
 /* Common Room UI */
