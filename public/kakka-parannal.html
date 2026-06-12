@@ -143,9 +143,9 @@
             text-shadow: 2px 2px 0px rgba(0,0,0,0.3); pointer-events: none;
         }
 
-        .btn-primary { background: linear-gradient(45deg, #00d2ff, #3a7bd5); box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4); }
+        .primary-btn { background: linear-gradient(45deg, #00d2ff, #3a7bd5); box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4); }
         .btn-danger { background: linear-gradient(45deg, #ff007f, #ff4da6); }
-        .btn-neutral { background: #222; border: 1px solid #444; }
+        .secondary-btn { background: #222; border: 1px solid #444; }
 
         /* Animation */
         @keyframes pop {
@@ -173,13 +173,13 @@
         </header>
 
         <!-- LANGUAGE SELECTOR -->
-        <div style="text-align: center; margin: 10px 0;">
-            <button id="lang-en" class="btn outline-btn active" style="padding: 5px 10px; width: auto; margin-right: 5px;">English</button>
-            <button id="lang-ml" class="btn outline-btn" style="padding: 5px 10px; width: auto;">മലയാളം</button>
+        <div style="text-align: center; margin: 15px 0;">
+            <button id="lang-en" class="btn outline-btn active" style="padding: 5px 15px; width: auto; margin-right: 5px; text-transform: none;">English</button>
+            <button id="lang-ml" class="btn outline-btn" style="padding: 5px 15px; width: auto; text-transform: none;">മലയാളം</button>
         </div>
 
         <div style="margin-top: 20px;">
-            <button class="btn btn-primary" id="start-btn" data-i18n="startBtn">Play Now</button>
+            <button class="btn primary-btn" id="start-btn" data-i18n="startBtn">Play Now</button>
         </div>
 
         <div class="instructions">
@@ -218,8 +218,8 @@
             <h2 data-i18n="gameOverTitle">Game Over!</h2>
             <div class="score-display" style="font-size:3rem; margin:10px 0; color: white;"><span data-i18n="scoreText">Score: </span><span id="final-score">0</span></div>
             <p id="gameover-reason" style="color:#ff4da6; font-weight:bold; margin-bottom:20px;"></p>
-            <button class="btn btn-primary" id="restart-btn" data-i18n="playAgain" style="margin-bottom:10px;">Play Again</button>
-            <button class="btn btn-neutral" id="go-hub" data-i18n="backHub">← Back to Hub</button>
+            <button class="btn primary-btn" id="restart-btn" data-i18n="playAgain" style="margin-bottom:10px;">Play Again</button>
+            <button class="btn secondary-btn" id="go-hub" data-i18n="backHub">← Back to Hub</button>
         </div>
     </div>
 
@@ -228,10 +228,10 @@
         <div class="game-over-box" style="text-align: left;">
             <h2 style="text-align: center; margin-top: 0;" data-i18n="paused">PAUSED</h2>
             <div style="display: flex; gap: 10px; margin-bottom: 15px; justify-content: center;">
-                <button id="lang-en-pause" class="btn outline-btn active" style="padding: 5px 10px; flex: 1;">English</button>
-                <button id="lang-ml-pause" class="btn outline-btn" style="padding: 5px 10px; flex: 1;">മലയാളം</button>
+                <button id="lang-en-pause" class="btn outline-btn active" style="padding: 5px 10px; flex: 1; text-transform: none;">English</button>
+                <button id="lang-ml-pause" class="btn outline-btn" style="padding: 5px 10px; flex: 1; text-transform: none;">മലയാളം</button>
             </div>
-            <button class="btn btn-primary" style="margin-bottom:10px;" id="resume-btn" data-i18n="resume">Resume</button>
+            <button class="btn primary-btn" style="margin-bottom:10px;" id="resume-btn" data-i18n="resume">Resume</button>
             <button class="btn btn-danger btn" id="quit-btn" data-i18n="quit">Quit Game</button>
         </div>
     </div>
