@@ -1,6 +1,6 @@
-// CACHE v24 — network-first for HTML, cache-first for assets
+// CACHE v26 — network-first for HTML, cache-first for assets
 // Bumping version forces all old caches to be wiped
-const CACHE_NAME = 'tinygames-v24';
+const CACHE_NAME = 'tinygames-v26';
 const ASSETS = [
   '/css/style.css',
   '/css/hermit-crab.css',
@@ -15,6 +15,8 @@ const ASSETS = [
   '/js/hermit-crab.js',
   '/js/pallanguzhi.js',
   '/js/aadu-puli-aattam.js',
+  '/js/signal-green.js',
+  '/js/syn-ant.js',
   '/manifest.json'
 ];
 

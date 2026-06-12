@@ -78,8 +78,7 @@ const DOM = {
     restartBtn: document.getElementById('restart-btn'),
     pauseBtn: document.getElementById('pause-btn'),
     resumeBtn: document.getElementById('resume-btn'),
-    quitBtn: document.getElementById('quit-btn'),
-    goHub: document.getElementById('go-hub')
+    quitBtn: document.getElementById('quit-btn')
 };
 
 // Translations
@@ -151,9 +150,6 @@ function setLanguage(lang) {
 [DOM.langEn, DOM.langEnPause].forEach(btn => btn.addEventListener('click', () => setLanguage('en')));
 [DOM.langMl, DOM.langMlPause].forEach(btn => btn.addEventListener('click', () => setLanguage('ml')));
 
-// Set initial language
-setLanguage('en');
-
 // State
 let score = 0;
 let isPlaying = false;
@@ -162,6 +158,9 @@ let currentItem = null;
 let itemStartTime = 0;
 let currentDuration = 1800; // ms to react
 let animationFrameId = null;
+
+// Set initial language
+setLanguage('en');
 
 // --- Fullscreen & Orientation ---
 async function requestGameFullscreen() {
@@ -364,10 +363,4 @@ DOM.quitBtn.addEventListener('click', () => {
 // Start/Restart/Back to Hub
 DOM.startBtn.addEventListener('click', startGame);
 DOM.restartBtn.addEventListener('click', startGame);
-DOM.goHub.addEventListener('click', () => {
-    DOM.gameoverScreen.classList.add('hidden');
-    DOM.gameContainer.classList.add('hidden');
-    DOM.startScreen.classList.remove('hidden');
-    exitGameFullscreen();
-});
 

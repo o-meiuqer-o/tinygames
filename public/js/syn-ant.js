@@ -76,7 +76,6 @@ const DOM = {
     pauseBtn: document.getElementById('pause-btn'),
     resumeBtn: document.getElementById('resume-btn'),
     quitBtn: document.getElementById('quit-btn'),
-    startHub: document.getElementById('start-hub'),
     goHub: document.getElementById('go-hub')
 };
 
@@ -166,8 +165,6 @@ function setLanguage(lang) {
 [DOM.langEn, DOM.langEnPause].forEach(btn => btn.addEventListener('click', () => setLanguage('en')));
 [DOM.langMl, DOM.langMlPause].forEach(btn => btn.addEventListener('click', () => setLanguage('ml')));
 
-setLanguage('en');
-
 async function requestGameFullscreen() {
     try {
         if (document.documentElement.requestFullscreen) {
@@ -212,6 +209,8 @@ let ruleSwitchInterval = null;
 
 let bubbleLifespan = 2000;
 let spawnRate = 1200;
+
+setLanguage('en');
 
 const playSound = (name) => {
     if (window.Sounds && typeof window.Sounds.play === 'function') {
@@ -495,7 +494,6 @@ DOM.quitBtn.addEventListener('click', () => {
     exitGameFullscreen();
 });
 
-DOM.startHub.addEventListener('click', () => { window.location.href = 'index.html'; });
 DOM.goHub.addEventListener('click', () => {
     DOM.gameoverScreen.classList.add('hidden');
     DOM.gameContainer.classList.add('hidden');
