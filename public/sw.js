@@ -1,6 +1,6 @@
-// CACHE v35 — network-first for HTML, cache-first for assets
+// CACHE v36 — network-first for HTML, cache-first for assets
 // Bumping version forces all old caches to be wiped
-const CACHE_NAME = 'tinygames-v35';
+const CACHE_NAME = 'tinygames-v36';
 const ASSETS = [
   '/css/style.css',
   '/css/hermit-crab.css',
@@ -22,6 +22,16 @@ const ASSETS = [
   '/js/map-data-2.js',
   '/js/map-data.js',
   '/js/mapping-express.js',
+  '/icons/tictactoe.png',
+  '/icons/dotsandboxes.png',
+  '/icons/pallanguzhi.png',
+  '/icons/aadu-puli-aattam.png',
+  '/icons/kakka-parannal.png',
+  '/icons/tetris.png',
+  '/icons/hermit-crab.png',
+  '/icons/signal-green.png',
+  '/icons/syn-ant.png',
+  '/icons/mapping-express.png',
   '/manifest.json'
 ];
 
