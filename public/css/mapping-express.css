@@ -1,0 +1,476 @@
+/* Mapping Express Style Sheets */
+:root {
+  --bg-color: #08091a;
+  --card-bg: #11142e;
+  --primary-color: #00d2ff;
+  --primary-glow: rgba(0, 210, 255, 0.4);
+  --yes-color: #00e676;
+  --yes-glow: rgba(0, 230, 118, 0.4);
+  --no-color: #ff1744;
+  --no-glow: rgba(255, 23, 68, 0.4);
+  --text-color: #ffffff;
+  --text-muted: #8a9fc4;
+  --accent-color: #ffd600;
+  --map-fill: #1a2040;
+  --map-stroke: #2e3b75;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Outfit', sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.game-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+#game-container {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+#start-screen {
+  overflow-y: auto;
+  height: auto;
+}
+
+/* Header & Top Bar */
+.top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 5px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.2s;
+}
+
+.back-btn:hover {
+  color: #fff;
+}
+
+.level-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  text-shadow: 0 0 10px var(--primary-glow);
+}
+
+.stats-container {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.stat-item {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.stat-val {
+  color: var(--accent-color);
+}
+
+/* Prompt Banner */
+.prompt-area {
+  text-align: center;
+  margin: 5px 0 10px 0;
+  padding: 8px 10px;
+  background: var(--card-bg);
+  border-radius: 16px;
+  border: 1px dashed var(--map-stroke);
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.prompt-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  margin-bottom: 2px;
+}
+
+.prompt-name {
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #fff;
+  text-shadow: 0 0 15px rgba(255,255,255,0.3);
+}
+
+.prompt-name.flash {
+  animation: flashText 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes flashText {
+  0% { transform: scale(0.96); opacity: 0.8; }
+  100% { transform: scale(1.04); opacity: 1; }
+}
+
+/* Map Container */
+.map-viewport {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(circle, #10163a 0%, #08091a 100%);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+  margin: 10px 0;
+}
+
+.map-svg-container {
+  width: 90%;
+  height: 90%;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+svg.geography-map {
+  width: 100%;
+  height: 100%;
+}
+
+svg.geography-map path {
+  fill: var(--map-fill);
+  stroke: var(--map-stroke);
+  stroke-width: 2;
+  transition: fill 0.2s, stroke 0.2s;
+}
+
+svg.geography-map path.highlighted {
+  fill: var(--primary-color);
+  stroke: #fff;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 8px var(--primary-color));
+  animation: pulseHighlight 0.6s infinite alternate;
+}
+
+@keyframes pulseHighlight {
+  0% { fill: var(--primary-color); filter: drop-shadow(0 0 3px var(--primary-color)); }
+  100% { fill: #99eeff; filter: drop-shadow(0 0 12px var(--primary-color)); }
+}
+
+/* Timer Indicator */
+.timer-bar-container {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.timer-bar-fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  border-radius: 3px;
+  transition: width 0.05s linear;
+}
+
+/* Interactive Action Buttons */
+.controls-area {
+  display: flex;
+  gap: 15px;
+  padding-bottom: 15px;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 18px;
+  border-radius: 16px;
+  border: none;
+  font-size: 1.4rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  text-transform: uppercase;
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn.yes {
+  background: linear-gradient(135deg, #00c853, #00e676);
+  box-shadow: 0 4px 15px var(--yes-glow);
+}
+
+.action-btn.no {
+  background: linear-gradient(135deg, #d50000, #ff1744);
+  box-shadow: 0 4px 15px var(--no-glow);
+}
+
+/* Screen Overlay system */
+.overlay-screen {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(8, 9, 26, 0.95);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.overlay-screen.hidden {
+  display: none;
+}
+
+.game-title-large {
+  font-size: 2.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #fff 30%, var(--primary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 5px;
+  letter-spacing: -1px;
+}
+
+.game-subtitle {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-bottom: 30px;
+}
+
+/* Level Grid Selection */
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  max-height: 320px;
+  overflow-y: auto;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  background: rgba(255,255,255,0.02);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 25px;
+}
+
+.level-card {
+  aspect-ratio: 1;
+  background: var(--card-bg);
+  border: 1.5px solid var(--map-stroke);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.level-card.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.level-card:not(.locked):hover {
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.level-card .emoji {
+  font-size: 1.5rem;
+  margin-bottom: 2px;
+}
+
+.level-card .num {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.level-card .lock-icon {
+  position: absolute;
+  font-size: 0.8rem;
+  bottom: 5px;
+  color: var(--text-muted);
+}
+
+/* Play button */
+.btn-primary-large {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #00d2ff, #0066ff);
+  color: #fff;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 20px rgba(0, 102, 255, 0.4);
+}
+
+.btn-primary-large:active {
+  transform: scale(0.98);
+}
+
+/* Instructions card */
+.instructions-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 15px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-top: 15px;
+  text-align: left;
+}
+
+.instructions-card h4 {
+  margin: 0 0 5px 0;
+  color: #fff;
+}
+
+/* Flash feedback effect */
+.feedback-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.1s ease-out;
+}
+
+.feedback-overlay.correct {
+  background: radial-gradient(circle, rgba(0, 230, 118, 0.2) 0%, rgba(0,0,0,0) 80%);
+  border: 4px solid var(--yes-color);
+  opacity: 1;
+}
+
+.feedback-overlay.incorrect {
+  background: radial-gradient(circle, rgba(255, 23, 68, 0.2) 0%, rgba(0,0,0,0) 80%);
+  border: 4px solid var(--no-color);
+  opacity: 1;
+}
+
+/* End Level Screen details */
+.result-status {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--accent-color);
+  margin-bottom: 10px;
+}
+
+.result-score {
+  font-size: 3.5rem;
+  font-weight: 900;
+  margin: 15px 0;
+}
+
+.result-fact-title {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--primary-color);
+  letter-spacing: 2px;
+  margin-bottom: 5px;
+}
+
+.result-fact-body {
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 30px;
+  max-width: 400px;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* Difficulty Selector Container & Buttons */
+.difficulty-container {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: stretch;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.outline-btn {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 2px solid #2e3b75;
+  background: #11142e;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: normal;
+  word-wrap: break-word;
+  line-height: 1.25;
+  box-sizing: border-box;
+}
+
+.outline-btn:hover {
+  border-color: rgba(0, 210, 255, 0.4);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.outline-btn.active {
+  background: linear-gradient(135deg, #00d2ff, #ff007f);
+  border-color: transparent;
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 4px 15px rgba(255, 0, 127, 0.3);
+  transform: scale(1.02);
+}
+
+.outline-btn.active:hover {
+  transform: scale(1.02) translateY(-1px);
+}

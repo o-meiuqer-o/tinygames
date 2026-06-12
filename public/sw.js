@@ -1,11 +1,12 @@
-// CACHE v27 — network-first for HTML, cache-first for assets
+// CACHE v35 — network-first for HTML, cache-first for assets
 // Bumping version forces all old caches to be wiped
-const CACHE_NAME = 'tinygames-v27';
+const CACHE_NAME = 'tinygames-v35';
 const ASSETS = [
   '/css/style.css',
   '/css/hermit-crab.css',
   '/css/pallanguzhi.css',
   '/css/aadu-puli-aattam.css',
+  '/css/mapping-express.css',
   '/js/app.js',
   '/js/sounds.js',
   '/js/tictactoe.js',
@@ -17,6 +18,10 @@ const ASSETS = [
   '/js/aadu-puli-aattam.js',
   '/js/signal-green.js',
   '/js/syn-ant.js',
+  '/js/map-data-1.js',
+  '/js/map-data-2.js',
+  '/js/map-data.js',
+  '/js/mapping-express.js',
   '/manifest.json'
 ];
 

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Mapping Express | TinyGames</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/mapping-express.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#08091a">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="feedback-overlay" id="feedback-overlay"></div>
+
+  <!-- START / LEVEL SELECT SCREEN -->
+  <div id="start-screen" class="game-layout">
+    <header class="top-header">
+      <button class="back-btn" onclick="location.href='index.html'">←</button>
+      <div class="level-title">Mapping Express</div>
+      <div style="width: 30px;"></div>
+    </header>
+
+    <div style="text-align: center; margin: 20px 0;">
+      <h1 class="game-title-large">State Border Taps</h1>
+      <p class="game-subtitle">High-speed geography & shape recognition</p>
+    </div>
+
+    <!-- LANGUAGE SELECTOR -->
+    <div style="text-align: center; margin: 10px 0; display: flex; gap: 10px; justify-content: center;">
+      <button id="lang-en" class="btn outline-btn active" style="padding: 5px 15px; width: auto; text-transform:none;">English</button>
+      <button id="lang-ml" class="btn outline-btn" style="padding: 5px 15px; width: auto; text-transform:none;">മലയാളം</button>
+    </div>
+
+    <!-- DIFFICULTY MODE SELECTOR (DISORIENTATION TOGGLE) -->
+    <div style="text-align: center; margin: 15px 0;">
+      <div style="font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1.5px; margin-bottom: 8px;" data-i18n="difficultyLabel">Difficulty Mode</div>
+      <div class="difficulty-container">
+        <button id="diff-classic" class="btn outline-btn active" data-i18n="diffEasy">Easy (North Up)</button>
+        <button id="diff-disorient" class="btn outline-btn" data-i18n="diffHard">Hard (Rotating Maps)</button>
+      </div>
+    </div>
+
+    <h3 style="margin: 0 0 10px 10px; font-size: 1.1rem; font-weight: 800;" data-i18n="selectLevel">Select Level:</h3>
+    <div class="level-grid" id="level-grid">
+      <!-- Generated via JS -->
+    </div>
+
+    <div class="instructions-card">
+      <h4 data-i18n="howToPlay">How to Play:</h4>
+      <p style="margin: 5px 0;" data-i18n="rule1">1. A region on the map lights up in light blue.</p>
+      <p style="margin: 5px 0;" data-i18n="rule2">2. Decide if the flashing name at the top matches that region.</p>
+      <p style="margin: 5px 0;" data-i18n="rule3">3. Tap <strong>YES ✓</strong> or <strong>NO ✗</strong> within <strong>800 milliseconds</strong>!</p>
+      <p style="margin: 5px 0; color: var(--accent-color);" data-i18n="rule4">4. Score 15 matches to unlock the next level.</p>
+    </div>
+  </div>
+
+  <!-- MAIN GAME SCREEN -->
+  <div id="game-container" class="game-layout hidden">
+    <header class="top-header" style="align-items: flex-start;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+        <button class="back-btn" onclick="game.exitToHub()" style="margin: 0; padding: 5px;">←</button>
+        <div class="level-title" id="level">India</div>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px;">
+        <div class="stats-container" style="display: flex; align-items: center; gap: 10px;">
+          <div class="stat-item" style="font-size: 0.95rem;">Lives: <span id="lives">❤️❤️❤️</span></div>
+          <button id="pause-btn" style="background:none; border:none; color:var(--text-color); font-size:1.1rem; cursor:pointer; padding: 2px;">⏸</button>
+        </div>
+        <div class="prompt-area" style="text-align: right; margin: 0; padding: 0; background: none; border: none; min-height: auto; align-items: flex-end;">
+          <div class="prompt-label" data-i18n="regionLabel" style="font-size: 0.6rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin: 0; line-height: 1;">Region name:</div>
+          <div class="prompt-name" id="prompt-name" style="font-size: 1.25rem; font-weight: 900; color: #fff; line-height: 1.2; text-shadow: 0 0 10px rgba(255,255,255,0.25); display: inline-block;">MAHARASHTRA</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="map-viewport">
+      <div class="map-svg-container" id="map-container">
+        <!-- SVG injected dynamically -->
+      </div>
+    </div>
+
+    <div class="timer-bar-container">
+      <div class="timer-bar-fill" id="timer-fill"></div>
+    </div>
+
+    <div class="controls-area">
+      <button class="action-btn no" id="btn-no" data-i18n="btnNo">✗ NO</button>
+      <button class="action-btn yes" id="btn-yes" data-i18n="btnYes">✓ YES</button>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; color:var(--text-muted); font-size:0.9rem; padding: 0 5px;">
+      <div><span data-i18n="scoreLabel">Score</span>: <span id="score" style="color:#fff; font-weight:bold;">0</span></div>
+      <div id="desktop-kb-tip" style="display:none;" data-i18n="keyboardTip">Keyboard: A / D / Left / Right</div>
+    </div>
+  </div>
+
+  <!-- END LEVEL / GAME OVER SCREEN -->
+  <div id="end-screen" class="overlay-screen hidden">
+    <div class="result-status" id="result-status" data-i18n="levelComplete">LEVEL COMPLETED! 🎉</div>
+    <div class="result-score" id="result-score">Score: 120</div>
+    
+    <div class="result-fact-title" data-i18n="didYouKnow">Did You Know?</div>
+    <div class="result-fact-body" id="result-fact">Fact detail placeholder...</div>
+
+    <button class="btn-primary-large" id="result-action-btn" data-i18n="nextLevelBtn">Next Level</button>
+    <button class="back-btn" onclick="game.exitToHub()" style="margin-top:20px; font-size:1rem;" data-i18n="backLevelSelect">Back to Level Select</button>
+  </div>
+
+  <!-- Core sound engine -->
+  <script src="js/sounds.js"></script>
+  <!-- Map database segments -->
+  <script src="js/map-data-1.js"></script>
+  <script src="js/map-data-2.js"></script>
+  <script src="js/map-data.js"></script>
+  <!-- Main logic -->
+  <script src="js/mapping-express.js"></script>
+</body>
+</html>
