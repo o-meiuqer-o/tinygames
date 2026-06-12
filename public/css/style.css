@@ -62,7 +62,8 @@ header p {
 .game-selection {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    column-gap: 30px;
+    row-gap: 60px;
 }
 
 
@@ -75,7 +76,8 @@ header p {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px; /* Breathing space between tile and text */
+    justify-content: flex-start;
+    gap: 10px; /* Tighten space so text sits right below its tile */
 }
 
 .card-icon {
