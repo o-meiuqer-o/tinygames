@@ -117,6 +117,14 @@ const translations = {
     }
 };
 
+// State — declared first so setLanguage() has no TDZ risk
+let score = 0;
+let isPlaying = false;
+let isPaused = false;
+let currentItem = null;
+let itemStartTime = 0;
+let currentDuration = 1800; // ms to react
+let animationFrameId = null;
 let currentLang = 'en';
 
 function setLanguage(lang) {
@@ -149,15 +157,6 @@ function setLanguage(lang) {
 
 [DOM.langEn, DOM.langEnPause].forEach(btn => btn.addEventListener('click', () => setLanguage('en')));
 [DOM.langMl, DOM.langMlPause].forEach(btn => btn.addEventListener('click', () => setLanguage('ml')));
-
-// State
-let score = 0;
-let isPlaying = false;
-let isPaused = false;
-let currentItem = null;
-let itemStartTime = 0;
-let currentDuration = 1800; // ms to react
-let animationFrameId = null;
 
 // Set initial language
 setLanguage('en');
