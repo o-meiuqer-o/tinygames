@@ -13,12 +13,16 @@
         .hub-container {
             max-width: 600px;
             margin: 0 auto;
+            overflow-y: auto;
+            max-height: 100vh;
+            padding-bottom: 40px;
         }
         .instructions {
             text-align: left;
             background: #1a1a1a;
             padding: 15px;
             border-radius: 8px;
+            margin-top: 20px;
             margin-bottom: 20px;
             font-size: 0.95rem;
             line-height: 1.5;
@@ -114,6 +118,18 @@
             <button id="lang-ml" class="btn outline-btn" style="padding: 5px 10px; width: auto;">മലയാളം</button>
         </div>
 
+        <div class="room-controls" id="room-controls">
+            <button id="create-room-btn" class="btn primary-btn" data-i18n="createRoom">Create Room</button>
+            <div class="join-room-wrapper">
+                <input type="text" id="room-code-input" placeholder="Room Code" maxlength="6">
+                <button id="join-room-btn" class="btn secondary-btn" data-i18n="joinRoom">Join Room</button>
+            </div>
+            <div style="margin-top: 20px; color: #aaa; text-align: center; width: 100%;" data-i18n="orLocal">
+                Or play locally:
+            </div>
+            <button id="local-mode-btn" class="btn outline-btn" style="width: 100%; margin-top: 10px;" data-i18n="localMode">Local 2-Player Mode</button>
+        </div>
+
         <div class="instructions">
             <p id="rules-premise" data-i18n="premise">
                 Aadu Puli Aattam (Goats and Tigers) is a traditional strategic, asymmetric two-player board game from South India. One player controls 3 Tigers, and the other controls 15 Goats. Tigers try to capture Goats, while Goats try to trap all Tigers so they cannot move.
@@ -126,18 +142,6 @@
                 <li data-i18n="rule4">A Tiger captures a Goat by jumping over it along a line onto an empty spot immediately behind it.</li>
                 <li data-i18n="rule5">Tigers win if they capture 5 Goats. Goats win if they block all Tigers from making any valid moves.</li>
             </ul>
-        </div>
-
-        <div class="room-controls" id="room-controls">
-            <button id="create-room-btn" class="btn primary-btn" data-i18n="createRoom">Create Room</button>
-            <div class="join-room-wrapper">
-                <input type="text" id="room-code-input" placeholder="Room Code" maxlength="6">
-                <button id="join-room-btn" class="btn secondary-btn" data-i18n="joinRoom">Join Room</button>
-            </div>
-            <div style="margin-top: 20px; color: #aaa; text-align: center; width: 100%;" data-i18n="orLocal">
-                Or play locally:
-            </div>
-            <button id="local-mode-btn" class="btn outline-btn" style="width: 100%; margin-top: 10px;" data-i18n="localMode">Local 2-Player Mode</button>
         </div>
 
         <a href="index.html" class="back-link" data-i18n="backHub">Back to Hub</a>
