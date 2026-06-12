@@ -8,68 +8,153 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#121212">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .tabs-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        .tab-btn {
+            flex: 1;
+            max-width: 150px;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            background: #1e1e1e;
+            color: #aaa;
+            border: 2px solid #333;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .tab-btn:hover {
+            color: white;
+            border-color: #555;
+            background: #252525;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+            color: white !important;
+            border-color: transparent !important;
+            box-shadow: 0 4px 15px rgba(245, 124, 0, 0.4);
+            transform: scale(1.02);
+        }
+        .game-selection {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+        }
+        /* Hide subheaders because we now filter dynamically using tabs */
+        .hub-subheader {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <div class="container hub-container">
         <header>
             <h1>TinyGames</h1>
-            <p>Multiplayer Games</p>
             <button id="install-pwa-btn" class="install-pwa-btn hidden">Install App</button>
         </header>
 
+        <!-- CATEGORY TABS -->
+        <div class="tabs-container">
+            <button class="tab-btn active" data-tab="single-player">Single Player</button>
+            <button class="tab-btn" data-tab="multi-player">Multi Player</button>
+            <button class="tab-btn" data-tab="play-learn">Play Learn</button>
+        </div>
+
         <div class="game-selection">
-            <a href="tictactoe.html" class="game-card">
+            <!-- MULTIPLAYER GAMES -->
+            <a href="tictactoe.html" class="game-card" data-category="multi-player">
                 <div class="card-icon">✕ ◯</div>
                 <h2>Tic-Tac-Toe</h2>
                 <p>The classic game of Xs and Os.</p>
             </a>
             
-            <a href="dotsandboxes.html" class="game-card">
+            <a href="dotsandboxes.html" class="game-card" data-category="multi-player">
                 <div class="card-icon">⚄</div>
                 <h2>Dots & Boxes</h2>
                 <p>Connect the dots, claim the boxes.</p>
             </a>
 
-            <a href="pallanguzhi.html" class="game-card">
+            <a href="pallanguzhi.html" class="game-card" data-category="multi-player">
                 <div class="card-icon">🕳️</div>
                 <h2>Pallanguzhi</h2>
                 <p>Traditional pit-and-pebble game.</p>
             </a>
 
-            <a href="aadu-puli-aattam.html" class="game-card">
+            <a href="aadu-puli-aattam.html" class="game-card" data-category="multi-player">
                 <div class="card-icon">🐅</div>
                 <h2>Aadu Puli Aattam</h2>
                 <p>Traditional Goats and Tigers strategy game.</p>
             </a>
-        </div>
 
-        <header style="margin-top: 40px;">
-            <p>Single Player Games</p>
-        </header>
-
-        <div class="game-selection">
-            <a href="kakka-parannal.html" class="game-card">
+            <!-- SINGLE PLAYER GAMES -->
+            <a href="kakka-parannal.html" class="game-card" data-category="single-player">
                 <div class="card-icon">🦅</div>
                 <h2>Kakka Parannal</h2>
                 <p>Traditional reflex game (Crow Flies).</p>
             </a>
 
-            <a href="tetris.html" class="game-card">
+            <a href="tetris.html" class="game-card" data-category="single-player">
                 <div class="card-icon">🧱</div>
                 <h2>Block Drop</h2>
                 <p>Clear lines and set high scores.</p>
             </a>
 
-            <a href="hermit-crab.html" class="game-card">
+            <a href="hermit-crab.html" class="game-card" data-category="single-player">
                 <div class="card-icon">🦀</div>
                 <h2>Hermit Crab's Real Estate</h2>
                 <p>Grow, adapt, and survive.</p>
             </a>
+
+            <a href="signal-green.html" class="game-card" data-category="single-player">
+                <div class="card-icon">🟢🚥</div>
+                <h2>Signal Green</h2>
+                <p>Fast-paced traffic flow coordination simulation.</p>
+            </a>
+
+            <!-- PLAY LEARN GAMES -->
+            <a href="syn-ant.html" class="game-card" data-category="play-learn">
+                <div class="card-icon">🧠</div>
+                <h2>Syn-Ant Switchback</h2>
+                <p>Cognitive reflex word matching.</p>
+            </a>
         </div>
     </div>
 
-    </div>
-
     <script src="js/app.js"></script>
+    <script>
+        // Tab switching logic
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const gameCards = document.querySelectorAll('.game-card');
+
+        function filterGames(category) {
+            gameCards.forEach(card => {
+                if (card.getAttribute('data-category') === category) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                filterGames(btn.getAttribute('data-tab'));
+            });
+        });
+
+        // Initialize display to show Single Player games
+        filterGames('single-player');
+    </script>
 </body>
 </html>

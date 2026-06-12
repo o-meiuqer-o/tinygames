@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0d0e12">
+    <link rel="manifest" href="/manifest.json">
+    <title>Signal Green | TinyGames</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/signal-green.css">
+</head>
+<body>
+    <!-- Landscape Orientation Lock Overlay -->
+    <div id="orientation-overlay" class="overlay-screen">
+        <div class="overlay-content">
+            <div class="device-rotation-animation">
+                <div class="phone-body"></div>
+                <div class="arrow-rotate"></div>
+            </div>
+            <h2>Landscape Mode Required</h2>
+            <p>Please rotate your device or adjust your window to play Signal Green.</p>
+        </div>
+    </div>
+
+    <!-- Start/Setup Screen -->
+    <div id="setup-screen" class="overlay-screen active">
+        <div class="setup-container">
+            <div class="glow-title">
+                <h1>SIGNAL GREEN</h1>
+                <span class="subtitle">Traffic Flow Logic Simulation</span>
+            </div>
+            
+            <div class="rules-section">
+                <div class="rule-card">
+                    <span class="rule-icon">🚗</span>
+                    <div>
+                        <h3>Regular Traffic</h3>
+                        <p>Tap a moving car to <strong>STOP / HOLD</strong> it. Tap again to <strong>GO</strong>.</p>
+                    </div>
+                </div>
+                <div class="rule-card highlight-boost">
+                    <span class="rule-icon">⚡</span>
+                    <div>
+                        <h3>Speed Boost</h3>
+                        <p>Swipe/flick a vehicle forward to <strong>BOOST</strong> it across the junction.</p>
+                    </div>
+                </div>
+                <div class="rule-card alert-card">
+                    <span class="rule-icon">🚨</span>
+                    <div>
+                        <h3>Emergency Vehicles</h3>
+                        <p>Ambulances <strong>CANNOT BE STOPPED</strong>. Prioritize their path immediately!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="difficulty-selection">
+                <label>Junction Complexity</label>
+                <div class="diff-btn-group">
+                    <button class="diff-btn active" data-difficulty="standard">Standard (4-Way)</button>
+                    <button class="diff-btn" data-difficulty="rush">Rush Hour (Multi-Lane)</button>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button id="start-btn" class="glow-btn">START SIMULATION</button>
+                <a href="index.html" class="back-btn">Back to Hub</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game HUD Layer -->
+    <div id="hud-container" class="hud-layout">
+        <div class="hud-top-bar">
+            <div class="hud-box score-box">
+                <div class="hud-label">PASSED VEHICLES</div>
+                <div id="hud-score" class="hud-value font-mono">000</div>
+            </div>
+
+            <div class="hud-box multiplier-box">
+                <div class="hud-label">MULTIPLIER</div>
+                <div id="hud-mult" class="hud-value font-mono text-neon-blue">x1.0</div>
+            </div>
+
+            <div class="hud-center-alert font-mono" id="hud-alert">
+                <!-- Dynamic alerts like "🚨 AMBULANCE INCOMING" will appear here -->
+            </div>
+
+            <div class="hud-box high-score-box">
+                <div class="hud-label">PEAK FLOW</div>
+                <div id="hud-highscore" class="hud-value font-mono text-neon-yellow">000</div>
+            </div>
+
+            <div class="hud-controls">
+                <button id="btn-sound" class="hud-icon-btn" title="Toggle Sound">🔊</button>
+                <button id="btn-fullscreen" class="hud-icon-btn" title="Toggle Fullscreen">📺</button>
+                <button id="btn-pause" class="hud-icon-btn" title="Pause Game">⏸</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pause Screen -->
+    <div id="pause-screen" class="overlay-screen">
+        <div class="setup-container paused-container">
+            <h2>Simulation Paused</h2>
+            <p>Traffic coordination frozen.</p>
+            <div class="action-buttons">
+                <button id="resume-btn" class="glow-btn">RESUME</button>
+                <button id="restart-paused-btn" class="back-btn">RESTART</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over-screen" class="overlay-screen">
+        <div class="setup-container gameover-container">
+            <div class="collision-banner">💥 COLLISION DETECTED 💥</div>
+            <p class="gameover-sub">Intersection gridlocked. Operation terminated.</p>
+            
+            <div class="gameover-stats">
+                <div class="stat-row">
+                    <span>Cars Dispatched:</span>
+                    <span id="stat-score" class="font-mono">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Active Multiplier reached:</span>
+                    <span id="stat-multiplier" class="font-mono text-neon-blue">x1.0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Priority Emergencies Handled:</span>
+                    <span id="stat-emergencies" class="font-mono text-neon-red">0</span>
+                </div>
+                <div class="stat-row highlight-stat">
+                    <span>Peak Flow (Best):</span>
+                    <span id="stat-best" class="font-mono text-neon-yellow">0</span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button id="retry-btn" class="glow-btn">REINITIALIZE GRID</button>
+                <a href="index.html" class="back-btn">Hangar Menu</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HTML5 Canvas for rendering the roads, vehicles, and particles -->
+    <canvas id="game-canvas"></canvas>
+
+    <script src="js/sounds.js"></script>
+    <script src="js/signal-green.js"></script>
+</body>
+</html>
