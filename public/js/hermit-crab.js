@@ -561,10 +561,11 @@ function initGame(isLeftHanded) {
     
     joystickManager = nipplejs.create({
         zone: zone,
-        mode: 'static',
+        mode: 'semi',
         position: isLeftHanded ? { left: '20%', bottom: '25%' } : { right: '20%', bottom: '25%' },
         size: 150, // Adult-friendly size (larger than default 100)
-        color: '#2196F3'
+        color: '#2196F3',
+        catchDistance: 150
     });
     
     joystickManager.on('move', (evt, data) => {

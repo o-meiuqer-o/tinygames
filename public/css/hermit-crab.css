@@ -96,8 +96,8 @@ body, html {
 
 #game-container {
     position: relative;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     background: linear-gradient(180deg, #87CEEB 0%, #E0D6B9 30%, #C2B280 100%);
 }
 
