@@ -274,6 +274,7 @@ class MappingExpressGame {
 
     this.renderMapAndName();
     this.startQuestionTimer();
+    this.speakStateName(this.shownName);
   }
 
   renderMapAndName() {
@@ -313,6 +314,20 @@ class MappingExpressGame {
     if (svgEl) {
       svgEl.style.transform = `rotate(${rotate}deg) scale(${scale})`;
       svgEl.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+    }
+  }
+
+  speakStateName(name) {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(name);
+      if (this.currentLang === 'ml') {
+        utterance.lang = 'ml-IN';
+      } else {
+        utterance.lang = 'en-US';
+      }
+      utterance.rate = 0.95;
+      window.speechSynthesis.speak(utterance);
     }
   }
 
@@ -395,6 +410,7 @@ class MappingExpressGame {
   completeLevel(isVictory) {
     this.isGameActive = false;
     if (this.timer) cancelAnimationFrame(this.timer);
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     
     this.el.gameScreen.classList.add('hidden');
     this.el.endScreen.classList.remove('hidden');
@@ -440,11 +456,15 @@ class MappingExpressGame {
   togglePause() {
     this.isPaused = !this.isPaused;
     this.el.btnPause.textContent = this.isPaused ? '▶' : '⏸';
+    if (this.isPaused && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
   }
 
   exitToHub() {
     this.isGameActive = false;
     if (this.timer) cancelAnimationFrame(this.timer);
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     this.el.gameScreen.classList.add('hidden');
     this.el.endScreen.classList.add('hidden');
     this.el.startScreen.classList.remove('hidden');

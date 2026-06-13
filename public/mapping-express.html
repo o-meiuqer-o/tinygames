@@ -58,22 +58,21 @@
 
   <!-- MAIN GAME SCREEN -->
   <div id="game-container" class="game-layout hidden">
-    <header class="top-header" style="align-items: flex-start;">
-      <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+    <header class="top-header" style="align-items: center;">
+      <div style="display: flex; align-items: center; gap: 8px;">
         <button class="back-btn" onclick="game.exitToHub()" style="margin: 0; padding: 5px;">←</button>
         <div class="level-title" id="level">India</div>
       </div>
-      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px;">
-        <div class="stats-container" style="display: flex; align-items: center; gap: 10px;">
-          <div class="stat-item" style="font-size: 0.95rem;">Lives: <span id="lives">❤️❤️❤️</span></div>
-          <button id="pause-btn" style="background:none; border:none; color:var(--text-color); font-size:1.1rem; cursor:pointer; padding: 2px;">⏸</button>
-        </div>
-        <div class="prompt-area" style="text-align: right; margin: 0; padding: 0; background: none; border: none; min-height: auto; align-items: flex-end;">
-          <div class="prompt-label" data-i18n="regionLabel" style="font-size: 0.6rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin: 0; line-height: 1;">Region name:</div>
-          <div class="prompt-name" id="prompt-name" style="font-size: 1.25rem; font-weight: 900; color: #fff; line-height: 1.2; text-shadow: 0 0 10px rgba(255,255,255,0.25); display: inline-block;">MAHARASHTRA</div>
-        </div>
+      <div class="stats-container" style="display: flex; align-items: center; gap: 10px;">
+        <div class="stat-item" style="font-size: 0.95rem;">Lives: <span id="lives">❤️❤️❤️</span></div>
+        <button id="pause-btn" style="background:none; border:none; color:var(--text-color); font-size:1.1rem; cursor:pointer; padding: 2px;">⏸</button>
       </div>
     </header>
+
+    <div class="prompt-area" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 5px auto 10px auto; padding: 6px 16px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); width: fit-content; min-height: auto;">
+      <div class="prompt-label" data-i18n="regionLabel" style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; line-height: 1; margin-bottom: 2px;">Region name:</div>
+      <div class="prompt-name" id="prompt-name" style="font-size: 1.4rem; font-weight: 900; color: #fff; line-height: 1.2; text-shadow: 0 0 10px rgba(255,255,255,0.25);">MAHARASHTRA</div>
+    </div>
 
     <div class="map-viewport">
       <div class="map-svg-container" id="map-container">
