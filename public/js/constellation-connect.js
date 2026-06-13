@@ -297,6 +297,12 @@ function startGame() {
     bgm.play().catch(e => console.log("Audio play prevented:", e));
   }
   
+  // Request fullscreen
+  const el = document.documentElement;
+  if (el.requestFullscreen) el.requestFullscreen();
+  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
+  
   shuffledConstellations = [...CONSTELLATIONS].sort(() => Math.random() - 0.5);
   
   document.getElementById('game-container').classList.remove('hidden');
@@ -370,6 +376,9 @@ function quitToLounge() {
     bgm.pause();
     bgm.currentTime = 0;
   }
+  // Exit fullscreen
+  if (document.exitFullscreen && document.fullscreenElement) document.exitFullscreen();
+  else if (document.webkitExitFullscreen && document.webkitFullscreenElement) document.webkitExitFullscreen();
   document.getElementById('pause-overlay').classList.add('hidden');
   document.getElementById('gameOverModal').classList.add('hidden');
   document.getElementById('levelCompleteModal').classList.add('hidden');
