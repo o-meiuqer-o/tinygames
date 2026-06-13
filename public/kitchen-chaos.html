@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Kitchen Chaos: The Heat Balance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=43">
+  <link rel="stylesheet" href="css/kitchen-chaos.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <!-- Rotate Device Overlay -->
+  <div id="rotate-overlay" class="overlay hidden-landscape">
+    <div style="text-align: center;">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 20px;">
+        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+        <polyline points="16 6 12 2 8 6" />
+        <line x1="12" y1="2" x2="12" y2="15" />
+      </svg>
+      <h2>Please Rotate Your Device</h2>
+      <p>This game requires landscape mode.</p>
+    </div>
+  </div>
+
+  <!-- 1. START SCREEN / LOUNGE -->
+  <div id="start-screen" class="container hub-container">
+    <header>
+      <h1 data-i18n="kcTitle">Kitchen Chaos</h1>
+      <p data-i18n="kcSubtitle">The Heat Balance</p>
+    </header>
+    <!-- Language selector (EN/ML) -->
+    <div style="text-align: center; margin: 10px 0;">
+      <button id="lang-en" class="btn outline-btn active">English</button>
+      <button id="lang-ml" class="btn outline-btn">മലയാളം</button>
+    </div>
+    
+    <!-- Difficulty Mode Selector -->
+    <div style="text-align: center; margin: 15px 0;">
+      <div style="font-size: 0.85rem; text-transform: uppercase; color: #888; letter-spacing: 1.5px; margin-bottom: 8px;" data-i18n="difficultyLabel">Difficulty Mode</div>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button id="diff-easy" class="btn outline-btn active" data-i18n="diffEasy">Easy (Kids)</button>
+        <button id="diff-hard" class="btn outline-btn" data-i18n="diffHard">Hard (Chef)</button>
+      </div>
+    </div>
+    <!-- Game instructions -->
+    <div class="instructions">
+      <h3 data-i18n="howToPlay">How to Play</h3>
+      <ul>
+        <li data-i18n="kcInst1">Manage 4 stovetops simultaneously.</li>
+        <li data-i18n="kcInst2">Tap a pot to instantly lower its heat by a small amount.</li>
+        <li data-i18n="kcInst3">Drag/Stir across a pot to rapidly cool it down.</li>
+        <li data-i18n="kcInst4">Beware of random events that can ruin your cooking!</li>
+        <li data-i18n="kcInst5">If any pot hits 100%, it's GAME OVER!</li>
+      </ul>
+    </div>
+    <button id="play-btn" class="btn primary-btn" data-i18n="play">Play Now</button>
+    <a href="index.html" class="back-link" data-i18n="backHub">Back to Hub</a>
+  </div>
+
+  <!-- 2. GAME CONTAINER -->
+  <div id="game-container" class="app-container hidden" style="display: flex; flex-direction: column; width: 100%; min-height: 100vh;">
+    
+    <!-- Top Bar -->
+    <div id="top-bar" style="height: 60px; display: flex; align-items: center; justify-content: space-between; background: #1a1a1a; border-bottom: 2px solid #333; padding: 0 15px; box-sizing: border-box; flex-shrink: 0; width: 100%;">
+      <a href="index.html" class="back-btn" style="margin: 0; padding: 5px 10px;">←</a>
+      <h1 data-i18n="kcTitleSmall" style="font-size: 1.2rem; margin: 0; font-weight: 800;">Kitchen Chaos</h1>
+      <div id="level-display" style="font-size: 1.1rem; background: rgba(255, 0, 127, 0.15); border: 1px solid var(--secondary); color: var(--secondary); padding: 2px 8px; border-radius: 8px;">Lvl 1</div>
+      <div id="score-display" style="font-size: 1.1rem; color: #fff;">$$ 0</div>
+      <div id="strikes-display" style="font-size: 1.2rem; margin: 0; display: flex; align-items: center;">❤️❤️❤️</div>
+      <button id="pause-top-btn" class="back-btn" style="margin: 0; border:none; background:transparent; font-size:1.5rem; padding: 0 10px;">⏸</button>
+    </div>
+
+    <!-- Game Area (Main) -->
+    <div id="kitchen-area" style="flex: 1; padding: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; width: 100%; box-sizing: border-box;">
+      <!-- Grid of 4 pots -->
+      <div class="stovetop-grid">
+        <div class="stovetop" data-index="0">
+          <div class="burner"></div>
+          <div class="pot">
+            <div class="heat-fill" id="heat-0"></div>
+            <div class="pot-content" id="content-0">Milk</div>
+            <div class="heat-percent" id="percent-0">0&deg;</div>
+            <div class="progress-bar-container"><div class="progress-bar-fill" id="progress-0"></div></div>
+          </div>
+        </div>
+        <div class="stovetop" data-index="1">
+          <div class="burner"></div>
+          <div class="pot">
+            <div class="heat-fill" id="heat-1"></div>
+            <div class="pot-content" id="content-1">Meat</div>
+            <div class="heat-percent" id="percent-1">0&deg;</div>
+            <div class="progress-bar-container"><div class="progress-bar-fill" id="progress-1"></div></div>
+          </div>
+        </div>
+        <div class="stovetop" data-index="2">
+          <div class="burner"></div>
+          <div class="pot">
+            <div class="heat-fill" id="heat-2"></div>
+            <div class="pot-content" id="content-2">Sauce</div>
+            <div class="heat-percent" id="percent-2">0&deg;</div>
+            <div class="progress-bar-container"><div class="progress-bar-fill" id="progress-2"></div></div>
+          </div>
+        </div>
+        <div class="stovetop" data-index="3">
+          <div class="burner"></div>
+          <div class="pot">
+            <div class="heat-fill" id="heat-3"></div>
+            <div class="pot-content" id="content-3">Soup</div>
+            <div class="heat-percent" id="percent-3">0&deg;</div>
+            <div class="progress-bar-container"><div class="progress-bar-fill" id="progress-3"></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Juice overlay for events (e.g. blackout) -->
+      <div id="event-overlay" class="hidden">
+        <h2 id="event-text">FUSE BLOWN!</h2>
+      </div>
+    </div>
+
+    <!-- Pause overlay -->
+    <div id="pause-overlay" class="hidden overlay">
+      <div class="game-over-box">
+        <h2 data-i18n="paused">Paused</h2>
+        <div style="margin: 20px 0;">
+          <button id="resume-btn" class="btn primary-btn" data-i18n="resume">Resume</button>
+          <button id="quit-btn" class="btn outline-btn" style="margin-top:10px" data-i18n="quitToLounge">Quit to Lounge</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Game over modal -->
+    <div class="overlay hidden" id="gameOverModal">
+      <div class="game-over-box">
+        <h2 data-i18n="gameOver">Game Over!</h2>
+        <p id="game-over-reason">The Milk boiled over!</p>
+        <h3 style="color: var(--primary);">Score: <span id="final-score">0</span></h3>
+        <div style="margin-top: 20px;">
+          <button id="restartBtn" class="btn primary-btn" data-i18n="playAgain">Play Again</button>
+          <button id="quitEndBtn" class="btn outline-btn" style="margin-top:10px" data-i18n="quitToLounge">Quit to Lounge</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/sounds.js"></script>
+  <script src="js/kitchen-chaos.js"></script>
+</body>
+</html>

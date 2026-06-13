@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Constellation Connect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=43">
+  <link rel="stylesheet" href="css/constellation-connect.css?v=4">
+  <link rel="manifest" href="manifest.json?v=1">
+</head>
+<body>
+  <!-- 1. START SCREEN / LOUNGE -->
+  <div id="start-screen" class="container hub-container">
+    <header>
+      <h1 data-i18n="title">Constellation Connect</h1>
+      <p data-i18n="subtitle">Find the hidden stars in the night sky!</p>
+    </header>
+    <!-- Language selector (EN/ML) -->
+    <div class="difficulty-container" style="margin-bottom: 20px;">
+      <button id="lang-en" class="btn outline-btn active">English</button>
+      <button id="lang-ml" class="btn outline-btn">മലയാളം</button>
+    </div>
+    <div class="instructions">
+      <p data-i18n="inst1">A reference card will show you a constellation.</p>
+      <p data-i18n="inst2">Scan the moving starfield to find it.</p>
+      <p data-i18n="inst3">Trace the constellation with your finger before the stars drift apart!</p>
+    </div>
+    
+    <!-- DIFFICULTY MODE SELECTOR -->
+    <div style="text-align: center; margin: 15px 0;">
+      <div style="font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1.5px; margin-bottom: 8px;" data-i18n="difficultyLabel">Difficulty Mode</div>
+      <div class="difficulty-container">
+        <button id="diff-easy" class="btn outline-btn active" data-i18n="diffEasy">Easy (Hints)</button>
+        <button id="diff-hard" class="btn outline-btn" data-i18n="diffHard">Hard (No Hints)</button>
+      </div>
+    </div>
+
+    <button id="play-btn" class="btn primary-btn" data-i18n="play">Play Now</button>
+    <a href="index.html" class="back-link" data-i18n="backHub">Back to Hub</a>
+  </div>
+
+  <!-- 2. GAME CONTAINER -->
+  <div id="game-container" class="app-container hidden">
+    <header class="compact-header" style="height: 12vh; min-height: 50px; max-height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 10px; width: 100%; box-sizing: border-box;">
+      <a href="index.html" class="back-btn" style="flex-shrink: 0; padding: 5px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+      </a>
+      <h1 data-i18n="title" style="font-size: 1.2rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; text-align: center; padding: 0 10px; line-height: 1;">Constellation</h1>
+      <div class="score-timer-nav" style="font-size:0.9rem; flex-shrink: 0; display: flex; gap: 10px; align-items: center;">
+        <span id="score-display">Score: 0</span>
+        <span id="strikes-display">Strikes: 0/3</span>
+        <button id="pause-top-btn" class="btn outline-btn" style="padding: 2px 8px; min-width: auto;">⏸</button>
+      </div>
+    </header>
+    
+    <!-- Game Area -->
+    <div class="game-area">
+      <!-- Starfield Canvas -->
+      <canvas id="star-canvas"></canvas>
+      
+      <!-- Reference Card UI -->
+      <div id="reference-card">
+        <h3 id="constellation-name">Name</h3>
+        <canvas id="reference-canvas" width="120" height="120"></canvas>
+      </div>
+
+      <!-- Messages overlay (e.g. "Too slow!", "Found it!") -->
+      <div id="game-message" class="hidden"></div>
+    </div>
+
+    <!-- Pause overlay -->
+    <div id="pause-overlay" class="hidden overlay">
+      <div class="modal">
+        <h2 data-i18n="paused">Paused</h2>
+        <button id="resume-btn" class="btn primary-btn" data-i18n="resume">Resume</button>
+        <button id="quit-btn" class="btn outline-btn" data-i18n="quit">Quit</button>
+      </div>
+    </div>
+
+    <!-- Level Complete modal -->
+    <div class="game-over-modal hidden overlay" id="levelCompleteModal">
+      <div class="modal">
+        <h2 id="lc-title" style="color:var(--primary); margin-bottom:5px;">Constellation Found!</h2>
+        <h3 id="lc-name" style="margin-top:0;">Name</h3>
+        <canvas id="lc-canvas" width="150" height="150" style="background:#000; border-radius:10px; margin: 10px auto; display:block;"></canvas>
+        <p id="lc-info" style="font-size:0.9rem; margin-bottom:10px;">Fun fact here.</p>
+        <div id="lc-stars" style="font-size: 2rem; color: gold; margin-bottom: 15px;">⭐⭐⭐</div>
+        <button id="nextLevelBtn" class="btn primary-btn" data-i18n="continue">Continue</button>
+      </div>
+    </div>
+
+    <!-- Game over modal -->
+    <div class="game-over-modal hidden overlay" id="gameOverModal">
+      <div class="modal">
+        <h2 data-i18n="gameOver">Game Over</h2>
+        <p id="final-score">Final Score: 0</p>
+        <button id="restartBtn" class="btn primary-btn" data-i18n="playAgain">Play Again</button>
+        <button id="menuBtn" class="btn outline-btn" data-i18n="mainMenu">Main Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <audio id="bg-music" src="assets/audio/cosmic_music.wav" loop></audio>
+  <audio id="sfx-hover" src="assets/audio/sfx_hover.wav"></audio>
+  <audio id="sfx-connect" src="assets/audio/sfx_connect.wav"></audio>
+  <audio id="sfx-error" src="assets/audio/sfx_error.wav"></audio>
+  <audio id="sfx-complete" src="assets/audio/sfx_complete.wav"></audio>
+  <script src="js/sounds.js"></script>
+  <script src="js/constellation-data.js"></script>
+  <script src="js/constellation-connect.js?v=4"></script>
+</body>
+</html>

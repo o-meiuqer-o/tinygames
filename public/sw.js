@@ -1,14 +1,18 @@
-// CACHE v44 — network-first for HTML, cache-first for assets
+// CACHE v51 — network-first for HTML, cache-first for assets
 // Bumping version forces all old caches to be wiped
-const CACHE_NAME = 'tinygames-v44';
+const CACHE_NAME = 'tinygames-v51';
 const ASSETS = [
   '/css/style.css?v=43',
   '/css/hermit-crab.css',
   '/css/pallanguzhi.css',
   '/css/aadu-puli-aattam.css',
   '/css/mapping-express.css',
+  '/css/kitchen-chaos.css',
+  '/css/constellation-connect.css',
   '/js/app.js',
   '/js/sounds.js',
+  '/js/constellation-connect.js',
+  '/js/constellation-data.js',
   '/js/tictactoe.js',
   '/js/dotsandboxes.js',
   '/js/tetris.js',
@@ -22,6 +26,7 @@ const ASSETS = [
   '/js/map-data-2.js',
   '/js/map-data.js',
   '/js/mapping-express.js',
+  '/js/kitchen-chaos.js',
   '/icons/tictactoe.png',
   '/icons/dotsandboxes.png',
   '/icons/pallanguzhi.png',
