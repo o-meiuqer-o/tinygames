@@ -10,7 +10,7 @@ const translations = {
     howToPlay: "How to Play:",
     rule1: "1. A region on the map lights up in light blue.",
     rule2: "2. Decide if the flashing name at the top matches that region.",
-    rule3: "3. Tap YES ✓ or NO ✗ within 800 milliseconds!",
+    rule3: "3. Tap YES ✓ or NO ✗ within 2.4 seconds!",
     rule4: "4. Score 15 matches to unlock the next level.",
     regionLabel: "Region name:",
     btnYes: "✓ YES",
@@ -35,7 +35,7 @@ const translations = {
     howToPlay: "എങ്ങനെ കളിക്കാം:",
     rule1: "1. ഭൂപടത്തിലെ ഒരു പ്രദേശം ഇളം നീല നിറത്തിൽ തിളങ്ങും.",
     rule2: "2. മുകളിൽ കാണിക്കുന്ന പേര് ഈ തിളങ്ങുന്ന പ്രദേശത്തിന്റേതാണോ എന്ന് തീരുമാനിക്കുക.",
-    rule3: "3. 800 മില്ലിസെക്കൻഡിനുള്ളിൽ അതെ (YES) അല്ലെങ്കിൽ അല്ല (NO) ടാപ്പ് ചെയ്യുക!",
+    rule3: "3. 2.4 സെക്കൻഡിനുള്ളിൽ അതെ (YES) അല്ലെങ്കിൽ അല്ല (NO) ടാപ്പ് ചെയ്യുക!",
     rule4: "4. അടുത്ത ലെവൽ അൺലോക്ക് ചെയ്യാൻ 15 പോയിന്റ് നേടുക.",
     regionLabel: "പ്രദേശത്തിന്റെ പേര്:",
     btnYes: "✓ അതെ",
@@ -63,8 +63,8 @@ class MappingExpressGame {
     this.questionsNeeded = 15;
     
     this.timer = null;
-    this.timeLeft = 1100; 
-    this.timerDuration = 1100;
+    this.timeLeft = 2400; 
+    this.timerDuration = 2400;
     this.lastFrameTime = 0;
 
     this.currentRegion = null;
@@ -250,14 +250,8 @@ class MappingExpressGame {
 
     const map = MAP_DATA[this.currentLevelIndex];
     
-    // Set timer duration according to difficulty mode
-    if (this.disorientMode) {
-      // Hard Mode starts at 1300ms, decreases down to 800ms (reaches 800ms at score 100)
-      this.timerDuration = Math.max(800, 1300 - (this.score * 5));
-    } else {
-      // Easy Mode stays fixed at 1100ms
-      this.timerDuration = 1100;
-    }
+    // Set timer duration to a constant 2400ms for both Easy & Hard modes
+    this.timerDuration = 2400;
     
     // Choose a random region
     const randomIdx = Math.floor(Math.random() * map.regions.length);
