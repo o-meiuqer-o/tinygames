@@ -253,6 +253,7 @@ class MappingExpressGame {
 
     // Set timer duration to a constant 3000ms for both Easy & Hard modes
     this.timerDuration = 3000;
+    const map = MAP_DATA[this.currentLevelIndex];
     
     // Choose a region from the pool, avoiding repeating more than twice
     if (!this.regionPool) {
