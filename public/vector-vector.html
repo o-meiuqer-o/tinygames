@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vector Vector: Force Direction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/game-common.css">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #050505;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            overflow: hidden;
+            touch-action: none;
+            display: block; /* Override style.css flex */
+        }
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            font-size: 24px;
+            text-shadow: 0 0 10px rgba(0,255,255,0.8);
+            font-family: 'Orbitron', sans-serif;
+        }
+        .lives {
+            color: #ff3366;
+            text-shadow: 0 0 10px #ff3366;
+        }
+        .score {
+            color: #00ffff;
+        }
+        .prompt-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .prompt-text {
+            font-size: 48px;
+            font-weight: 900;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: transform 0.2s, opacity 0.2s;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            transform: scale(0.5);
+        }
+        .prompt-text.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .prompt-resultant {
+            color: #00ffcc;
+            text-shadow: 0 0 20px #00ffcc;
+        }
+        .prompt-opposing {
+            color: #ff3366;
+            text-shadow: 0 0 20px #ff3366;
+        }
+        .timer-bar-container {
+            width: 80%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
+            border-radius: 5px;
+            overflow: hidden;
+            opacity: 0;
+        }
+        .timer-bar {
+            width: 100%;
+            height: 100%;
+            background: #00ffcc;
+            transform-origin: left;
+        }
+        /* Hidden class comes from style.css but we ensure it's here too just in case */
+        .hidden {
+            display: none !important;
+        }
+        .feedback {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 72px;
+            font-weight: 900;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .feedback.right {
+            color: #00ff00;
+            text-shadow: 0 0 30px #00ff00;
+            animation: popFeedback 1s forwards;
+        }
+        .feedback.wrong {
+            color: #ff0000;
+            text-shadow: 0 0 30px #ff0000;
+            animation: popFeedback 1s forwards;
+        }
+        @keyframes popFeedback {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+        
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.location.href='index.html'" style="position: absolute; top: 20px; left: 20px; z-index: 1001; border: none; background: transparent; padding: 10px; cursor: pointer; font-size: 1.5rem; text-shadow: 0 0 10px rgba(0,0,0,0.8);">←</button>
+    
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="ui-layer">
+        <div class="header">
+            <div style="width: 50px;"></div> <!-- Spacer for back btn -->
+            <div class="score"><span data-i18n="score">SCORE</span>: <span id="scoreVal">0</span></div>
+            <div class="lives"><span data-i18n="lives">LIVES</span>: <span id="livesVal">❤❤❤</span></div>
+        </div>
+        <div class="prompt-container">
+            <div id="prompt" class="prompt-text" data-i18n="resultant">RESULTANT DIRECTION!</div>
+            <div class="timer-bar-container" id="timer-container">
+                <div class="timer-bar" id="timer-bar"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="feedback" class="feedback"></div>
+
+    <div id="menu" class="overlay">
+        <div class="game-over-box" style="max-width: 500px;">
+            <!-- LANGUAGE SELECTOR -->
+            <div style="text-align: center; margin-bottom: 20px; display: flex; gap: 10px; justify-content: center;">
+                <button id="lang-en" class="btn outline-btn active" style="padding: 5px 15px; width: auto; text-transform:none;">English</button>
+                <button id="lang-ml" class="btn outline-btn" style="padding: 5px 15px; width: auto; text-transform:none;">മലയാളം</button>
+            </div>
+            <h1 class="game-title-large" style="margin-bottom: 20px; font-family: 'Outfit', sans-serif;">VECTOR VECTOR</h1>
+            <p data-i18n="desc1" style="margin-bottom: 20px; color: #ccc; font-family: 'Outfit', sans-serif; font-size: 1.2rem;">Two robots push the central block. Swipe in the correct direction based on the prompt before time runs out!</p>
+            <p data-i18n="desc2" style="margin-bottom: 30px; color: #ccc; font-family: 'Outfit', sans-serif; font-size: 1.1rem;">Magnitude is shown by robot size & arrow length.</p>
+            <button class="btn btn-primary" id="startBtn" data-i18n="start" style="font-family: 'Outfit', sans-serif;">START GAME</button>
+        </div>
+    </div>
+
+    <div id="game-over" class="overlay hidden">
+        <div class="game-over-box" style="max-width: 400px;">
+            <h1 class="game-title-large" data-i18n="gameover" style="margin-bottom: 20px; font-family: 'Outfit', sans-serif; color: #ff3366; text-shadow: 0 0 20px #ff3366;">GAME OVER</h1>
+            <p style="font-size: 1.5rem; margin-bottom: 30px;"><span data-i18n="finalscore">Final Score</span>: <span id="finalScore" style="color: #00ffff; font-weight: bold;">0</span></p>
+            <button class="btn btn-primary" id="restartBtn" data-i18n="playagain">PLAY AGAIN</button>
+            <button class="btn btn-neutral" onclick="window.location.href='index.html'" style="margin-top: 15px;">Back to Hub</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const ui = {
+            menu: document.getElementById('menu'),
+            gameOver: document.getElementById('game-over'),
+            startBtn: document.getElementById('startBtn'),
+            restartBtn: document.getElementById('restartBtn'),
+            score: document.getElementById('scoreVal'),
+            lives: document.getElementById('livesVal'),
+            finalScore: document.getElementById('finalScore'),
+            prompt: document.getElementById('prompt'),
+            timerContainer: document.getElementById('timer-container'),
+            timerBar: document.getElementById('timer-bar'),
+            feedback: document.getElementById('feedback')
+        };
+
+        // Audio Elements
+        const bgm = new Audio('sounds/vector-bgm.wav');
+        bgm.loop = true;
+        bgm.volume = 0.3;
+
+        const sfxCorrect = new Audio('sounds/vector-correct.wav');
+        const sfxWrong = new Audio('sounds/vector-wrong.wav');
+        const sfxPrompt = new Audio('sounds/vector-prompt.wav');
+
+        let width, height, cx, cy, scale;
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            cx = width / 2;
+            cy = height / 2;
+            scale = Math.min(width, height) / 600;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Game State
+        let state = 'MENU'; // MENU, PLAYING, ANIMATING, GAMEOVER
+        let score = 0;
+        let lives = 3;
+        let mode = 'RESULTANT'; // or OPPOSING
+        
+        let block = { x: 0, y: 0, size: 60 };
+        let robots = [];
+        let resultant = { x: 0, y: 0, angle: 0 };
+        
+        let roundStartTime = 0;
+        let timeLimit = 4000; // 4 seconds
+        let animationStartTime = 0;
+        let isCorrect = false;
+        let puzzleRound = 1;
+
+        // Input handling
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        window.addEventListener('touchstart', e => {
+            if (state !== 'PLAYING') return;
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, {passive: false});
+
+        window.addEventListener('touchend', e => {
+            if (state !== 'PLAYING') return;
+            let touchEndX = e.changedTouches[0].screenX;
+            let touchEndY = e.changedTouches[0].screenY;
+            handleSwipe(touchEndX - touchStartX, touchEndY - touchStartY);
+        });
+
+        let isMouseDown = false;
+        window.addEventListener('mousedown', e => {
+            if (state !== 'PLAYING') return;
+            isMouseDown = true;
+            touchStartX = e.clientX;
+            touchStartY = e.clientY;
+        });
+
+        window.addEventListener('mouseup', e => {
+            if (state !== 'PLAYING' || !isMouseDown) return;
+            isMouseDown = false;
+            handleSwipe(e.clientX - touchStartX, e.clientY - touchStartY);
+        });
+
+        function handleSwipe(dx, dy) {
+            if (Math.abs(dx) < 30 && Math.abs(dy) < 30) return; // Too short
+
+            let swipeAngle = Math.atan2(dy, dx);
+            let targetAngle = mode === 'RESULTANT' ? resultant.angle : resultant.angle + Math.PI;
+            
+            // Normalize angles
+            targetAngle = (targetAngle + Math.PI * 2) % (Math.PI * 2);
+            swipeAngle = (swipeAngle + Math.PI * 2) % (Math.PI * 2);
+
+            let diff = Math.abs(targetAngle - swipeAngle);
+            if (diff > Math.PI) diff = Math.PI * 2 - diff;
+
+            // Tolerance ~45 degrees (PI/4)
+            isCorrect = diff < Math.PI / 4;
+            
+            triggerAnimation();
+        }
+
+        function triggerAnimation() {
+            state = 'ANIMATING';
+            animationStartTime = performance.now();
+            ui.timerContainer.style.opacity = 0;
+            ui.prompt.classList.remove('show');
+        }
+
+        function spawnRound() {
+            block.x = cx;
+            block.y = cy;
+            
+            // Generate 2 random forces
+            robots = [];
+            let forceVectors = [];
+            let sharedMag = Math.floor(Math.random() * 3) + 1;
+            
+            for (let i = 0; i < 2; i++) {
+                // Angle roughly in 8 directions to make it clearer
+                let angleObj = (Math.floor(Math.random() * 8) * Math.PI / 4);
+                
+                // Magnitudes: Equal for first 3 rounds, varying from round 4 onwards
+                let mag = (puzzleRound < 4) ? sharedMag : (Math.floor(Math.random() * 3) + 1);
+                
+                // Ensure the two robots aren't at the exact same angle or opposite
+                if (i === 1) {
+                    let prevAngle = robots[0].angle;
+                    while (Math.abs(angleObj - prevAngle) < 0.1 || Math.abs(Math.abs(angleObj - prevAngle) - Math.PI) < 0.1) {
+                        angleObj = (Math.floor(Math.random() * 8) * Math.PI / 4);
+                    }
+                }
+
+                // Robot starting distance
+                let dist = (200 + mag * 20) * scale;
+
+                robots.push({
+                    angle: angleObj,
+                    mag: mag,
+                    startX: cx - Math.cos(angleObj) * dist,
+                    startY: cy - Math.sin(angleObj) * dist,
+                    x: cx - Math.cos(angleObj) * dist,
+                    y: cy - Math.sin(angleObj) * dist,
+                    color: i === 0 ? '#ff3366' : '#33ccff'
+                });
+
+                forceVectors.push({
+                    x: Math.cos(angleObj) * mag,
+                    y: Math.sin(angleObj) * mag
+                });
+            }
+
+            // Calculate resultant
+            let resX = forceVectors[0].x + forceVectors[1].x;
+            let resY = forceVectors[0].y + forceVectors[1].y;
+            resultant = {
+                x: resX,
+                y: resY,
+                angle: Math.atan2(resY, resX),
+                mag: Math.sqrt(resX*resX + resY*resY)
+            };
+
+            mode = Math.random() > 0.5 ? 'RESULTANT' : 'OPPOSING';
+            
+            ui.prompt.textContent = mode === 'RESULTANT' ? translations[currentLang].resultant : translations[currentLang].opposing;
+            ui.prompt.className = 'prompt-text ' + (mode === 'RESULTANT' ? 'prompt-resultant' : 'prompt-opposing');
+            
+            sfxPrompt.currentTime = 0;
+            sfxPrompt.play().catch(e=>console.log(e));
+
+            // Show prompt
+            requestAnimationFrame(() => {
+                ui.prompt.classList.add('show');
+                ui.timerContainer.style.opacity = 1;
+            });
+
+            roundStartTime = performance.now();
+            state = 'PLAYING';
+        }
+
+        function drawGrid() {
+            ctx.strokeStyle = 'rgba(0, 255, 255, 0.05)';
+            ctx.lineWidth = 1;
+            const size = 50;
+            for (let x = 0; x < width; x += size) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
+            }
+            for (let y = 0; y < height; y += size) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+            }
+        }
+
+        function drawBlock(x, y) {
+            ctx.save();
+            ctx.translate(x, y);
+            let s = block.size * scale;
+            // Draw metallic block
+            const grad = ctx.createLinearGradient(-s/2, -s/2, s/2, s/2);
+            grad.addColorStop(0, '#aaa');
+            grad.addColorStop(0.5, '#555');
+            grad.addColorStop(1, '#222');
+            
+            ctx.fillStyle = grad;
+            ctx.strokeStyle = '#00ffcc';
+            ctx.lineWidth = 2 * scale;
+            
+            ctx.beginPath();
+            ctx.roundRect(-s/2, -s/2, s, s, 10 * scale);
+            ctx.fill();
+            ctx.stroke();
+
+            // Inner details
+            ctx.strokeStyle = '#333';
+            ctx.beginPath();
+            ctx.roundRect(-s/2 + 5*scale, -s/2 + 5*scale, s - 10*scale, s - 10*scale, 5*scale);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function drawRobot(r) {
+            ctx.save();
+            ctx.translate(r.x, r.y);
+            ctx.rotate(r.angle);
+
+            // Size based on magnitude
+            let rSize = (30 + r.mag * 10) * scale;
+
+            // Vehicle body
+            ctx.fillStyle = r.color;
+            ctx.shadowColor = r.color;
+            ctx.shadowBlur = 15 * scale;
+            ctx.beginPath();
+            // Pointy front
+            ctx.moveTo(rSize/2, 0);
+            ctx.lineTo(-rSize/2, rSize/2);
+            ctx.lineTo(-rSize/2, -rSize/2);
+            ctx.closePath();
+            ctx.fill();
+
+            // Arrow
+            if (state === 'PLAYING') {
+                ctx.strokeStyle = r.color;
+                ctx.lineWidth = 4 * scale;
+                ctx.shadowBlur = 10 * scale;
+                let arrowLen = (40 + r.mag * 25) * scale;
+                
+                ctx.beginPath();
+                ctx.moveTo(rSize/2, 0);
+                ctx.lineTo(rSize/2 + arrowLen, 0);
+                // Arrowhead
+                ctx.lineTo(rSize/2 + arrowLen - 15*scale, -15*scale);
+                ctx.moveTo(rSize/2 + arrowLen, 0);
+                ctx.lineTo(rSize/2 + arrowLen - 15*scale, 15*scale);
+                ctx.stroke();
+            }
+            
+            ctx.restore();
+        }
+
+        function loop(timestamp) {
+            ctx.clearRect(0, 0, width, height);
+            drawGrid();
+
+            if (state === 'ANIMATING' || state === 'WAITING') {
+                ctx.save();
+                const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(width, height) / 1.5);
+                grad.addColorStop(0, isCorrect ? 'rgba(0, 255, 100, 0.3)' : 'rgba(255, 50, 50, 0.3)');
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, width, height);
+                ctx.restore();
+            }
+
+            if (state === 'PLAYING') {
+                let elapsed = timestamp - roundStartTime;
+                let remain = Math.max(0, timeLimit - elapsed);
+                ui.timerBar.style.transform = `scaleX(${remain / timeLimit})`;
+
+                if (remain === 0) {
+                    isCorrect = false;
+                    triggerAnimation();
+                }
+
+                robots.forEach(drawRobot);
+                drawBlock(block.x, block.y);
+
+            } else if (state === 'ANIMATING') {
+                let elapsed = timestamp - animationStartTime;
+                let animDuration = 1000;
+                let progress = Math.min(1, elapsed / animDuration);
+                
+                // Ease out
+                let ease = 1 - Math.pow(1 - progress, 3);
+
+                // Robots move to hit block
+                // Let's say they take the first 0.3s to hit the block
+                let hitProgress = Math.min(1, elapsed / 300);
+                
+                robots.forEach(r => {
+                    if (hitProgress < 1) {
+                        let targetX = cx - Math.cos(r.angle) * (block.size/2 * scale + 20 * scale);
+                        let targetY = cy - Math.sin(r.angle) * (block.size/2 * scale + 20 * scale);
+                        r.x = r.startX + (targetX - r.startX) * hitProgress;
+                        r.y = r.startY + (targetY - r.startY) * hitProgress;
+                    } else {
+                        // Push block
+                        let pushProgress = Math.min(1, (elapsed - 300) / 700);
+                        let pushEase = 1 - Math.pow(1 - pushProgress, 3);
+                        
+                        // Block moves in resultant direction
+                        let moveDist = resultant.mag * 30 * scale;
+                        block.x = cx + Math.cos(resultant.angle) * moveDist * pushEase;
+                        block.y = cy + Math.sin(resultant.angle) * moveDist * pushEase;
+
+                        // Robots follow block (roughly)
+                        let targetX = cx - Math.cos(r.angle) * (block.size/2 * scale + 20 * scale);
+                        let targetY = cy - Math.sin(r.angle) * (block.size/2 * scale + 20 * scale);
+                        r.x = targetX + Math.cos(resultant.angle) * moveDist * pushEase;
+                        r.y = targetY + Math.sin(resultant.angle) * moveDist * pushEase;
+                    }
+                    drawRobot(r);
+                });
+
+                drawBlock(block.x, block.y);
+
+                if (progress === 1) {
+                    state = 'WAITING';
+                    finishRound();
+                }
+            } else if (state === 'MENU' || state === 'GAMEOVER' || state === 'WAITING') {
+                drawBlock(cx, cy);
+            }
+
+            requestAnimationFrame(loop);
+        }
+
+        function finishRound() {
+            ui.feedback.className = 'feedback ' + (isCorrect ? 'right' : 'wrong');
+            ui.feedback.textContent = isCorrect ? "RIGHT!" : "WRONG!";
+            
+            // trigger animation reflow
+            void ui.feedback.offsetWidth;
+            
+            if (isCorrect) {
+                sfxCorrect.currentTime = 0;
+                sfxCorrect.play().catch(e=>console.log(e));
+                score += 100;
+                ui.score.textContent = score;
+                puzzleRound++;
+            } else {
+                sfxWrong.currentTime = 0;
+                sfxWrong.play().catch(e=>console.log(e));
+                lives--;
+                updateLives();
+            }
+
+            if (lives <= 0) {
+                setTimeout(() => {
+                    state = 'GAMEOVER';
+                    ui.finalScore.textContent = score;
+                    ui.gameOver.classList.remove('hidden');
+                }, 1500);
+            } else {
+                setTimeout(spawnRound, 1500);
+            }
+        }
+
+        function updateLives() {
+            let str = '';
+            for(let i=0; i<lives; i++) str += '❤';
+            ui.lives.textContent = str;
+        }
+
+        function startGame() {
+            // Request landscape orientation for this game
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(err => {
+                    console.log('Orientation lock failed or not supported:', err);
+                });
+            }
+            score = 0;
+            lives = 3;
+            puzzleRound = 1;
+            ui.score.textContent = score;
+            updateLives();
+            ui.menu.classList.add('hidden');
+            ui.gameOver.classList.add('hidden');
+            bgm.play().catch(e=>console.log(e));
+            spawnRound();
+        }
+
+        ui.startBtn.addEventListener('click', startGame);
+        ui.restartBtn.addEventListener('click', startGame);
+
+        // --- Localization ---
+        const translations = {
+            en: {
+                score: "SCORE",
+                lives: "LIVES",
+                resultant: "RESULTANT DIRECTION!",
+                opposing: "OPPOSING FORCE NEEDED!",
+                desc1: "Two robots push the central block. Swipe in the correct direction based on the prompt before time runs out!",
+                desc2: "Magnitude is shown by robot size & arrow length.",
+                start: "START GAME",
+                gameover: "GAME OVER",
+                finalscore: "Final Score",
+                playagain: "PLAY AGAIN"
+            },
+            ml: {
+                score: "സ്കോർ",
+                lives: "ജീവനുകൾ",
+                resultant: "ഫലമായ ദിശ!",
+                opposing: "എതിർദിശ ആവശ്യമാണ്!",
+                desc1: "രണ്ട് റോബോട്ടുകൾ ബ്ലോക്ക് തള്ളുന്നു. സമയം തീരുന്നതിന് മുമ്പ് ശരിയായ ദിശയിലേക്ക് സ്വൈപ്പ് ചെയ്യുക!",
+                desc2: "റോബോട്ടിന്റെ വലുപ്പവും അമ്പടയാളവും ശക്തിയെ സൂചിപ്പിക്കുന്നു.",
+                start: "ഗെയിം തുടങ്ങുക",
+                gameover: "ഗെയിം അവസാനിച്ചു",
+                finalscore: "അന്തിമ സ്കോർ",
+                playagain: "വീണ്ടും കളിക്കുക"
+            }
+        };
+
+        let currentLang = 'en';
+        
+        function updateLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+            document.getElementById('lang-ml').classList.toggle('active', lang === 'ml');
+            
+            if (state === 'PLAYING') {
+                ui.prompt.textContent = mode === 'RESULTANT' ? translations[currentLang].resultant : translations[currentLang].opposing;
+            }
+        }
+        
+        document.getElementById('lang-en').addEventListener('click', () => updateLanguage('en'));
+        document.getElementById('lang-ml').addEventListener('click', () => updateLanguage('ml'));
+
+        // Start game loop
+        requestAnimationFrame(loop);
+    </script>
+</body>
+</html>

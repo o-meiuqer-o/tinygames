@@ -299,11 +299,22 @@ document.getElementById('lang-ml').addEventListener('click', () => updateLanguag
 // Lounge logic
 let isGameVisible = false;
 
+// Background Music & SFX
+const bgMusic = new Audio('assets/audio/puzzle_game_music.wav');
+bgMusic.loop = true;
+bgMusic.volume = 0.15;
+
+const winAudio = new Audio('assets/audio/quiz_win.wav');
+const loseAudio = new Audio('assets/audio/quiz_lose.wav');
+winAudio.volume = 1.0;
+loseAudio.volume = 1.0;
+
 document.getElementById('play-btn').addEventListener('click', () => {
     if (typeof Sounds !== 'undefined') Sounds.play('click');
     document.getElementById('start-screen').classList.add('hidden');
     document.getElementById('game-container').classList.remove('hidden');
     isGameVisible = true;
+    bgMusic.play().catch(e => console.log('Audio autoplay prevented'));
     
     if (allPaintings.length > 0 && !currentPainting) {
         startRound();
@@ -320,12 +331,14 @@ if (pauseTopBtn) {
     pauseTopBtn.addEventListener('click', () => {
         if (typeof Sounds !== 'undefined') Sounds.play('click');
         pauseOverlay.classList.remove('hidden');
+        bgMusic.pause();
     });
 }
 if (resumeBtn) {
     resumeBtn.addEventListener('click', () => {
         if (typeof Sounds !== 'undefined') Sounds.play('click');
         pauseOverlay.classList.add('hidden');
+        bgMusic.play().catch(e => console.log('Audio play prevented'));
     });
 }
 if (quitBtn) {
@@ -335,6 +348,8 @@ if (quitBtn) {
         document.getElementById('game-container').classList.add('hidden');
         document.getElementById('start-screen').classList.remove('hidden');
         isGameVisible = false;
+        bgMusic.pause();
+        bgMusic.currentTime = 0;
         score = 0;
         scoreElement.innerText = score;
     });
@@ -491,13 +506,13 @@ function handleGuess(guess, btn) {
     });
 
     if (isWin) {
-        if (typeof Sounds !== 'undefined') Sounds.play('win');
+        winAudio.play().catch(e => console.log('Audio play prevented'));
         score++;
         scoreElement.innerText = score;
         modalTitle.innerText = translations[currentLang].correct;
         modalTitle.className = "modal-title win";
     } else {
-        if (typeof Sounds !== 'undefined') Sounds.play('lose');
+        loseAudio.play().catch(e => console.log('Audio play prevented'));
         score = 0;
         scoreElement.innerText = score;
         modalTitle.innerText = translations[currentLang].incorrect;
