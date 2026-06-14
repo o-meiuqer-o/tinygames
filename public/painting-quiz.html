@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title data-i18n="title">Painting Quiz | TinyGames</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/game-common.css">
+    <link rel="stylesheet" href="css/painting-quiz.css">
+</head>
+<body>
+
+    <!-- START SCREEN / LOUNGE -->
+    <div id="start-screen" class="container hub-container">
+        <header>
+            <h1 data-i18n="title">Painting Quiz</h1>
+            <p data-i18n="subtitle">Find the odd one out!</p>
+        </header>
+
+        <!-- LANGUAGE SELECTOR -->
+        <div style="text-align: center; margin: 10px 0;">
+            <button id="lang-en" class="btn outline-btn active" style="padding: 5px 10px; width: auto; margin-right: 5px; text-transform: none;">English</button>
+            <button id="lang-ml" class="btn outline-btn" style="padding: 5px 10px; width: auto; text-transform: none;">മലയാളം</button>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <button id="play-btn" class="btn primary-btn" data-i18n="playLocal" style="width: 100%;">Play Game</button>
+        </div>
+
+        <div class="instructions">
+            <p id="rules-premise" data-i18n="premise">
+                Test your art history knowledge! In this quiz, you will see a famous painting and four attributes.
+            </p>
+            <h3 data-i18n="rulesTitle">Rules:</h3>
+            <ul id="rules-list">
+                <li data-i18n="rule1">You will be presented with a painting.</li>
+                <li data-i18n="rule2">Four options will appear: Artist, Year, Medium, and Movement.</li>
+                <li data-i18n="rule3">Three of these are correct for the painting. One is completely unrelated.</li>
+                <li data-i18n="rule4">Find and click the odd one out to win!</li>
+            </ul>
+        </div>
+
+        <a href="index.html" class="back-link" data-i18n="backHub">Back to Hub</a>
+    </div>
+
+    <!-- GAME CONTAINER -->
+    <div id="game-container" class="game-wrapper hidden">
+        <div class="header">
+            <button class="back-btn" onclick="document.getElementById('game-container').classList.add('hidden'); document.getElementById('start-screen').classList.remove('hidden');">← <span data-i18n="backHub">Back to Hub</span></button>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <div class="score-display"><span id="score-label" data-i18n="scoreText">Score: </span><span id="score">0</span></div>
+                <button id="pause-top-btn" class="btn outline-btn" style="padding: 5px 10px; width: auto;">⏸</button>
+            </div>
+        </div>
+        
+        <div class="prompt-text" id="prompt-text">Find the odd one out! Which is <strong style="color:#ff9800;">NOT</strong> related?</div>
+
+        <div class="content-area">
+            <div class="image-container">
+                <div id="loading-indicator" class="loading">Loading...</div>
+                <img id="painting-img" src="" alt="Painting" style="opacity: 0;">
+            </div>
+            
+            <div class="options-container" id="options-container">
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Modal -->
+    <!-- Result Modal -->
+    <div class="overlay hidden" id="result-modal">
+        <div class="game-over-box">
+            <h2 id="modal-title" class="modal-title"></h2>
+            <div id="modal-painting-title" class="painting-title"></div>
+            <p id="modal-description" class="modal-description"></p>
+            <button id="next-btn" class="btn primary-btn" data-i18n="nextPainting">Next Painting</button>
+        </div>
+    </div>
+
+    <!-- Pause overlay -->
+    <div id="pause-overlay" class="hidden overlay">
+        <div class="game-over-box">
+            <h2 data-i18n="paused">Paused</h2>
+            <button id="resume-btn" class="btn primary-btn" data-i18n="resume">Resume</button>
+            <button id="quit-btn" class="btn outline-btn" data-i18n="quit" style="margin-top: 10px;">Quit Game</button>
+        </div>
+    </div>
+
+    <script src="js/painting-data.js"></script>
+    <script src="js/painting-quiz.js"></script>
+</body>
+</html>

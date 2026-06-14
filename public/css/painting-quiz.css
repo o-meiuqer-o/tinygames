@@ -1,0 +1,134 @@
+.game-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    padding: 10px;
+    box-sizing: border-box;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    flex-shrink: 0;
+}
+.back-btn {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+}
+.score-display {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #aaa;
+}
+.content-area {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0; 
+    gap: 15px;
+}
+.image-container {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    background: #1a1a1a;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+#painting-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+    transition: opacity 0.3s ease;
+}
+.options-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    flex-shrink: 0;
+    padding-bottom: 20px;
+}
+.option-btn {
+    background: #252525;
+    color: #fff;
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 15px 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    word-break: break-word;
+}
+.option-btn:hover {
+    background: #333;
+    border-color: #555;
+    transform: translateY(-2px);
+}
+.option-btn.correct {
+    background: #4CAF50;
+    border-color: #4CAF50;
+}
+.option-btn.wrong {
+    background: var(--secondary);
+    border-color: var(--secondary);
+}
+
+.modal-title {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    margin-top: 0;
+}
+.modal-title.win { color: #4CAF50; }
+.modal-title.loss { color: var(--secondary); }
+
+.modal-description {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    color: #ddd;
+    margin-bottom: 25px;
+}
+.painting-title {
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+.loading {
+    position: absolute;
+    font-size: 1.5rem;
+    color: var(--primary);
+}
+
+@media (orientation: landscape) {
+    .content-area {
+        flex-direction: row;
+    }
+    .options-container {
+        grid-template-columns: 1fr;
+        width: 250px;
+        padding-bottom: 0;
+    }
+}
+
+.prompt-text {
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #bbb;
+}

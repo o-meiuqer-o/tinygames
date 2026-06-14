@@ -92,6 +92,7 @@
     let currentLang = 'en';
 
     function setLanguage(lang) {
+    document.documentElement.lang = lang;
         currentLang = lang;
         const elements = document.querySelectorAll('[data-i18n]');
         elements.forEach(el => {

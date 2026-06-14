@@ -6,6 +6,7 @@
   <title>Kitchen Chaos: The Heat Balance</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=43">
+  <link rel="stylesheet" href="css/game-common.css">
   <link rel="stylesheet" href="css/kitchen-chaos.css">
   <link rel="manifest" href="manifest.json">
 </head>
@@ -38,7 +39,8 @@
     <!-- Difficulty Mode Selector -->
     <div style="text-align: center; margin: 15px 0;">
       <div style="font-size: 0.85rem; text-transform: uppercase; color: #888; letter-spacing: 1.5px; margin-bottom: 8px;" data-i18n="difficultyLabel">Difficulty Mode</div>
-      <div style="display: flex; gap: 10px; justify-content: center;">
+      <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+        <button id="diff-very-easy" class="btn outline-btn" data-i18n="diffVeryEasy">Very Easy (2 Pots)</button>
         <button id="diff-easy" class="btn outline-btn active" data-i18n="diffEasy">Easy (Kids)</button>
         <button id="diff-hard" class="btn outline-btn" data-i18n="diffHard">Hard (Chef)</button>
       </div>
@@ -47,11 +49,11 @@
     <div class="instructions">
       <h3 data-i18n="howToPlay">How to Play</h3>
       <ul>
-        <li data-i18n="kcInst1">Manage 4 stovetops simultaneously.</li>
-        <li data-i18n="kcInst2">Tap a pot to instantly lower its heat by a small amount.</li>
-        <li data-i18n="kcInst3">Drag/Stir across a pot to rapidly cool it down.</li>
-        <li data-i18n="kcInst4">Beware of random events that can ruin your cooking!</li>
-        <li data-i18n="kcInst5">If any pot hits 100%, it's GAME OVER!</li>
+        <li data-i18n="kcInst1">Manage up to 4 stovetops simultaneously.</li>
+        <li data-i18n="kcInst2">Keep heat in the Green Zone (40%-60%) for 8 seconds to cook!</li>
+        <li data-i18n="kcInst3">Tap to lower heat. Drag to cool rapidly. Tap glowing pot to deliver and earn money!</li>
+        <li data-i18n="kcInst4">Pots spoil if left too long in Orange or Brown zones.</li>
+        <li data-i18n="kcInst5">3 spoiled pots and you're fired!</li>
       </ul>
     </div>
     <button id="play-btn" class="btn primary-btn" data-i18n="play">Play Now</button>

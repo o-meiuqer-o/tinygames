@@ -1,4 +1,11 @@
 const socket = io();
+
+socket.on('connect', () => {
+    if (typeof gameMode !== 'undefined' && gameMode === 'online' && typeof myRoomId !== 'undefined' && myRoomId) {
+        let gridSize = (typeof ROWS !== 'undefined') ? ROWS : 6;
+        socket.emit('join_game', { gameType, roomId: myRoomId, gridSize });
+    }
+});
 const gameType = 'tictactoe';
 let mySymbol = '';
 let myRoomId = '';
@@ -100,6 +107,7 @@ const translations = {
 let currentLang = 'en';
 
 function setLanguage(lang) {
+    document.documentElement.lang = lang;
     currentLang = lang;
     const elements = document.querySelectorAll('[data-i18n]');
     elements.forEach(el => {
@@ -191,13 +199,23 @@ function startGameUI() {
 }
 
 DOM.createBtn.addEventListener('click', () => {
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    if (!socket.connected) {
+        alert("Disconnected from server! Please refresh the page.");
+        return;
+    }
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for(let i=0; i<6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
     gameMode = 'online';
     socket.emit('join_game', { gameType, roomId: code });
     startGameUI();
 });
 
 DOM.joinBtn.addEventListener('click', () => {
+    if (!socket.connected) {
+        alert("Disconnected from server! Please refresh the page.");
+        return;
+    }
     const code = DOM.roomCodeInput.value.trim().toUpperCase();
     if (code.length >= 4) {
         myRoomId = code;

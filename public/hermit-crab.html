@@ -5,92 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title data-i18n="title">Hermit Crab's Real Estate</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/game-common.css">
     <link rel="stylesheet" href="css/hermit-crab.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#121212">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* Shared Lounge & Pause overlay styles */
-        .hub-container {
-            max-width: 600px;
-            margin: 0 auto;
-            overflow-y: auto;
-            max-height: 100vh;
-            padding: 20px;
-            padding-bottom: 40px;
-            text-align: center;
-        }
-        .instructions {
-            text-align: left;
-            background: #1a1a1a;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            margin-bottom: 15px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        .instructions p {
-            color: #eee;
-            margin-top: 0;
-            margin-bottom: 8px;
-        }
-        .btn {
-            display: inline-block;
-            text-align: center;
-            text-decoration: none;
-            width: 100%;
-            padding: 16px;
-            border-radius: 12px;
-            border: none;
-            font-size: 1.1rem;
-            font-weight: 800;
-            cursor: pointer;
-            color: white;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-sizing: border-box;
-        }
-        .outline-btn {
-            background: transparent;
-            border: 2px solid #555;
-            color: #ccc;
-        }
-        .outline-btn.active {
-            border-color: var(--primary);
-            color: white;
-            background: rgba(0, 210, 255, 0.1);
-        }
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 15px;
-            color: #aaa;
-            text-decoration: none;
-        }
-        .back-link:hover {
-            color: white;
-        }
-        .overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.92);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .game-over-box {
-            background: var(--card-bg, #1e1e1e);
-            border: 2px solid #333;
-            border-radius: 16px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            color: white;
-            width: 95%;
-            max-width: 440px;
-        }
         .hand-btn {
             cursor: pointer;
         }
@@ -117,8 +37,8 @@
         </div>
 
         <div class="control-selection" style="margin-top: 15px;">
-            <h2 data-i18n="selectHand" style="font-size:1.4rem;">Select Hand Preference</h2>
-            <p data-i18n="handPreferenceDesc" style="font-size:0.9rem; color:#aaa; margin-bottom:15px;">This sets the position of your virtual joystick.</p>
+            <h2 data-i18n="selectHand" style="font-size:1.4rem;">Select a side to start the game</h2>
+            <p data-i18n="handPreferenceDesc" style="font-size:0.9rem; color:#aaa; margin-bottom:15px;">This starts the game and sets your joystick position.</p>
             <div class="hand-options" style="display:flex; gap:12px;">
                 <button id="left-hand-btn" class="hand-btn" style="flex:1;">
                     <span class="icon">👈</span>

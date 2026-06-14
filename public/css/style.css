@@ -395,3 +395,7 @@ button:hover {
     }
 }
 
+html[lang="ml"] { 
+    font-size: 75%; 
+    line-height: 1.65; 
+}

@@ -97,13 +97,13 @@
 
             <!-- SINGLE PLAYER GAMES -->
             <a href="constellation-connect.html" class="game-card" data-category="single-player play-learn">
-                <div class="card-icon">✨</div>
+                <div class="card-icon"><img src="icons/constellation-connect.png" alt="Constellation Connect"></div>
                 <h2>Constellation Connect</h2>
                 <p>Trace star patterns in the night sky.</p>
             </a>
 
             <a href="kitchen-chaos.html" class="game-card" data-category="single-player">
-                <div class="card-icon">🍳</div>
+                <div class="card-icon"><img src="icons/kitchen-chaos.png" alt="Kitchen Chaos"></div>
                 <h2>Kitchen Chaos</h2>
                 <p>Manage four stovetops before it all boils over.</p>
             </a>
@@ -133,6 +133,12 @@
             </a>
 
             <!-- PLAY LEARN GAMES -->
+            <a href="painting-quiz.html" class="game-card" data-category="single-player play-learn">
+                <div class="card-icon"><img src="icons/painting-quiz.png" alt="Painting Quiz"></div>
+                <h2>Painting Quiz</h2>
+                <p>Find the odd word out.</p>
+            </a>
+
             <a href="syn-ant.html" class="game-card" data-category="single-player play-learn">
                 <div class="card-icon"><img src="icons/syn-ant.png" alt="Syn-Ant Switchback"></div>
                 <h2>Syn-Ant Switchback</h2>
@@ -168,12 +174,22 @@
             btn.addEventListener('click', () => {
                 tabBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                filterGames(btn.getAttribute('data-tab'));
+                const tab = btn.getAttribute('data-tab');
+                filterGames(tab);
+                sessionStorage.setItem('lastHubTab', tab);
             });
         });
 
-        // Initialize display to show Single Player games
-        filterGames('single-player');
+        // Initialize display to show the last active tab, or Single Player by default
+        const lastTab = sessionStorage.getItem('lastHubTab') || 'single-player';
+        const targetBtn = document.querySelector(`.tab-btn[data-tab="${lastTab}"]`);
+        if (targetBtn) {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            targetBtn.classList.add('active');
+            filterGames(lastTab);
+        } else {
+            filterGames('single-player');
+        }
     </script>
 </body>
 </html>

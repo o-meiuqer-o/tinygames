@@ -1,5 +1,12 @@
 // aadu-puli-aattam.js
 const socket = io();
+
+socket.on('connect', () => {
+    if (typeof gameMode !== 'undefined' && gameMode === 'online' && typeof myRoomId !== 'undefined' && myRoomId) {
+        let gridSize = (typeof ROWS !== 'undefined') ? ROWS : 6;
+        socket.emit('join_game', { gameType, roomId: myRoomId, gridSize });
+    }
+});
 let roomId = null;
 let mySymbol = null; // 'goat' or 'tiger' (online only)
 let turn = 'goat'; // 'goat' or 'tiger'
@@ -150,6 +157,7 @@ const translations = {
 let currentLang = 'en';
 
 function setLanguage(lang) {
+    document.documentElement.lang = lang;
     currentLang = lang;
     const elements = document.querySelectorAll('[data-i18n]');
     elements.forEach(el => {
@@ -274,7 +282,7 @@ function startGame() {
     validMoves = [];
     
     updateUI();
-    DOM.gameOverModal.classList.remove('show');
+    DOM.gameOverModal.classList.add('hidden');
 }
 
 function updatePiecePositionAndOrientation(piece, nodeId, type) {
@@ -677,7 +685,7 @@ function updateUI() {
 function showGameOver(title, reason) {
     DOM.winnerText.textContent = title;
     DOM.winReason.textContent = reason;
-    DOM.gameOverModal.classList.add('show');
+    DOM.gameOverModal.classList.remove('hidden');
     if (typeof Sounds !== 'undefined') Sounds.play('happyWin');
 }
 
@@ -701,6 +709,10 @@ function startGameUI() {
 }
 
 DOM.createBtn.addEventListener('click', () => {
+    if (!socket.connected) {
+        alert("Disconnected from server! Please refresh the page.");
+        return;
+    }
     roomId = generateRoomId();
     gameMode = 'online';
     socket.emit('join_game', { gameType: 'aadupuliaattam', roomId });
@@ -708,6 +720,10 @@ DOM.createBtn.addEventListener('click', () => {
 });
 
 DOM.joinBtn.addEventListener('click', () => {
+    if (!socket.connected) {
+        alert("Disconnected from server! Please refresh the page.");
+        return;
+    }
     const code = DOM.roomCodeInput.value.trim().toUpperCase();
     if (code.length === 6) {
         roomId = code;

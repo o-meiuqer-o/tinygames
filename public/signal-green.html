@@ -8,30 +8,7 @@
     <title data-i18n="title">Signal Green | TinyGames</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/signal-green.css">
-    <style>
-        .btn {
-            display: inline-block;
-            text-align: center;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            color: white;
-        }
-        .outline-btn {
-            background: transparent;
-            border: 2px solid #555;
-            color: #ccc;
-        }
-        .outline-btn.active {
-            border-color: #00ff66;
-            color: white;
-            background: rgba(0, 255, 102, 0.1);
-        }
-    </style>
+    <link rel="stylesheet" href="css/game-common.css">
 </head>
 <body>
     <!-- Landscape Orientation Lock Overlay -->
@@ -61,6 +38,13 @@
             </div>
             
             <div class="rules-section">
+                <div class="rule-card" style="border-left: 4px solid #ff9800; background: rgba(255, 152, 0, 0.1);">
+                    <span class="rule-icon">🎯</span>
+                    <div>
+                        <h3 data-i18n="ruleObjTitle" style="color: #ff9800;">Objective</h3>
+                        <p data-i18n="ruleObjDesc">Manage the intersection traffic and <strong>AVOID COLLISIONS!</strong></p>
+                    </div>
+                </div>
                 <div class="rule-card">
                     <span class="rule-icon">🚗</span>
                     <div>

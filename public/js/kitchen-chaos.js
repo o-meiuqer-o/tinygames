@@ -8,11 +8,11 @@ const translations = {
     kcSubtitle: "The Heat Balance",
     kcTitleSmall: "Kitchen Chaos",
     howToPlay: "How to Play",
-    kcInst1: "Manage 4 stovetops simultaneously.",
-    kcInst2: "Tap a pot to instantly lower its heat by a small amount.",
-    kcInst3: "Drag/Stir across a pot to rapidly cool it down.",
-    kcInst4: "Beware of random events that can ruin your cooking!",
-    kcInst5: "If any pot hits 100%, it's GAME OVER!",
+    kcInst1: "Manage up to 4 stovetops simultaneously.",
+    kcInst2: "Keep heat in the Green Zone (40%-60%) for 8 seconds to cook!",
+    kcInst3: "Tap to lower heat. Drag to cool rapidly. Tap glowing pot to deliver and earn money!",
+    kcInst4: "Pots spoil if left too long in Orange or Brown zones.",
+    kcInst5: "3 spoiled pots and you're fired!",
     play: "Play Now",
     backHub: "Back to Hub",
     paused: "Paused",
@@ -21,6 +21,7 @@ const translations = {
     gameOver: "Game Over!",
     playAgain: "Play Again",
     difficultyLabel: "Difficulty Mode",
+    diffVeryEasy: "Very Easy (2 Pots)",
     diffEasy: "Easy (Kids)",
     diffHard: "Hard (Chef)",
     Milk: "Milk", Meat: "Meat", Sauce: "Sauce", Soup: "Soup", Pasta: "Pasta", Curry: "Curry",
@@ -31,11 +32,11 @@ const translations = {
     kcSubtitle: "ചൂട് ബാലൻസ്",
     kcTitleSmall: "കിച്ചൻ കയോസ്",
     howToPlay: "എങ്ങനെ കളിക്കാം",
-    kcInst1: "4 സ്റ്റൗകൾ ഒരുമിച്ച് നിയന്ത്രിക്കുക.",
-    kcInst2: "ചൂട് കുറയ്ക്കാൻ പാത്രത്തിൽ തൊടുക.",
-    kcInst3: "വേഗത്തിൽ തണുപ്പിക്കാൻ പാത്രത്തിൽ ഉരസുക.",
-    kcInst4: "യാദൃശ്ചിക സംഭവങ്ങളെ കരുതിയിരിക്കുക!",
-    kcInst5: "ചൂട് 100% എത്തിയാൽ ഗെയിം ഓവർ!",
+    kcInst1: "4 സ്റ്റൗകൾ വരെ ഒരുമിച്ച് നിയന്ത്രിക്കുക.",
+    kcInst2: "പാകം ചെയ്യാൻ ചൂട് പച്ച സോണിൽ (40%-60%) 8 സെക്കൻഡ് നിലനിർത്തുക!",
+    kcInst3: "ചൂട് കുറയ്ക്കാൻ തൊടുക. ഉരച്ചാൽ വേഗത്തിൽ തണുക്കും. തിളങ്ങുന്ന പാത്രത്തിൽ തൊട്ട് പണം നേടുക!",
+    kcInst4: "ഓറഞ്ച് അല്ലെങ്കിൽ ബ്രൗൺ സോണുകളിൽ ദീർഘനേരം വെച്ചാൽ കേടാകും.",
+    kcInst5: "3 പാത്രങ്ങൾ കേടായാൽ നിങ്ങളെ പുറത്താക്കും!",
     play: "കളിക്കാം",
     backHub: "ഹബ്ബിലേക്ക്",
     paused: "പോസ്",
@@ -44,6 +45,7 @@ const translations = {
     gameOver: "ഗെയിം ഓവർ!",
     playAgain: "വീണ്ടും കളിക്കാം",
     difficultyLabel: "കാഠിന്യം (Difficulty)",
+    diffVeryEasy: "വളരെ എളുപ്പം (2 പാത്രങ്ങൾ)",
     diffEasy: "എളുപ്പം (കുട്ടികൾക്ക്)",
     diffHard: "കഠിനം (ഷെഫ്)",
     Milk: "പാൽ", Meat: "ഇറച്ചി", Sauce: "സോസ്", Soup: "സൂപ്പ്", Pasta: "പാസ്ത", Curry: "കറി",
@@ -52,6 +54,7 @@ const translations = {
 };
 
 function setLanguage(lang) {
+    document.documentElement.lang = lang;
   currentLang = lang;
   const t = translations[lang];
   
@@ -115,30 +118,12 @@ let lastPointerPos = { x: 0, y: 0 };
 let lastTapTimes = [0, 0, 0, 0];
 
 function generateNewOrder(index) {
-  const isLevel3 = level >= 3;
-  let minP = 40;
-  let maxP = 95;
-  
   // Pick an item not currently on any pot if possible
   const currentTypes = pots.filter(p => p && p.type).map(p => p.type);
   const availableTypes = FOOD_TYPES.filter(t => !currentTypes.includes(t));
   let selectedType = FOOD_TYPES[Math.floor(Math.random() * FOOD_TYPES.length)];
   if (availableTypes.length > 0) {
     selectedType = availableTypes[Math.floor(Math.random() * availableTypes.length)];
-  }
-  
-  const typeCategory = selectedType.length % 4; // Map 12 items to 4 difficulty buckets based on name length
-  
-  if (isLevel3) {
-    // Variable perfect zones based on level
-    const ranges = [
-      { min: 30, max: 60 }, // lower heat (e.g. Milk, Tea)
-      { min: 70, max: 95 }, // high heat (e.g. Meat)
-      { min: 50, max: 80 }, // medium (e.g. Sauce)
-      { min: 40, max: 90 }  // wide (e.g. Soup)
-    ];
-    minP = ranges[typeCategory].min;
-    maxP = ranges[typeCategory].max;
   }
   
   let foodRate = 1.5 + Math.random();
@@ -154,9 +139,9 @@ function generateNewOrder(index) {
   return {
     heat: 0,
     progress: 0,
+    spoilOrange: 0,
+    spoilBrown: 0,
     rate: foodRate,
-    minPerfect: minP,
-    maxPerfect: maxP,
     cooked: false,
     type: selectedType,
     element: document.querySelector(`.stovetop[data-index="${index}"] .pot`),
@@ -186,15 +171,24 @@ document.getElementById('restartBtn').addEventListener('click', startGame);
 document.getElementById('lang-en').addEventListener('click', () => setLanguage('en'));
 document.getElementById('lang-ml').addEventListener('click', () => setLanguage('ml'));
 
+document.getElementById('diff-very-easy').addEventListener('click', () => {
+  currentDifficulty = 'very-easy';
+  document.getElementById('diff-very-easy').classList.add('active');
+  document.getElementById('diff-easy').classList.remove('active');
+  document.getElementById('diff-hard').classList.remove('active');
+});
+
 document.getElementById('diff-easy').addEventListener('click', () => {
   currentDifficulty = 'easy';
   document.getElementById('diff-easy').classList.add('active');
+  document.getElementById('diff-very-easy').classList.remove('active');
   document.getElementById('diff-hard').classList.remove('active');
 });
 
 document.getElementById('diff-hard').addEventListener('click', () => {
   currentDifficulty = 'hard';
   document.getElementById('diff-hard').classList.add('active');
+  document.getElementById('diff-very-easy').classList.remove('active');
   document.getElementById('diff-easy').classList.remove('active');
 });
 
@@ -203,24 +197,25 @@ pots.forEach((potObj, index) => {
   
   potEl.addEventListener('pointerdown', (e) => {
     if (gameState !== 'PLAYING') return;
-    
-    const now = performance.now();
-    const timeSinceLastTap = now - lastTapTimes[index];
-    lastTapTimes[index] = now;
-    
-    // Double tap detection
-    if (timeSinceLastTap < 300) {
-      handleDoubleTap(index);
-      e.preventDefault();
-      return;
-    }
+    if (!pots[index]) return;
     
     isPointerDown = true;
     activePotIndex = index;
     lastPointerPos = { x: e.clientX, y: e.clientY };
     
-    // Tap to reduce heat instantly by a chunk
-    if (!pots[index].cooked) {
+    if (pots[index].cooked) {
+      // Serve order
+      score += 50 * level;
+      updateUI();
+      playSfx('cash');
+      
+      // Reset order
+      pots[index] = generateNewOrder(index);
+      pots[index].contentElement.textContent = translations[currentLang][pots[index].type];
+      pots[index].element.classList.remove('cooked');
+      updatePotUI(pots[index]);
+    } else {
+      // Tap to reduce heat instantly by a chunk
       reduceHeat(index, 10);
       try { if (window.Sounds) Sounds.play('click'); } catch(e){}
     }
@@ -229,7 +224,7 @@ pots.forEach((potObj, index) => {
 
   potEl.addEventListener('pointermove', (e) => {
     if (gameState !== 'PLAYING' || !isPointerDown || activePotIndex !== index) return;
-    if (pots[index].cooked) return; // Don't stir if cooked
+    if (!pots[index] || pots[index].cooked) return; // Don't stir if cooked or disabled
     
     // Stirring calculation
     const dx = e.clientX - lastPointerPos.x;
@@ -252,22 +247,6 @@ window.addEventListener('pointercancel', () => {
   isPointerDown = false;
   activePotIndex = -1;
 });
-
-function handleDoubleTap(index) {
-  const p = pots[index];
-  if (p.cooked) {
-    // Serve order
-    score += 50 * level;
-    updateUI();
-    playSfx('cash');
-    
-    // Reset order
-    pots[index] = generateNewOrder(index);
-    pots[index].contentElement.textContent = translations[currentLang][pots[index].type];
-    pots[index].element.classList.remove('cooked');
-    updatePotUI(pots[index]);
-  }
-}
 
 function requestFullscreen() {
   const elem = document.documentElement;
@@ -371,11 +350,23 @@ function startGame() {
   
   updateUI();
   
+  const activePotsCount = currentDifficulty === 'very-easy' ? 2 : 4;
+  const stovetopGrid = document.querySelector('.stovetop-grid');
+  if (currentDifficulty === 'very-easy') stovetopGrid.classList.add('very-easy');
+  else stovetopGrid.classList.remove('very-easy');
+  
   for (let i = 0; i < 4; i++) {
-    pots[i] = generateNewOrder(i);
-    pots[i].contentElement.textContent = translations[currentLang][pots[i].type];
-    pots[i].element.classList.remove('cooked');
-    updatePotUI(pots[i]);
+    const stovetopEl = document.querySelector(`.stovetop[data-index="${i}"]`);
+    if (i < activePotsCount) {
+      stovetopEl.style.display = 'flex';
+      pots[i] = generateNewOrder(i);
+      pots[i].contentElement.textContent = translations[currentLang][pots[i].type];
+      pots[i].element.classList.remove('cooked');
+      updatePotUI(pots[i]);
+    } else {
+      stovetopEl.style.display = 'none';
+      pots[i] = null;
+    }
   }
   
   startAmbientNoise();
@@ -470,15 +461,16 @@ function updatePotUI(p) {
   p.progElement.style.width = `${p.progress}%`;
   
   let newZone = 'cool';
-  if (p.heat > p.maxPerfect) {
-    if (p.heat >= 95) newZone = 'brown';
-    else if (p.heat >= p.maxPerfect + 10) newZone = 'red';
-    else newZone = 'orange';
-  } else if (p.heat >= p.minPerfect) {
-    newZone = 'perfect';
+  if (p.heat > 80) {
+    newZone = 'brown';
+  } else if (p.heat > 60) {
+    newZone = 'orange';
+  } else if (p.heat >= 40) {
+    newZone = 'perfect'; // green
+  } else if (p.heat >= 20) {
+    newZone = 'yellow';
   } else {
-    if (p.heat >= p.minPerfect - 15) newZone = 'yellow';
-    else newZone = 'cool';
+    newZone = 'cool'; // blue
   }
   
   p.element.setAttribute('data-zone', newZone);
@@ -490,7 +482,17 @@ function setNextEventTime() {
 }
 
 function triggerRandomEvent() {
-  const events = ['FUSE BLOWN!', 'RUSH HOUR!', 'FREEZE!'];
+  let events = ['RUSH HOUR!', 'FREEZE!'];
+  
+  // Only add FUSE BLOWN! if more than one pot is above 80 degrees
+  let hotPots = 0;
+  pots.forEach(p => {
+    if (p && !p.cooked && p.heat > 80) hotPots++;
+  });
+  if (hotPots > 1) {
+    events.push('FUSE BLOWN!');
+  }
+  
   const ev = events[Math.floor(Math.random() * events.length)];
   
   eventText.textContent = ev;
@@ -501,17 +503,17 @@ function triggerRandomEvent() {
   
   if (ev === 'FUSE BLOWN!') {
     document.getElementById('kitchen-area').style.background = '#000';
-    pots.forEach(p => p.element.style.opacity = '0.2');
+    pots.forEach(p => { if (p) p.element.style.opacity = '0.2'; });
     setTimeout(() => {
       document.getElementById('kitchen-area').style.background = '';
-      pots.forEach(p => p.element.style.opacity = '1');
+      pots.forEach(p => { if (p) p.element.style.opacity = '1'; });
       clearEvent();
     }, 2000);
   } else if (ev === 'RUSH HOUR!') {
-    pots.forEach(p => { if(!p.cooked) p.heat += 20; });
+    pots.forEach(p => { if(p && !p.cooked) p.heat += 20; });
     setTimeout(clearEvent, 1500);
   } else if (ev === 'FREEZE!') {
-    pots.forEach(p => { p.heat -= 30; if (p.heat < 0) p.heat = 0; });
+    pots.forEach(p => { if (p) p.heat = 0; });
     setTimeout(clearEvent, 1500);
   }
 }
@@ -545,32 +547,54 @@ function gameLoop(timestamp) {
   for (let i = 0; i < 4; i++) {
     const p = pots[i];
     
-    if (p.cooked) continue;
+    if (!p || p.cooked) continue;
     
-    if (activeEvent !== 'FUSE BLOWN!') {
-      const baseSpeed = currentDifficulty === 'easy' ? 2 : 4.5;
-      p.heat += p.rate * heatMultiplier * (dt / 1000) * baseSpeed;
+    let isGreen = p.heat >= 40 && p.heat <= 60;
+    
+    if (activeEvent !== 'FUSE BLOWN!' && activeEvent !== 'FREEZE!') {
+      const baseSpeed = currentDifficulty === 'hard' ? 4.5 : 2;
+      let heatIncrease = p.rate * heatMultiplier * (dt / 1000) * baseSpeed;
+      p.heat += heatIncrease;
     }
     
-    // Cooking progress
-    if (p.heat >= p.minPerfect && p.heat <= p.maxPerfect) {
-      p.progress += (dt / 1000) * 15; // takes ~6.6s to cook in perfect zone
-      if (p.progress >= 100) {
-        p.progress = 100;
-        p.cooked = true;
-        p.element.classList.add('cooked');
-        playSfx('ding');
-      }
+    // Evaluate Zones
+    if (p.heat > 80) {
+      // Brown zone
+      p.spoilBrown += (dt / 1000) * (100 / 3); // 3 seconds to spoil
+      p.spoilOrange = 0;
+      p.progress -= (dt / 1000) * 10;
+    } else if (p.heat > 60) {
+      // Orange zone
+      p.spoilOrange += (dt / 1000) * (100 / 5); // 5 seconds to spoil
+      p.spoilBrown = 0;
+      p.progress -= (dt / 1000) * 10;
+    } else if (isGreen) {
+      // Green zone
+      p.progress += (dt / 1000) * (100 / 8); // 8 seconds to cook
+      p.spoilOrange = 0;
+      p.spoilBrown = 0;
     } else {
-      // Progress decays slightly if out of perfect zone? Let's leave it as is or maybe very slow decay.
-      p.progress -= (dt / 1000) * 2;
-      if (p.progress < 0) p.progress = 0;
+      // Blue/Yellow zone (< 40)
+      p.progress -= (dt / 1000) * 5;
+      p.spoilOrange = 0;
+      p.spoilBrown = 0;
+    }
+    
+    if (p.progress < 0) p.progress = 0;
+    
+    // Check if cooked
+    if (p.progress >= 100) {
+      p.progress = 100;
+      p.cooked = true;
+      p.element.classList.add('cooked');
+      playSfx('ding');
     }
     
     updatePotUI(p);
     
-    if (p.heat >= 100) {
-      addStrike(`${translations[currentLang][p.type] || p.type} burned!`);
+    // Check for spoil (Burn)
+    if (p.spoilBrown >= 100 || p.spoilOrange >= 100 || p.heat >= 100) {
+      addStrike(`${translations[currentLang][p.type] || p.type} spoiled!`);
       // Reset pot
       pots[i] = generateNewOrder(i);
       pots[i].contentElement.textContent = translations[currentLang][pots[i].type];

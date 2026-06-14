@@ -1,5 +1,12 @@
 // pallanguzhi.js
 const socket = io();
+
+socket.on('connect', () => {
+    if (typeof gameMode !== 'undefined' && gameMode === 'online' && typeof myRoomId !== 'undefined' && myRoomId) {
+        let gridSize = (typeof ROWS !== 'undefined') ? ROWS : 6;
+        socket.emit('join_game', { gameType, roomId: myRoomId, gridSize });
+    }
+});
 let roomId = null;
 let mySymbol = null;
 let currentPlayer = 'player1'; // player1 goes first
@@ -115,6 +122,7 @@ const translations = {
 let currentLang = 'en';
 
 function setLanguage(lang) {
+    document.documentElement.lang = lang;
     currentLang = lang;
     const elements = document.querySelectorAll('[data-i18n]');
     elements.forEach(el => {
@@ -437,6 +445,10 @@ function generateRoomId() {
 }
 
 DOM.createBtn.addEventListener('click', () => {
+    if (!socket.connected) {
+        alert("Disconnected from server! Please refresh the page.");
+        return;
+    }
     roomId = generateRoomId();
     gameMode = 'online';
     socket.emit('join_game', { gameType: 'pallanguzhi', roomId });
@@ -444,6 +456,10 @@ DOM.createBtn.addEventListener('click', () => {
 });
 
 DOM.joinBtn.addEventListener('click', () => {
+    if (!socket.connected) {
+        alert("Disconnected from server! Please refresh the page.");
+        return;
+    }
     const code = DOM.roomCodeInput.value.trim().toUpperCase();
     if (code.length === 6) {
         roomId = code;

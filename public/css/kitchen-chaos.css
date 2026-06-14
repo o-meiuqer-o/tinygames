@@ -20,6 +20,11 @@
   box-sizing: border-box;
 }
 
+.stovetop-grid.very-easy {
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 800px;
+}
+
 .stovetop {
   background: #1a1a1a;
   border-radius: 20px;

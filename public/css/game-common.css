@@ -1,0 +1,161 @@
+/* Shared Lounge & Game Overlay styles for TinyGames */
+
+.hub-container {
+    max-width: 600px;
+    margin: 0 auto;
+    overflow-y: auto;
+    max-height: 100vh;
+    padding-bottom: 40px;
+}
+
+.instructions {
+    text-align: left;
+    background: #1a1a1a;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.instructions p {
+    color: #eee;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.instructions h3 {
+    margin-top: 0;
+    color: #ffd700;
+}
+
+.instructions ul {
+    padding-left: 20px;
+    color: #ccc;
+}
+
+.room-controls button, .room-controls input {
+    box-sizing: border-box;
+}
+
+.room-controls .join-room-wrapper {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.room-controls input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background-color: #222;
+    color: white;
+    font-size: 1rem;
+    width: 50% !important;
+}
+
+.room-controls .join-room-wrapper button {
+    flex: 1;
+    width: 50% !important;
+}
+
+/* Button Classes */
+.btn {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition, all 0.3s ease);
+}
+
+.btn:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.primary-btn, .btn-primary {
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    color: white;
+}
+
+.secondary-btn {
+    background: #333;
+    color: white;
+}
+
+.outline-btn {
+    background: transparent;
+    border: 2px solid #555;
+    color: #ccc;
+}
+
+.outline-btn.active {
+    border-color: var(--primary);
+    color: white;
+    background: rgba(0, 210, 255, 0.1);
+}
+
+.btn-danger {
+    background: linear-gradient(45deg, #ff007f, #ff4da6);
+    color: white;
+}
+
+.btn-neutral {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+/* Navigation Links */
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #aaa;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    color: white;
+}
+
+.back-btn {
+    text-decoration: none;
+    color: #aaa;
+    display: inline-block;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.back-btn:hover {
+    color: white;
+}
+
+/* Overlays and Modals */
+.overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.game-over-box {
+    background: var(--card-bg, #1e1e1e);
+    border: 2px solid #333;
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    color: white;
+}

@@ -18,10 +18,21 @@ io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
     socket.on('join_game', (data) => {
+        console.log(`[DEBUG] Received join_game from ${socket.id} with data:`, data);
         const { gameType, roomId } = data;
         
+        if (!gameType || !roomId) {
+            console.error(`[DEBUG] Invalid join_game payload!`, data);
+            return;
+        }
+
         socket.join(roomId);
         
+        if (!games[gameType]) {
+            console.error(`[DEBUG] gameType ${gameType} does not exist in games object!`);
+            return;
+        }
+
         if (!games[gameType][roomId]) {
             games[gameType][roomId] = { players: [], state: null, gridSize: data.gridSize || 6 };
         }
